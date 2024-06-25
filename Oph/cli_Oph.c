@@ -4,6 +4,8 @@
 #include "file_io_Oph.h"
 #include "cli_Oph.h"
 
+int exiting = 0;
+
 //This executes the commands, we can simply add commands by adding if statements
 void exec_command(char* input){
 
@@ -28,7 +30,7 @@ void exec_command(char* input){
 	}else if(strcmp(cmd,"exit") == 0){
 
 		printf("Exiting BCP\n");
-		exit(0);
+		exiting = 1;
 	}else{
 
 		printf("%s: Unknown commmand\n",cmd);
@@ -61,7 +63,7 @@ void cmdprompt(FILE* cmdlog){
 	int count = 1;
 	char* input;
 
-	while(1){
+	while(exiting != 1){
 
 		printf("[BCP@Ophiuchus]<%d>$ ",count);
 		input = get_input();
