@@ -1,70 +1,90 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
+#include <time.h>
 #include <libconfig.h>
 #include "file_io_Sag.h"
 
-//this file is for basic file operations so we can all stick to the dame format
+conf_params_t config;
 
-//this takes the file pointer cfile is the name of the cfile it is called from 
-//func is the name of the function it is called from amd msg
-//is the message you wish to print to the log
-void write_to_log(FILE* fptr, char* cfile, char* func, char* msg){
-
-	time_t time_m;
-
-	time_m = time(NULL);
-
-	fprintf(fptr, "[%ld][%s][%s] %s\n", time_m, cfile, func, msg);
+void write_to_log(FILE* logfile, const char* file, const char* function, const char* message) {
+    time_t now;
+    time(&now);
+    char* date = ctime(&now);
+    date[strlen(date) - 1] = '\0';
+    fprintf(logfile, "%s : %s : %s : %s\n", date, file, function, message);
+    fflush(logfile);
 }
-//This reads the config file and takes the config file path
-//We just add parameters by adding ifstatements as below
-void read_in_config(char* filepath){
 
-	config_t conf;
-	struct conf_params;
-	const char* tmpstr = NULL;
-	int status;
+void read_in_config(const char* filepath) {
+    config_t cfg;
+    config_init(&cfg);
 
-	config_init(&conf);
+    if (!config_read_file(&cfg, filepath)) {
+        fprintf(stderr, "%s:%d - %s\n", config_error_file(&cfg),
+                config_error_line(&cfg), config_error_text(&cfg));
+        config_destroy(&cfg);
+        exit(1);
+    }
 
-	if (!config_read_file(&conf,filepath)){
+    const char* tmpstr;
+    // Read main section
+    if (config_lookup_string(&cfg, "main.logpath", &tmpstr)) {
+        strncpy(config.main.logpath, tmpstr, sizeof(config.main.logpath) - 1);
+        config.main.logpath[sizeof(config.main.logpath) - 1] = '\0';
+    }
 
-		printf("%s: No such file or directory\n",filepath);
-		config_destroy(&conf);
-		exit(0);
+    if (config_lookup_string(&cfg, "main.cmdlog", &tmpstr)) {
+        strncpy(config.main.cmdlog, tmpstr, sizeof(config.main.cmdlog) - 1);
+        config.main.cmdlog[sizeof(config.main.cmdlog) - 1] = '\0';
+    }
 
-	}
-	if (!config_lookup_string(&conf,"main.logpath",&tmpstr)){
+    // Read rfsoc_spectrometer section
+    config_lookup_int(&cfg, "rfsoc_spectrometer.enabled", &config.rfsoc.enabled);
 
-		printf("Missing main.logpath in %s\n",filepath);
-		config_destroy(&conf);
-		exit(0);
+    if (config_lookup_string(&cfg, "rfsoc_spectrometer.ip_address", &tmpstr)) {
+        strncpy(config.rfsoc.ip_address, tmpstr, sizeof(config.rfsoc.ip_address) - 1);
+        config.rfsoc.ip_address[sizeof(config.rfsoc.ip_address) - 1] = '\0';
+    }
 
-	}
+    if (config_lookup_string(&cfg, "rfsoc_spectrometer.mode", &tmpstr)) {
+        strncpy(config.rfsoc.mode, tmpstr, sizeof(config.rfsoc.mode) - 1);
+        config.rfsoc.mode[sizeof(config.rfsoc.mode) - 1] = '\0';
+    }
 
-	config.main.logpath = (char*)malloc((strlen(tmpstr)+1)*sizeof(char));
-	strcpy(config.main.logpath, tmpstr);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.data_save_interval", &config.rfsoc.data_save_interval);
 
-	if(!config_lookup_string(&conf,"main.cmdlog",&tmpstr)){
+    if (config_lookup_string(&cfg, "rfsoc_spectrometer.data_save_path", &tmpstr)) {
+        strncpy(config.rfsoc.data_save_path, tmpstr, sizeof(config.rfsoc.data_save_path) - 1);
+        config.rfsoc.data_save_path[sizeof(config.rfsoc.data_save_path) - 1] = '\0';
+    }
 
-		printf("Missing main.cmdlog in %s\n",filepath);
-		config_destroy(&conf);
-		exit(0);
+    if (config_lookup_string(&cfg, "rfsoc_spectrometer.fpga_bitstream", &tmpstr)) {
+        strncpy(config.rfsoc.fpga_bitstream, tmpstr, sizeof(config.rfsoc.fpga_bitstream) - 1);
+        config.rfsoc.fpga_bitstream[sizeof(config.rfsoc.fpga_bitstream) - 1] = '\0';
+    }
 
-	}
+    config_lookup_int(&cfg, "rfsoc_spectrometer.adc_channel", &config.rfsoc.adc_channel);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.accumulation_length", &config.rfsoc.accumulation_length);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.num_channels", &config.rfsoc.num_channels);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.num_fft_points", &config.rfsoc.num_fft_points);
 
-	config.main.cmdlog = (char*)malloc((strlen(tmpstr)+1)*sizeof(char));
-	strcpy(config.main.cmdlog, tmpstr);
-	config_destroy(&conf);
+    // Read gps section
+    config_lookup_int(&cfg, "gps.enabled", &config.gps.enabled);
 
-}
-//This prints the config file to screen
-void print_config(){
-	printf("Found following config parameters:\n\n");
-	printf("main:{\n");
-	printf("  logpath = %s;\n",config.main.logpath);
-	printf("  cmdlog = %s;\n",config.main.cmdlog);
-	printf("};\n\n");
+    if (config_lookup_string(&cfg, "gps.port", &tmpstr)) {
+        strncpy(config.gps.port, tmpstr, sizeof(config.gps.port) - 1);
+        config.gps.port[sizeof(config.gps.port) - 1] = '\0';
+    }
+
+    config_lookup_int(&cfg, "gps.baud_rate", &config.gps.baud_rate);
+
+    if (config_lookup_string(&cfg, "gps.data_save_path", &tmpstr)) {
+        strncpy(config.gps.data_save_path, tmpstr, sizeof(config.gps.data_save_path) - 1);
+        config.gps.data_save_path[sizeof(config.gps.data_save_path) - 1] = '\0';
+    }
+
+    config_lookup_int(&cfg, "gps.file_rotation_interval", &config.gps.file_rotation_interval);
+
+    config_destroy(&cfg);
 }
