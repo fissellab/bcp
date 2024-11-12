@@ -107,35 +107,16 @@ The system maintains two types of logs:
 1. Modify the relevant source files
 2. Update the configuration file if needed
 3. Update the CLI commands in `cli_Sag.c` if required
-4. Rebuild using the provided script
 
-### Debugging
-
-- Use the `-g` flag in CFLAGS (already included in build script)
-- Check system logs for error messages
-- Monitor data output files for consistency
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Authors
-
-- Your Name <your.email@example.com>
 
 ## Acknowledgments
 
 - CASPER (Collaboration for Astronomy Signal Processing and Electronics Research)
-- Contributors to the libconfig library
-- The open-source community
 
 ## Support
 
