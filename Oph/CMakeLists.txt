@@ -1,34 +1,25 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Set the project name
-project(bcp_Oph)
+project(bcp_Oph LANGUAGES C)
 
 # Add the source files
-set(SOURCES
-    main_Oph.c
-    file_io_Oph.c
-    cli_Oph.c
-    bvexcam.c
-    camera.c
-    lens_adapter.c
-    matrix.c
-    astrometry.c
-    accelerometer.c
-    ec_motor.c
-    motor_control.c
-)
+file(GLOB SOURCES
+    "*.c"
+    "*.h")
 
 # Include directories
 include_directories(
     /usr/include/glib-2.0
     /usr/lib/x86_64-linux-gnu/glib-2.0/include
+    
 )
 
 # Add the executable
 add_executable(bcp_Oph ${SOURCES})
 
 # Link the libraries
-target_link_libraries(bcp_Oph
+target_link_libraries(bcp_Oph PRIVATE
     pthread
     config
     curses
@@ -36,6 +27,6 @@ target_link_libraries(bcp_Oph
     m
     astrometry
     glib-2.0
-    /usr/local/lib/libsofa_c.a
-    /usr/local/lib/libsoem.a
+    ./pkgs/libsofa/build/src/libsofa.a
+    ./pkgs/libsoem/build/libsoem.a
 )
