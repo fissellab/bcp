@@ -15,6 +15,8 @@
 #include <unistd.h>
 #include <curses.h>
 
+#include "send_telemetry.h"
+#include "socket.h"
 
 #include "ec_motor.h"
 #include "motor_control.h"
@@ -925,6 +927,8 @@ void *do_motors(void*){
 	expectedWKC = (ec_group[0].outputsWKC*2) + ec_group[0].inputsWKC;
 	
 	outfile = fopen(config.motor.datafile, "w");
+
+	int socket_fd = make_async_connected_send_socket("localhost", "3000");
 	
 	start_loop:
 		while(!stop){
@@ -946,6 +950,9 @@ void *do_motors(void*){
 			}
 			command_motor();
 			fprintf(outfile,"%ld;%lf;%lf;%lf\n",t,MotorData[GETREADINDEX(motor_index)].position,MotorData[GETREADINDEX(motor_index)].velocity,MotorData[GETREADINDEX(motor_index)].current);
+			
+			send_sample_double(socket_fd, "motor_position", (float) t, MotorData[GETREADINDEX(motor_index)].position);
+
 			usleep(4600);
 		}
 	fclose(outfile);
