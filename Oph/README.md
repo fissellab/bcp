@@ -1,13 +1,19 @@
 # Ophiuchus
 
-## Building and running
-
-### Requirements
+## Requirements
 - CMake 3.24 or later (3.22.1-1ubuntu1 fails with undescriptive error.
     - [Instructions to install a newer version of cmake](https://apt.kitware.com/)
 - vcpkg (and `$VCPKG_ROOT` environment variable defined)
 
-### Steps
+## Steps
+
+### Automatic
+
+```
+./start.sh
+```
+
+### Manual
 
 Clone submodules
 ```
@@ -25,10 +31,12 @@ Configure (re-run this when you change the configuration):
 ```
 cmake --preset=vcpkg
 ```
+
 Build (re-run this when you edit the source code):
 ```
 cmake --build build
 ```
+
 Run the executable:
 ```
 ./build/main
