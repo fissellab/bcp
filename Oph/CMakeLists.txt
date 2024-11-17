@@ -25,9 +25,11 @@ message(STATUS "Source files: ${_srcFiles}")
 
 add_executable(main ${_srcFiles})
 
-target_include_directories(main PRIVATE include 
+target_include_directories(main PRIVATE 
+    include 
     /usr/include/glib-2.0
-    /usr/lib/x86_64-linux-gnu/glib-2.0/include)
+    /usr/lib/x86_64-linux-gnu/glib-2.0/include
+)
 
 
 target_link_libraries(main

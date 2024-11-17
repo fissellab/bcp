@@ -14,6 +14,11 @@ Clone submodules
 git submodule update --init --recursive
 ```
 
+Install dependencies
+```
+vcpkg install
+```
+
 Make Oph your working directory
 
 Configure (re-run this when you change the configuration):
