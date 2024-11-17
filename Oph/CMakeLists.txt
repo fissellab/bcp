@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.24)
 
 project(bcp_oph VERSION 0.1 LANGUAGES C)
 
@@ -7,9 +7,9 @@ add_subdirectory(
     ../bvex-link/telemetry-uplink/build
 )
 
-add_executable(bcp_oph test.c)
+add_executable(main test.c)
 
-target_link_libraries(bcp_oph
+target_link_libraries(main
     telemetry-uplink
 )
 

@@ -5,3 +5,4 @@ Makefile
 CMakeFiles/
 pkgs/
 bvex-link/
+vcpkg_installed/
