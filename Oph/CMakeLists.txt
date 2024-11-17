@@ -12,20 +12,23 @@ add_subdirectory(
 )
 # we now have a target called telemetry-uplink
 
-find_package(OpenMP REQUIRED)
+# gather all source files from src/ into variable _srcFiles
+aux_source_directory(src _srcFiles)
 
-# Gather all source filepaths into variable SOURCES
-file(GLOB SOURCES
-    "src/*.c"
-    "src/*.h"
+# exclude these files
+list(REMOVE_ITEM _srcFiles
+    "src/accl_rx.c"
+    "src/accl_tx.c"
 )
 
-add_executable(main ${SOURCES})
+message(STATUS "Source files: ${_srcFiles}")
 
-target_include_directories(main PRIVATE
+add_executable(main ${_srcFiles})
+
+target_include_directories(main PRIVATE include 
     /usr/include/glib-2.0
-    /usr/lib/x86_64-linux-gnu/glib-2.0/include
-)
+    /usr/lib/x86_64-linux-gnu/glib-2.0/include)
+
 
 target_link_libraries(main
     telemetry-uplink
