@@ -2,48 +2,40 @@ cmake_minimum_required(VERSION 3.24)
 
 project(bcp_oph VERSION 0.1 LANGUAGES C)
 
-add_subdirectory(
-    ../bvex-link/telemetry-uplink
-    ../bvex-link/telemetry-uplink/build
-)
-
-add_executable(main test.c)
-
-target_link_libraries(main
-    telemetry-uplink
-)
-
-
-# Add the source files
-# file(GLOB SOURCES
-#     "*.c"
-#     "*.h")
-
 # sometimes I have to uncomment this line to get cmake to find
 # vcpkg installed packages. Not sure why.
 # include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
-# message(STATUS "Found telemetry-uplink: ${TELEMETRY_UPLINK_LIB}")
+add_subdirectory(
+    ../bvex-link/telemetry-uplink
+    ../bvex-link/telemetry-uplink/build
+)
+# we now have a target called telemetry-uplink
 
-# Add the executable
-# add_executable(bcp_Oph ${SOURCES})
+find_package(OpenMP REQUIRED)
 
-# target_include_directories(bcp_Oph PRIVATE
-#     /usr/include/glib-2.0
-#     /usr/lib/x86_64-linux-gnu/glib-2.0/include
-#     # /home/ophiuchus/bcp-oliver/bvex-link/telemetry-uplink/include
-# )
+# Gather all source filepaths into variable SOURCES
+file(GLOB SOURCES
+    "src/*.c"
+    "src/*.h"
+)
 
-# Link the libraries
-# target_link_libraries(bcp_Oph
-#     pthread
-#     config
-#     curses
-#     ueye_api
-#     m
-#     astrometry
-#     glib-2.0
-#     /usr/local/lib/libsofa_c.a
-#     /usr/local/lib/libsoem.a
-#     telemetry-uplink
-# )
+add_executable(main ${SOURCES})
+
+target_include_directories(main PRIVATE
+    /usr/include/glib-2.0
+    /usr/lib/x86_64-linux-gnu/glib-2.0/include
+)
+
+target_link_libraries(main
+    telemetry-uplink
+    pthread
+    config
+    curses
+    ueye_api  # requires omp5
+    m
+    astrometry
+    glib-2.0
+    /usr/local/lib/libsofa_c.a
+    /usr/local/lib/libsoem.a
+)
