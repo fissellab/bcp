@@ -8,10 +8,6 @@ if [ ! -d "vcpkg_installed" ]; then
     vcpkg install
 fi
 
-if [ ! -d "build" ]; then
-    echo "generating build files"
-    cmake --preset=vcpkg
-fi
-
+cmake --preset=vcpkg "$@"  # pass any additional arguments to cmake
 cmake --build build
 ./build/main bcp_Oph.config
