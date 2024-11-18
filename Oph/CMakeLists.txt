@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.24)
 
 project(bcp_oph VERSION 0.1 LANGUAGES C)
 
+option(SEND_DUMMY_ACCL "Send dummy accelerometer data" OFF)
+
+if(SEND_DUMMY_ACCL)
+    message(STATUS "Send dummy accelerometer data mode is ON")
+    add_definitions(-DSEND_DUMMY_ACCL)
+endif()
+
 # sometimes I have to uncomment this line to get cmake to find
 # vcpkg installed packages. Not sure why.
 # include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
