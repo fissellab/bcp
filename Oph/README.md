@@ -47,3 +47,20 @@ Run the executable:
 ### vcpkg
 
 This is used to install `nanopb`, a transitive dependency from the `telemetry-uplink` library.
+
+## cli
+
+- `print <string>`: Prints the provided string.
+- `exit`: Exits the command prompt and shuts down various components if enabled.
+- `bvexcam_status`: Displays the status of the bvexcam if it is enabled.
+- `focus_bvexcam`: Starts the autofocus mode for bvexcam if it is enabled.
+- `accl_status`: Displays the status of the accelerometer if it is enabled.
+- `accl_start`: Starts the accelerometer data collection if it is enabled.
+- `accl_stop`: Stops the accelerometer data collection if it is enabled.
+- `motor_start`: Starts the motor if it is enabled.
+- `motor_stop`: Stops the motor if it is enabled.
+- `motor_control`: Enters a motor control mode with additional sub-commands:
+  - `exit`: Exits the motor control mode.
+  - `gotoenc <angle (floating point val)>`: Moves the motor to the specified encoder position.
+  - `encdither <start_el,stop_el,vel,nscans>`: Starts an encoder dither scan with the specified parameters.
+  - `stop`: Stops the current scan and sets the motor velocity to 0.
