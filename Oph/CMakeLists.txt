@@ -7,10 +7,10 @@ project(bcp_oph VERSION 0.1 LANGUAGES C)
 # include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 add_subdirectory(
-    ../bvex-link/telemetry-uplink
-    ../bvex-link/telemetry-uplink/build
+    ../bvex-link/onboard-telemetry-client
+    ../bvex-link/onboard-telemetry-client/build
 )
-# we now have a target called telemetry-uplink
+# we now have a target called telemetry-client
 
 # gather all source files from src/ into variable _srcFiles
 aux_source_directory(src _srcFiles)
@@ -33,7 +33,7 @@ target_include_directories(main PRIVATE
 
 
 target_link_libraries(main
-    telemetry-uplink
+    telemetry-client
     pthread
     config
     curses
