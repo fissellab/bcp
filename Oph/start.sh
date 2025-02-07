@@ -10,7 +10,7 @@ fi
 
 if [ ! -d "build" ]; then
     echo "generating build files"
-    cmake --preset=vcpkg
+    cmake --preset=default
 fi
 
 cmake --build build
