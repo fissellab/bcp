@@ -29,7 +29,7 @@ Make Oph your working directory
 
 Configure (re-run this when you change the configuration):
 ```
-cmake --preset=vcpkg
+cmake --preset=default
 ```
 
 Build (re-run this when you edit the source code):
