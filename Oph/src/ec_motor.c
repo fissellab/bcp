@@ -946,6 +946,7 @@ void *do_motors(void*){
 			}
 			command_motor();
 			fprintf(outfile,"%ld;%lf;%lf;%lf\n",t,MotorData[GETREADINDEX(motor_index)].position,MotorData[GETREADINDEX(motor_index)].velocity,MotorData[GETREADINDEX(motor_index)].current);
+
 			usleep(4600);
 		}
 	fclose(outfile);
