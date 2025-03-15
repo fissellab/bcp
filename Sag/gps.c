@@ -85,11 +85,6 @@ static void *gps_logging_thread(void *arg) {
             continue;
         }
 
-        // Ensure we do not overflow gps_data_string
-        if (n > GPS_BUFFER_SIZE) {
-            n = GPS_BUFFER_SIZE;
-        }
-
         // get null terminated string gps_data_string 
         // from buffer containing gps data
         memcpy(gps_data_string, buffer, n);
