@@ -10,6 +10,11 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#include "send_telemetry.h"
+
+#define TELEMETRY_SERVER_IP_ADDR "192.168.2.4"
+#define TELEMETRY_SERVER_PORT "8080"
+
 static int fd;
 static FILE *logfile = NULL;
 static bool logging = false;
@@ -53,10 +58,23 @@ static void rotate_logfile(void) {
     last_file_rotation = time(NULL);
 }
 
+// loops getting gps data, logging it to file, and sending it to
+// the telemetry server, until variable logging is false
 static void *gps_logging_thread(void *arg) {
     (void)arg;  // Cast to void to explicitly ignore the parameter
     char buffer[GPS_BUFFER_SIZE];
 
+    // socket configured to send to telemetry server
+    int socket_fd = connected_udp_socket(
+        TELEMETRY_SERVER_IP_ADDR,
+        TELEMETRY_SERVER_PORT
+    );
+
+    // Stores copy of gps data with additional
+    // byte for null terminator so it can be given
+    // as string to send_sample_string
+    char gps_data_string[GPS_BUFFER_SIZE + 1];
+    
     while (logging) {
         ssize_t n = read(fd, buffer, sizeof(buffer));
         if (n < 0) {
@@ -66,6 +84,19 @@ static void *gps_logging_thread(void *arg) {
             sleep(1);
             continue;
         }
+
+        // Ensure we do not overflow gps_data_string
+        if (n > GPS_BUFFER_SIZE) {
+            n = GPS_BUFFER_SIZE;
+        }
+
+        // get null terminated string gps_data_string 
+        // from buffer containing gps data
+        memcpy(gps_data_string, buffer, n);
+        gps_data_string[n] = '\0';
+
+        // send gps data to telemetry server
+        send_sample_string(socket_fd, "gps", time(NULL), gps_data_string);
 
         // Write to log file in binary
         fwrite(buffer, 1, n, logfile);
