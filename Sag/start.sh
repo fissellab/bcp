@@ -14,4 +14,4 @@ if [ ! -d "build" ]; then
 fi
 
 cmake --build build
-./build/main bcp_Sag.config
+sudo ./build/main bcp_Sag.config
