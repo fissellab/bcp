@@ -41,8 +41,7 @@ BCP (Basic Control Program) Saggitarius is a data acquisition and control system
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/bcp-saggitarius.git
-cd bcp-saggitarius
+git clone https://github.com/fissellab/bcp
 ```
 
 2. Install dependencies:
@@ -50,6 +49,10 @@ cd bcp-saggitarius
 sudo apt-get install gcc libconfig-dev python3-pip
 pip3 install numpy casperfpga
 ```
+
+[Install Cmake >3.24](https://apt.kitware.com/)
+
+[Install vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-bash)
 
 3. Set up device permissions:
 ```bash
@@ -70,8 +73,9 @@ Edit `bcp_Sag.config` to set your system parameters:
 Use the provided shell script to build and run the program:
 
 ```bash
-chmod +x run_bcp_Sag.sh
-./run_bcp_Sag.sh
+cd bcp/Sag
+chmod +x start.sh
+./start.sh
 ```
 
 ## Command Line Interface
