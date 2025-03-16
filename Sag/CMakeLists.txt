@@ -5,10 +5,10 @@ project(bcp_sag VERSION 0.1 LANGUAGES C)
 include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 add_subdirectory(
-    ../bvex-link/onboard-telemetry-client
-    ../bvex-link/onboard-telemetry-client/build
+    ../bvex-link/bcp-fetch-client
+    ../bvex-link/bcp-fetch-client/build
 )
-# we now have a target called telemetry-client
+# we now have a target called bcp-fetch
 
 add_executable(
     main
@@ -26,7 +26,7 @@ target_include_directories(main PRIVATE
 
 
 target_link_libraries(main
-    telemetry-client
+    bcp-fetch
     pthread
     config
 )

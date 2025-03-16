@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#include "send_telemetry.h"
+#include "send_sample.h"
 
 #define TELEMETRY_SERVER_IP_ADDR "192.168.2.4"
 #define TELEMETRY_SERVER_PORT "8080"
