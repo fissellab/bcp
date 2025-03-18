@@ -16,7 +16,7 @@ typedef struct {
     int file_rotation_interval;
 } gps_config_t;
 
-int gps_init(const gps_config_t *config);
+int gps_init(const gps_config_t* config);
 bool gps_start_logging(void);
 void gps_stop_logging(void);
 bool gps_is_logging(void);

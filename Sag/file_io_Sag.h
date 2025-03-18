@@ -1,10 +1,11 @@
 #ifndef FILE_IO_SAG_H
 #define FILE_IO_SAG_H
 
-#include <stdio.h>
 #include "gps.h"
+#include <stdio.h>
 
-void write_to_log(FILE* logfile, const char* file, const char* function, const char* message);
+void write_to_log(FILE* logfile, const char* file, const char* function,
+                  const char* message);
 
 typedef struct conf_params {
     struct {

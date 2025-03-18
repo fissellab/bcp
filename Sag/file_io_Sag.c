@@ -1,13 +1,14 @@
+#include "file_io_Sag.h"
+#include <libconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <libconfig.h>
-#include "file_io_Sag.h"
 
 conf_params_t config;
 
-void write_to_log(FILE* logfile, const char* file, const char* function, const char* message) {
+void write_to_log(FILE* logfile, const char* file, const char* function,
+                  const char* message) {
     time_t now;
     time(&now);
     char* date = ctime(&now);
@@ -40,10 +41,12 @@ void read_in_config(const char* filepath) {
     }
 
     // Read rfsoc_spectrometer section
-    config_lookup_int(&cfg, "rfsoc_spectrometer.enabled", &config.rfsoc.enabled);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.enabled",
+                      &config.rfsoc.enabled);
 
     if (config_lookup_string(&cfg, "rfsoc_spectrometer.ip_address", &tmpstr)) {
-        strncpy(config.rfsoc.ip_address, tmpstr, sizeof(config.rfsoc.ip_address) - 1);
+        strncpy(config.rfsoc.ip_address, tmpstr,
+                sizeof(config.rfsoc.ip_address) - 1);
         config.rfsoc.ip_address[sizeof(config.rfsoc.ip_address) - 1] = '\0';
     }
 
@@ -52,22 +55,33 @@ void read_in_config(const char* filepath) {
         config.rfsoc.mode[sizeof(config.rfsoc.mode) - 1] = '\0';
     }
 
-    config_lookup_int(&cfg, "rfsoc_spectrometer.data_save_interval", &config.rfsoc.data_save_interval);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.data_save_interval",
+                      &config.rfsoc.data_save_interval);
 
-    if (config_lookup_string(&cfg, "rfsoc_spectrometer.data_save_path", &tmpstr)) {
-        strncpy(config.rfsoc.data_save_path, tmpstr, sizeof(config.rfsoc.data_save_path) - 1);
-        config.rfsoc.data_save_path[sizeof(config.rfsoc.data_save_path) - 1] = '\0';
+    if (config_lookup_string(&cfg, "rfsoc_spectrometer.data_save_path",
+                             &tmpstr)) {
+        strncpy(config.rfsoc.data_save_path, tmpstr,
+                sizeof(config.rfsoc.data_save_path) - 1);
+        config.rfsoc.data_save_path[sizeof(config.rfsoc.data_save_path) - 1] =
+            '\0';
     }
 
-    if (config_lookup_string(&cfg, "rfsoc_spectrometer.fpga_bitstream", &tmpstr)) {
-        strncpy(config.rfsoc.fpga_bitstream, tmpstr, sizeof(config.rfsoc.fpga_bitstream) - 1);
-        config.rfsoc.fpga_bitstream[sizeof(config.rfsoc.fpga_bitstream) - 1] = '\0';
+    if (config_lookup_string(&cfg, "rfsoc_spectrometer.fpga_bitstream",
+                             &tmpstr)) {
+        strncpy(config.rfsoc.fpga_bitstream, tmpstr,
+                sizeof(config.rfsoc.fpga_bitstream) - 1);
+        config.rfsoc.fpga_bitstream[sizeof(config.rfsoc.fpga_bitstream) - 1] =
+            '\0';
     }
 
-    config_lookup_int(&cfg, "rfsoc_spectrometer.adc_channel", &config.rfsoc.adc_channel);
-    config_lookup_int(&cfg, "rfsoc_spectrometer.accumulation_length", &config.rfsoc.accumulation_length);
-    config_lookup_int(&cfg, "rfsoc_spectrometer.num_channels", &config.rfsoc.num_channels);
-    config_lookup_int(&cfg, "rfsoc_spectrometer.num_fft_points", &config.rfsoc.num_fft_points);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.adc_channel",
+                      &config.rfsoc.adc_channel);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.accumulation_length",
+                      &config.rfsoc.accumulation_length);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.num_channels",
+                      &config.rfsoc.num_channels);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.num_fft_points",
+                      &config.rfsoc.num_fft_points);
 
     // Read gps section
     config_lookup_int(&cfg, "gps.enabled", &config.gps.enabled);
@@ -80,11 +94,13 @@ void read_in_config(const char* filepath) {
     config_lookup_int(&cfg, "gps.baud_rate", &config.gps.baud_rate);
 
     if (config_lookup_string(&cfg, "gps.data_save_path", &tmpstr)) {
-        strncpy(config.gps.data_save_path, tmpstr, sizeof(config.gps.data_save_path) - 1);
+        strncpy(config.gps.data_save_path, tmpstr,
+                sizeof(config.gps.data_save_path) - 1);
         config.gps.data_save_path[sizeof(config.gps.data_save_path) - 1] = '\0';
     }
 
-    config_lookup_int(&cfg, "gps.file_rotation_interval", &config.gps.file_rotation_interval);
+    config_lookup_int(&cfg, "gps.file_rotation_interval",
+                      &config.gps.file_rotation_interval);
 
     config_destroy(&cfg);
 }
