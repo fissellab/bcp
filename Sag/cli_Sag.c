@@ -1,6 +1,7 @@
 #include "cli_Sag.h"
 #include "file_io_Sag.h"
 #include "gps.h"
+#include "command_server.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +9,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <poll.h>
+#include <errno.h>
 
 int exiting = 0;
 int spec_running = 0;
@@ -24,18 +27,23 @@ void run_python_script(const char* logpath, const char* hostname,
     exit(1);
 }
 
+void print_command_response(const char* response, const command_server_t* command_server) {
+    command_server_send(command_server, response);
+    printf("%s\n", response);
+}
+
 void exec_command(char* input, FILE* cmdlog, const char* logpath,
                   const char* hostname, const char* mode,
-                  int data_save_interval, const char* data_save_path) {
+                  int data_save_interval, const char* data_save_path, const command_server_t* command_server) {
     char* arg = (char*) malloc(strlen(input) * sizeof(char));
     char* cmd = (char*) malloc(strlen(input) * sizeof(char));
     int scan = sscanf(input, "%s %[^\t\n]", cmd, arg);
 
     if (strcmp(cmd, "print") == 0) {
         if (scan == 1) {
-            printf("print is missing argument usage is print <string>\n");
+            print_command_response("print is missing argument usage is print <string>", command_server);
         } else {
-            printf("%s\n", arg);
+            print_command_response(arg, command_server);
         }
     } else if (strcmp(cmd, "exit") == 0) {
         printf("Exiting BCP\n");
@@ -43,13 +51,13 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath,
             spec_running = 0;
             kill(python_pid, SIGTERM);
             waitpid(python_pid, NULL, 0);
-            printf("Stopped spec script\n");
+            print_command_response("Stopped spec script\n", command_server);
             write_to_log(cmdlog, "cli_Sag.c", "exec_command",
                          "Stopped spec script");
         }
         if (gps_is_logging()) {
             gps_stop_logging();
-            printf("Stopped GPS logging\n");
+            print_command_response("Stopped GPS logging\n", command_server);
             write_to_log(cmdlog, "cli_Sag.c", "exec_command",
                          "Stopped GPS logging");
         }
@@ -68,12 +76,12 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath,
                 spec_running = 0;
             } else {
                 // Parent process
-                printf("Started spec script\n");
+                print_command_response("Started spec script\n", command_server);
                 write_to_log(cmdlog, "cli_Sag.c", "exec_command",
                              "Started spec script");
             }
         } else {
-            printf("Spec script is already running\n");
+            print_command_response("Spec script is already running\n", command_server);
         }
     } else if (strcmp(cmd, "stop") == 0 && strcmp(arg, "spec") == 0) {
         if (spec_running) {
@@ -88,7 +96,7 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath,
             while (timeout > 0) {
                 pid_t result = waitpid(python_pid, &status, WNOHANG);
                 if (result == python_pid) {
-                    printf("Stopped spec script\n");
+                    print_command_response("Stopped spec script\n", command_server);
                     write_to_log(cmdlog, "cli_Sag.c", "exec_command",
                                  "Stopped spec script");
                     return;
@@ -104,26 +112,26 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath,
             if (timeout == 0) {
                 kill(python_pid, SIGKILL);
                 waitpid(python_pid, NULL, 0);
-                printf("Forcefully stopped spec script\n");
+                print_command_response("Forcefully stopped spec script\n", command_server);
                 write_to_log(cmdlog, "cli_Sag.c", "exec_command",
                              "Forcefully stopped spec script");
             }
         } else {
-            printf("Spec script is not running\n");
+            print_command_response("Spec script is not running\n", command_server);
         }
     } else if (strcmp(cmd, "start") == 0 && strcmp(arg, "gps") == 0) {
         if (!gps_is_logging()) {
             if (gps_start_logging()) {
-                printf("Started GPS logging\n");
+                print_command_response("Started GPS logging\n", command_server);
                 write_to_log(cmdlog, "cli_Sag.c", "exec_command",
                              "Started GPS logging");
             } else {
-                printf("Failed to start GPS logging\n");
+                print_command_response("Failed to start GPS logging\n", command_server);
                 write_to_log(cmdlog, "cli_Sag.c", "exec_command",
                              "Failed to start GPS logging");
             }
         } else {
-            printf("GPS logging is already active\n");
+            print_command_response("GPS logging is already active\n", command_server);
             write_to_log(
                 cmdlog, "cli_Sag.c", "exec_command",
                 "Attempted to start GPS logging, but it was already active");
@@ -131,17 +139,17 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath,
     } else if (strcmp(cmd, "stop") == 0 && strcmp(arg, "gps") == 0) {
         if (gps_is_logging()) {
             gps_stop_logging();
-            printf("Stopped GPS logging\n");
+            print_command_response("Stopped GPS logging\n", command_server);
             write_to_log(cmdlog, "cli_Sag.c", "exec_command",
                          "Stopped GPS logging");
         } else {
-            printf("GPS logging is not active\n");
+            print_command_response("GPS logging is not active\n", command_server);
             write_to_log(
                 cmdlog, "cli_Sag.c", "exec_command",
                 "Attempted to stop GPS logging, but it was not active");
         }
     } else {
-        printf("%s: Unknown command\n", cmd);
+        print_command_response("Unknown command\n", command_server);
     }
 
     free(arg);
@@ -165,15 +173,80 @@ void cmdprompt(FILE* cmdlog, const char* logpath, const char* hostname,
                const char* data_save_path) {
     int count = 1;
     char* input;
-    while (exiting != 1) {
-        printf("[BCP@Saggitarius]<%d>$ ", count);
-        input = get_input();
-        if (strlen(input) != 0) {
-            write_to_log(cmdlog, "cli_Sag.c", "cmdprompt", input);
-            exec_command(input, cmdlog, logpath, hostname, mode,
-                         data_save_interval, data_save_path);
-        }
-        free(input);
-        count++;
+    struct pollfd fds[2];
+    char buffer[1024];
+    ssize_t bytes;
+
+    // Initialize command server
+    command_server_t* command_server = command_server_create(8000, 10); // Port 8000, max 10 connections
+    if (!command_server) {
+        printf("Failed to create command server\n");
+        return;
     }
+
+    if (command_server_listen(command_server) != 0) {
+        printf("Failed to start command server\n");
+        command_server_destroy(command_server);
+        return;
+    }
+
+    // Setup poll fds
+    fds[0].fd = STDIN_FILENO;
+    fds[0].events = POLLIN;
+    fds[1].fd = command_server->commands_read_fd;
+    fds[1].events = POLLIN;
+
+    while (exiting != 1) {
+        char prompt[100];
+        sprintf(prompt, "[BCP@Saggitarius]<%d>$ ", count);
+        printf("%s", prompt);
+        fflush(stdout);
+
+        // Poll for input from both sources
+        int ret = poll(fds, 2, -1); // Wait indefinitely
+        if (ret < 0) {
+            if (errno == EINTR) {
+                continue; // Interrupted by signal, continue polling
+            }
+            printf("Poll error: %s\n", strerror(errno));
+            break;
+        }
+
+        // Check stdin
+        if (fds[0].revents & POLLIN) {
+            input = get_input();
+            if (strlen(input) != 0) {
+                // broadcast prompt to command clients
+                char* prompt = (char*) malloc(strlen("[BCP@Saggitarius]<%d>$ ") + strlen(input) + 1);
+                sprintf(prompt, "[BCP@Saggitarius]<%d>$ %s", count, input);
+                command_server_broadcast(command_server, prompt);
+                
+                write_to_log(cmdlog, "cli_Sag.c", "cmdprompt", input);
+
+                exec_command(input, cmdlog, logpath, hostname, mode,
+                           data_save_interval, data_save_path, command_server);
+            }
+            free(input);
+            count++;
+        }
+
+        // Check command server
+        if (fds[1].revents & POLLIN) {
+            input = command_server_recv(command_server);
+
+            if (input) {
+                // print prompt to stdout
+                printf("%s\n", input);
+
+                write_to_log(cmdlog, "cli_Sag.c", "cmdprompt", input);
+                exec_command(input, cmdlog, logpath, hostname, mode,
+                           data_save_interval, data_save_path, command_server);
+                free(input);
+                count++;
+            }
+        }
+    }
+
+    // Cleanup
+    command_server_destroy(command_server);
 }
