@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "send_sample.h"
+#include "connected_udp_socket.h"
 
 #define TELEMETRY_SERVER_IP_ADDR "192.168.2.4"
 #define TELEMETRY_SERVER_PORT "8080"
