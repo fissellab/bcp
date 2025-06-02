@@ -97,8 +97,8 @@ static int connect_to_gpsd(void) {
         return -1;
     }
     
-    // Send WATCH command to start receiving GPS data
-    const char *watch_cmd = "?WATCH={\"enable\":true,\"json\":true}\n";
+    // Send WATCH command to start receiving GPS data (both JSON and NMEA)
+    const char *watch_cmd = "?WATCH={\"enable\":true,\"json\":true,\"nmea\":true}\n";
     if (send(gpsd_socket, watch_cmd, strlen(watch_cmd), 0) < 0) {
         fprintf(stderr, "Error sending WATCH command: %s\n", strerror(errno));
         close(gpsd_socket);

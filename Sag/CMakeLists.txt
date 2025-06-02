@@ -34,5 +34,6 @@ target_link_libraries(main
     bcp-fetch
     pthread
     config
+    m
     ${JSON_C_LIBRARIES}
 )
