@@ -117,11 +117,68 @@ static int connect_to_gpsd(void) {
 
 // Parse TPV (Time-Position-Velocity) message from gpsd
 static void parse_tpv_message(json_object *json_obj) {
-    (void)json_obj; // Suppress unused parameter warning
+    json_object *lat_obj, *lon_obj, *alt_obj, *time_obj, *track_obj, *mode_obj;
     
-    // We're now using NMEA GPRMC and HEHDT messages for all GPS data
-    // This function is kept for compatibility but doesn't update any data
-    // All GPS data will come from the NMEA thread parsing GPRMC and HEHDT messages
+    // Check if we have a valid GPS fix (mode >= 2)
+    if (json_object_object_get_ex(json_obj, "mode", &mode_obj)) {
+        int mode = json_object_get_int(mode_obj);
+        if (mode < 2) {
+            return; // No valid fix
+        }
+    }
+    
+    pthread_mutex_lock(&current_gps_data.mutex);
+    
+    // Parse latitude
+    if (json_object_object_get_ex(json_obj, "lat", &lat_obj)) {
+        current_gps_data.latitude = json_object_get_double(lat_obj);
+        current_gps_data.valid_position = true;
+    }
+    
+    // Parse longitude
+    if (json_object_object_get_ex(json_obj, "lon", &lon_obj)) {
+        current_gps_data.longitude = json_object_get_double(lon_obj);
+    }
+    
+    // Parse altitude (prefer altMSL, fall back to alt)
+    if (json_object_object_get_ex(json_obj, "altMSL", &alt_obj) ||
+        json_object_object_get_ex(json_obj, "alt", &alt_obj)) {
+        current_gps_data.altitude = json_object_get_double(alt_obj);
+    }
+    
+    // Parse track (heading)
+    if (json_object_object_get_ex(json_obj, "track", &track_obj)) {
+        current_gps_data.heading = json_object_get_double(track_obj);
+        current_gps_data.valid_heading = true;
+    }
+    
+    // Parse time (ISO 8601 format: 2025-06-02T20:14:06.550Z)
+    if (json_object_object_get_ex(json_obj, "time", &time_obj)) {
+        const char *time_str = json_object_get_string(time_obj);
+        if (time_str && strlen(time_str) >= 19) {
+            // Parse YYYY-MM-DDTHH:MM:SS
+            char year_str[5], month_str[3], day_str[3];
+            char hour_str[3], min_str[3], sec_str[3];
+            
+            strncpy(year_str, time_str, 4); year_str[4] = '\0';
+            strncpy(month_str, time_str + 5, 2); month_str[2] = '\0';
+            strncpy(day_str, time_str + 8, 2); day_str[2] = '\0';
+            strncpy(hour_str, time_str + 11, 2); hour_str[2] = '\0';
+            strncpy(min_str, time_str + 14, 2); min_str[2] = '\0';
+            strncpy(sec_str, time_str + 17, 2); sec_str[2] = '\0';
+            
+            current_gps_data.year = atoi(year_str);
+            current_gps_data.month = atoi(month_str);
+            current_gps_data.day = atoi(day_str);
+            current_gps_data.hour = atoi(hour_str);
+            current_gps_data.minute = atoi(min_str);
+            current_gps_data.second = atoi(sec_str);
+        }
+    }
+    
+    current_gps_data.last_update = time(NULL);
+    
+    pthread_mutex_unlock(&current_gps_data.mutex);
 }
 
 // Process JSON message from gpsd
