@@ -15,7 +15,7 @@ LIBS="-lconfig -lpthread -lm -ljson-c"
 OUTPUT="bcp_Sag"
 
 # Create necessary directories
-sudo mkdir -p /home/saggitarius/flight_code/log
+sudo mkdir -p /home/saggitarius/bcp/Sag/log
 sudo mkdir -p /media/saggitarius/T7/GPS_data
 
 # Set permissions for GPS device (not needed for gpsd client, but keeping for compatibility)

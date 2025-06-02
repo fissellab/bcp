@@ -1,7 +1,5 @@
-Tue Apr  8 16:19:34 2025 : cli_Sag.c : cmdprompt : start spec
-Tue Apr  8 16:19:34 2025 : cli_Sag.c : exec_command : Started spec script
-Tue Apr  8 16:25:34 2025 : cli_Sag.c : cmdprompt : estop spec
-Tue Apr  8 16:25:38 2025 : cli_Sag.c : cmdprompt : stop spec
-Tue Apr  8 1Tue Apr  8 17:09:50 2025 : cli_Sag.c : cmdprompt : exit
-Tue Apr  8 17:09:50 2025 : cli_Sag.c : exec_command : Stopped GPS logging
-6:25:41 2025 : cli_Sag.c : exec_command : Stopped GPS logging
+Mon Jun  2 17:31:09 2025 : cli_Sag.c : cmdprompt : gps status
+Mon Jun  2 17:31:09 2025 : cli_Sag.c : exec_command : Started GPS status display
+Mon Jun  2 17:31:12 2025 : cli_Sag.c : exec_command : Stopped GPS status display
+Mon Jun  2 17:31:15 2025 : cli_Sag.c : cmdprompt : exit
+Mon Jun  2 17:31:15 2025 : cli_Sag.c : exec_command : Stopped GPS logging
