@@ -1,49 +1,44 @@
-#include "cli_Sag.h"
-#include "file_io_Sag.h"
-#include "gps.h"
-#include "command_server.h"
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
-#include <poll.h>
-#include <errno.h>
+#include <termios.h>
+#include "file_io_Sag.h"
+#include "cli_Sag.h"
+#include "gps.h"
 
 int exiting = 0;
 int spec_running = 0;
+int spec_479khz = 0; // Flag to track if 479kHz spectrometer is running
+int spec_120khz = 0; // Flag to track if 120kHz spectrometer is running
 pid_t python_pid;
 
-void run_python_script(const char* logpath, const char* hostname,
-                       const char* mode, int data_save_interval,
-                       const char* data_save_path) {
+void run_python_script(const char* script_name, const char* logpath, const char* hostname, const char* mode, int data_save_interval, const char* data_save_path) {
     char interval_str[20];
     snprintf(interval_str, sizeof(interval_str), "%d", data_save_interval);
-    execlp("python3", "python3", "rfsoc_spec.py", hostname, logpath, mode, "-i",
-           interval_str, "-p", data_save_path, (char*) NULL);
+    execlp("python3", "python3", script_name, hostname, logpath, mode, "-i", interval_str, "-p", data_save_path, (char*)NULL);
     perror("execlp failed");
     exit(1);
 }
 
-void print_command_response(const char* response, const command_server_t* command_server) {
-    command_server_send(command_server, response);
-    printf("%s\n", response);
-}
-
-void exec_command(char* input, FILE* cmdlog, const char* logpath,
-                  const char* hostname, const char* mode,
-                  int data_save_interval, const char* data_save_path, const command_server_t* command_server) {
+void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* hostname, const char* mode, int data_save_interval, const char* data_save_path) {
     char* arg = (char*) malloc(strlen(input) * sizeof(char));
     char* cmd = (char*) malloc(strlen(input) * sizeof(char));
+    
+    // Additional argument to capture optional "479khz" or "120khz" parameter
+    char* sub_arg = (char*) malloc(strlen(input) * sizeof(char));
+    sub_arg[0] = '\0'; // Initialize to empty string
+    
     int scan = sscanf(input, "%s %[^\t\n]", cmd, arg);
 
     if (strcmp(cmd, "print") == 0) {
         if (scan == 1) {
-            print_command_response("print is missing argument usage is print <string>", command_server);
+            printf("print is missing argument usage is print <string>\n");
         } else {
-            print_command_response(arg, command_server);
+            printf("%s\n", arg);
         }
     } else if (strcmp(cmd, "exit") == 0) {
         printf("Exiting BCP\n");
@@ -51,109 +46,209 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath,
             spec_running = 0;
             kill(python_pid, SIGTERM);
             waitpid(python_pid, NULL, 0);
-            print_command_response("Stopped spec script\n", command_server);
-            write_to_log(cmdlog, "cli_Sag.c", "exec_command",
-                         "Stopped spec script");
+            printf("Stopped spec script\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped spec script");
         }
         if (gps_is_logging()) {
             gps_stop_logging();
-            print_command_response("Stopped GPS logging\n", command_server);
-            write_to_log(cmdlog, "cli_Sag.c", "exec_command",
-                         "Stopped GPS logging");
+            printf("Stopped GPS logging\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped GPS logging");
         }
         exiting = 1;
-    } else if (strcmp(cmd, "start") == 0 && strcmp(arg, "spec") == 0) {
-        if (!spec_running) {
-            spec_running = 1;
-            python_pid = fork();
-            if (python_pid == 0) {
-                // Child process
-                run_python_script(logpath, hostname, mode, data_save_interval,
-                                  data_save_path);
-                exit(0); // Should never reach here
-            } else if (python_pid < 0) {
-                perror("fork failed");
-                spec_running = 0;
-            } else {
-                // Parent process
-                print_command_response("Started spec script\n", command_server);
-                write_to_log(cmdlog, "cli_Sag.c", "exec_command",
-                             "Started spec script");
-            }
-        } else {
-            print_command_response("Spec script is already running\n", command_server);
-        }
-    } else if (strcmp(cmd, "stop") == 0 && strcmp(arg, "spec") == 0) {
-        if (spec_running) {
-            spec_running = 0;
-
-            // Send SIGTERM first
-            kill(python_pid, SIGTERM);
-
-            // Wait for up to 5 seconds for the process to terminate
-            int status;
-            int timeout = 5;
-            while (timeout > 0) {
-                pid_t result = waitpid(python_pid, &status, WNOHANG);
-                if (result == python_pid) {
-                    print_command_response("Stopped spec script\n", command_server);
-                    write_to_log(cmdlog, "cli_Sag.c", "exec_command",
-                                 "Stopped spec script");
-                    return;
-                } else if (result == -1) {
-                    perror("waitpid failed");
-                    break;
+    } else if (strcmp(cmd, "start") == 0) {
+        // Check for "start spec" or "start spec 479khz" or "start spec 120khz"
+        sscanf(arg, "%s %s", sub_arg, arg + strlen(sub_arg) + 1);
+        
+        if (strcmp(sub_arg, "spec") == 0) {
+            if (!spec_running) {
+                spec_running = 1;
+                
+                // Check if we're starting the 120khz version
+                if (strlen(arg) > strlen(sub_arg) && strstr(arg, "120khz") != NULL) {
+                    spec_120khz = 1;
+                    spec_479khz = 0;
+                    python_pid = fork();
+                    if (python_pid == 0) {
+                        // Child process for 120khz spectrometer
+                        run_python_script("rfsoc_spec_120khz.py", logpath, hostname, mode, data_save_interval, data_save_path);
+                        exit(0);  // Should never reach here
+                    } else if (python_pid < 0) {
+                        perror("fork failed");
+                        spec_running = 0;
+                        spec_120khz = 0;
+                    } else {
+                        // Parent process
+                        printf("Started 120kHz spec script\n");
+                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started 120kHz spec script");
+                    }
                 }
-                sleep(1);
-                timeout--;
-            }
-
-            // If the process hasn't terminated, use SIGKILL
-            if (timeout == 0) {
-                kill(python_pid, SIGKILL);
-                waitpid(python_pid, NULL, 0);
-                print_command_response("Forcefully stopped spec script\n", command_server);
-                write_to_log(cmdlog, "cli_Sag.c", "exec_command",
-                             "Forcefully stopped spec script");
-            }
-        } else {
-            print_command_response("Spec script is not running\n", command_server);
-        }
-    } else if (strcmp(cmd, "start") == 0 && strcmp(arg, "gps") == 0) {
-        if (!gps_is_logging()) {
-            if (gps_start_logging()) {
-                print_command_response("Started GPS logging\n", command_server);
-                write_to_log(cmdlog, "cli_Sag.c", "exec_command",
-                             "Started GPS logging");
+                // Check if we're starting the 479khz version
+                else if (strlen(arg) > strlen(sub_arg) && strstr(arg, "479khz") != NULL) {
+                    spec_479khz = 1;
+                    spec_120khz = 0;
+                    python_pid = fork();
+                    if (python_pid == 0) {
+                        // Child process for 479khz spectrometer
+                        run_python_script("rfsoc_spec_479khz.py", logpath, hostname, mode, data_save_interval, data_save_path);
+                        exit(0);  // Should never reach here
+                    } else if (python_pid < 0) {
+                        perror("fork failed");
+                        spec_running = 0;
+                        spec_479khz = 0;
+                    } else {
+                        // Parent process
+                        printf("Started 479kHz spec script\n");
+                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started 479kHz spec script");
+                    }
+                } else {
+                    // Standard spectrometer (960kHz)
+                    spec_479khz = 0;
+                    spec_120khz = 0;
+                    python_pid = fork();
+                    if (python_pid == 0) {
+                        // Child process
+                        run_python_script("rfsoc_spec.py", logpath, hostname, mode, data_save_interval, data_save_path);
+                        exit(0);  // Should never reach here
+                    } else if (python_pid < 0) {
+                        perror("fork failed");
+                        spec_running = 0;
+                    } else {
+                        // Parent process
+                        printf("Started spec script\n");
+                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started spec script");
+                    }
+                }
             } else {
-                print_command_response("Failed to start GPS logging\n", command_server);
-                write_to_log(cmdlog, "cli_Sag.c", "exec_command",
-                             "Failed to start GPS logging");
+                printf("Spec script is already running\n");
+            }
+        } else if (strcmp(sub_arg, "gps") == 0) {
+            if (!gps_is_logging()) {
+                if (gps_start_logging()) {
+                    printf("Started GPS logging\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started GPS logging");
+                } else {
+                    printf("Failed to start GPS logging\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to start GPS logging");
+                }
+            } else {
+                printf("GPS logging is already active\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to start GPS logging, but it was already active");
             }
         } else {
-            print_command_response("GPS logging is already active\n", command_server);
-            write_to_log(
-                cmdlog, "cli_Sag.c", "exec_command",
-                "Attempted to start GPS logging, but it was already active");
+            printf("Unknown start command: %s\n", sub_arg);
         }
-    } else if (strcmp(cmd, "stop") == 0 && strcmp(arg, "gps") == 0) {
-        if (gps_is_logging()) {
-            gps_stop_logging();
-            print_command_response("Stopped GPS logging\n", command_server);
-            write_to_log(cmdlog, "cli_Sag.c", "exec_command",
-                         "Stopped GPS logging");
+    } else if (strcmp(cmd, "stop") == 0) {
+        // Check for "stop spec" or "stop spec 479khz" or "stop spec 120khz"
+        sscanf(arg, "%s %s", sub_arg, arg + strlen(sub_arg) + 1);
+        
+        if (strcmp(sub_arg, "spec") == 0) {
+            if (spec_running) {
+                spec_running = 0;
+                
+                // Send SIGTERM first
+                kill(python_pid, SIGTERM);
+                
+                // Wait for up to 5 seconds for the process to terminate
+                int status;
+                int timeout = 5;
+                while (timeout > 0) {
+                    pid_t result = waitpid(python_pid, &status, WNOHANG);
+                    if (result == python_pid) {
+                        if (spec_479khz) {
+                            printf("Stopped 479kHz spec script\n");
+                            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped 479kHz spec script");
+                        } else if (spec_120khz) {
+                            printf("Stopped 120kHz spec script\n");
+                            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped 120kHz spec script");
+                        } else {
+                            printf("Stopped spec script\n");
+                            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped spec script");
+                        }
+                        spec_479khz = 0; // Reset the spectrometer type flags
+                        spec_120khz = 0;
+                        break;
+                    } else if (result == -1) {
+                        perror("waitpid failed");
+                        break;
+                    }
+                    sleep(1);
+                    timeout--;
+                }
+                
+                // If the process hasn't terminated, use SIGKILL
+                if (timeout == 0) {
+                    kill(python_pid, SIGKILL);
+                    waitpid(python_pid, NULL, 0);
+                    if (spec_479khz) {
+                        printf("Forcefully stopped 479kHz spec script\n");
+                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Forcefully stopped 479kHz spec script");
+                    } else if (spec_120khz) {
+                        printf("Forcefully stopped 120kHz spec script\n");
+                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Forcefully stopped 120kHz spec script");
+                    } else {
+                        printf("Forcefully stopped spec script\n");
+                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Forcefully stopped spec script");
+                    }
+                    spec_479khz = 0; // Reset the spectrometer type flags
+                    spec_120khz = 0;
+                }
+            } else {
+                printf("Spec script is not running\n");
+            }
+        } else if (strcmp(sub_arg, "gps") == 0) {
+            if (gps_is_logging()) {
+                gps_stop_logging();
+                printf("Stopped GPS logging\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped GPS logging");
+            } else {
+                printf("GPS logging is not active\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to stop GPS logging, but it was not active");
+            }
         } else {
-            print_command_response("GPS logging is not active\n", command_server);
-            write_to_log(
-                cmdlog, "cli_Sag.c", "exec_command",
-                "Attempted to stop GPS logging, but it was not active");
+            printf("Unknown stop command: %s\n", sub_arg);
+        }
+    } else if (strcmp(cmd, "gps") == 0 && scan > 1) {
+        // Handle GPS sub-commands
+        if (strcmp(arg, "status") == 0) {
+            // Command for GPS status display
+            if (!gps_is_logging()) {
+                printf("GPS logging is not active. Start GPS logging first.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to show GPS status, but GPS logging was not active");
+            } else if (gps_is_status_active()) {
+                printf("GPS status display is already active.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to show GPS status, but it was already active");
+            } else {
+                printf("Starting GPS status display. Press 'q' to exit.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started GPS status display");
+                
+                // Save terminal settings
+                struct termios old_term;
+                tcgetattr(STDIN_FILENO, &old_term);
+                struct termios new_term = old_term;
+                new_term.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+                tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+                
+                // Display GPS status (blocks until user exits)
+                gps_display_status();
+                
+                // Restore terminal settings
+                tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
+                
+                // Flush any remaining input to prevent interference with CLI
+                fflush(stdin);
+                
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped GPS status display");
+            }
+        } else {
+            printf("Unknown GPS command: %s\n", arg);
         }
     } else {
-        print_command_response("Unknown command\n", command_server);
+        printf("%s: Unknown command\n", cmd);
     }
 
     free(arg);
     free(cmd);
+    free(sub_arg);
 }
 
 char* get_input() {
@@ -168,85 +263,17 @@ char* get_input() {
     return input;
 }
 
-void cmdprompt(FILE* cmdlog, const char* logpath, const char* hostname,
-               const char* mode, int data_save_interval,
-               const char* data_save_path) {
+void cmdprompt(FILE* cmdlog, const char* logpath, const char* hostname, const char* mode, int data_save_interval, const char* data_save_path) {
     int count = 1;
     char* input;
-    struct pollfd fds[2];
-    char buffer[1024];
-    ssize_t bytes;
-
-    // Initialize command server
-    command_server_t* command_server = command_server_create(8000, 10); // Port 8000, max 10 connections
-    if (!command_server) {
-        printf("Failed to create command server\n");
-        return;
-    }
-
-    if (command_server_listen(command_server) != 0) {
-        printf("Failed to start command server\n");
-        command_server_destroy(command_server);
-        return;
-    }
-
-    // Setup poll fds
-    fds[0].fd = STDIN_FILENO;
-    fds[0].events = POLLIN;
-    fds[1].fd = command_server->commands_read_fd;
-    fds[1].events = POLLIN;
-
     while (exiting != 1) {
-        char prompt[100];
-        sprintf(prompt, "[BCP@Saggitarius]<%d>$ ", count);
-        printf("%s", prompt);
-        fflush(stdout);
-
-        // Poll for input from both sources
-        int ret = poll(fds, 2, -1); // Wait indefinitely
-        if (ret < 0) {
-            if (errno == EINTR) {
-                continue; // Interrupted by signal, continue polling
-            }
-            printf("Poll error: %s\n", strerror(errno));
-            break;
+        printf("[BCP@Saggitarius]<%d>$ ", count);
+        input = get_input();
+        if (strlen(input) != 0) {
+            write_to_log(cmdlog, "cli_Sag.c", "cmdprompt", input);
+            exec_command(input, cmdlog, logpath, hostname, mode, data_save_interval, data_save_path);
         }
-
-        // Check stdin
-        if (fds[0].revents & POLLIN) {
-            input = get_input();
-            if (strlen(input) != 0) {
-                // broadcast prompt to command clients
-                char* prompt = (char*) malloc(strlen("[BCP@Saggitarius]<%d>$ ") + strlen(input) + 1);
-                sprintf(prompt, "[BCP@Saggitarius]<%d>$ %s", count, input);
-                command_server_broadcast(command_server, prompt);
-                
-                write_to_log(cmdlog, "cli_Sag.c", "cmdprompt", input);
-
-                exec_command(input, cmdlog, logpath, hostname, mode,
-                           data_save_interval, data_save_path, command_server);
-            }
-            free(input);
-            count++;
-        }
-
-        // Check command server
-        if (fds[1].revents & POLLIN) {
-            input = command_server_recv(command_server);
-
-            if (input) {
-                // print prompt to stdout
-                printf("%s\n", input);
-
-                write_to_log(cmdlog, "cli_Sag.c", "cmdprompt", input);
-                exec_command(input, cmdlog, logpath, hostname, mode,
-                           data_save_interval, data_save_path, command_server);
-                free(input);
-                count++;
-            }
-        }
+        free(input);
+        count++;
     }
-
-    // Cleanup
-    command_server_destroy(command_server);
 }

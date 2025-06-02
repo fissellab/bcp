@@ -1,14 +1,14 @@
-#include "cli_Sag.h"
-#include "file_io_Sag.h"
-#include "gps.h"
-#include <errno.h>
-#include <libconfig.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <time.h>
+#include <libconfig.h>
+#include <string.h>
+#include <errno.h>
+#include "file_io_Sag.h"
+#include "cli_Sag.h"
+#include "gps.h"
 
 void print_config() {
     printf("Configuration parameters:\n");
@@ -19,8 +19,7 @@ void print_config() {
     printf("  Enabled: %s\n", config.rfsoc.enabled ? "Yes" : "No");
     printf("  IP Address: %s\n", config.rfsoc.ip_address);
     printf("  Mode: %s\n", config.rfsoc.mode);
-    printf("  Data Save Interval: %d seconds\n",
-           config.rfsoc.data_save_interval);
+    printf("  Data Save Interval: %d seconds\n", config.rfsoc.data_save_interval);
     printf("  Data Save Path: %s\n", config.rfsoc.data_save_path);
     printf("  FPGA Bitstream: %s\n", config.rfsoc.fpga_bitstream);
     printf("  ADC Channel: %d\n", config.rfsoc.adc_channel);
@@ -32,16 +31,15 @@ void print_config() {
     printf("  Port: %s\n", config.gps.port);
     printf("  Baud Rate: %d\n", config.gps.baud_rate);
     printf("  Data Save Path: %s\n", config.gps.data_save_path);
-    printf("  File Rotation Interval: %d seconds\n",
-           config.gps.file_rotation_interval);
+    printf("  File Rotation Interval: %d seconds\n", config.gps.file_rotation_interval);
 }
 
 int main(int argc, char* argv[]) {
     printf("This is BCP on Saggitarius\n");
     printf("==========================\n");
 
-    FILE* main_log; // main log file
-    FILE* cmd_log;  // command log
+    FILE* main_log;  // main log file
+    FILE* cmd_log;   // command log
 
     if (argc < 2) {
         printf("Usage: %s <config_file>\n", argv[0]);
@@ -52,13 +50,12 @@ int main(int argc, char* argv[]) {
     read_in_config(argv[1]);
     printf("Reading config parameters from: %s\n", argv[1]);
     print_config();
-
+    
     printf("Starting main log\n");
     main_log = fopen(config.main.logpath, "w");
 
     if (main_log == NULL) {
-        printf("Error opening logfile %s: %s\n", config.main.logpath,
-               strerror(errno));
+        printf("Error opening logfile %s: %s\n", config.main.logpath, strerror(errno));
         return 1;
     }
 
@@ -69,10 +66,8 @@ int main(int argc, char* argv[]) {
     write_to_log(main_log, "main_Sag.c", "main", "Starting command log");
 
     if (cmd_log == NULL) {
-        printf("Error opening command log %s: %s\n", config.main.cmdlog,
-               strerror(errno));
-        write_to_log(main_log, "main_Sag.c", "main",
-                     "Error opening command log");
+        printf("Error opening command log %s: %s\n", config.main.cmdlog, strerror(errno));
+        write_to_log(main_log, "main_Sag.c", "main", "Error opening command log");
         fclose(main_log);
         return 1;
     }
@@ -83,47 +78,39 @@ int main(int argc, char* argv[]) {
         strncpy(gps_config.port, config.gps.port, sizeof(gps_config.port) - 1);
         gps_config.port[sizeof(gps_config.port) - 1] = '\0';
         gps_config.baud_rate = config.gps.baud_rate;
-        strncpy(gps_config.data_path, config.gps.data_save_path,
-                sizeof(gps_config.data_path) - 1);
+        strncpy(gps_config.data_path, config.gps.data_save_path, sizeof(gps_config.data_path) - 1);
         gps_config.data_path[sizeof(gps_config.data_path) - 1] = '\0';
         gps_config.file_rotation_interval = config.gps.file_rotation_interval;
 
         int gps_init_result = gps_init(&gps_config);
         if (gps_init_result == 0) {
             write_to_log(main_log, "main_Sag.c", "main", "GPS initialized");
-
+            
             // Automatically start GPS logging
             if (gps_start_logging()) {
                 printf("GPS logging started automatically.\n");
-                write_to_log(main_log, "main_Sag.c", "main",
-                             "GPS logging started automatically");
+                write_to_log(main_log, "main_Sag.c", "main", "GPS logging started automatically");
             } else {
                 printf("Failed to start GPS logging automatically.\n");
-                write_to_log(main_log, "main_Sag.c", "main",
-                             "Failed to start GPS logging automatically");
+                write_to_log(main_log, "main_Sag.c", "main", "Failed to start GPS logging automatically");
             }
         } else {
             char error_msg[100];
-            snprintf(error_msg, sizeof(error_msg),
-                     "Failed to initialize GPS. Error code: %d",
-                     gps_init_result);
+            snprintf(error_msg, sizeof(error_msg), "Failed to initialize GPS. Error code: %d", gps_init_result);
             write_to_log(main_log, "main_Sag.c", "main", error_msg);
         }
     } else {
-        write_to_log(main_log, "main_Sag.c", "main",
-                     "GPS disabled in configuration");
+        write_to_log(main_log, "main_Sag.c", "main", "GPS disabled in configuration");
     }
 
     // Start the command prompt
-    cmdprompt(cmd_log, config.main.logpath, config.rfsoc.ip_address,
-              config.rfsoc.mode, config.rfsoc.data_save_interval,
-              config.rfsoc.data_save_path);
+    cmdprompt(cmd_log, config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, 
+              config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
 
     // Cleanup
     if (config.gps.enabled && gps_is_logging()) {
         gps_stop_logging();
-        write_to_log(main_log, "main_Sag.c", "main",
-                     "GPS logging stopped during cleanup");
+        write_to_log(main_log, "main_Sag.c", "main", "GPS logging stopped during cleanup");
     }
 
     fclose(cmd_log);

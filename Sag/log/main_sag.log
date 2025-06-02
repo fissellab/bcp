@@ -1,0 +1,26 @@
+Tue Apr  8 16:19:26 2025 : main_Sag.c : main : Started logfile
+Tue Apr  8 16:19:26 2025 : main_Sag.c : main : Starting command log
+Tue Apr  8 16:19:26 2025 : main_Sag.c : main : GPS initialized
+Tue Apr  8 16:19:26 2025 : main_Sag.c : main : GPS logging started automatically
+2025-04-08 16:19:36,556 - INFO - Using FPGA file at rfsoc4x2_tut_spec_cx/output/rfsoc4x2_tut_spec_cx_2023-04-03_1141.fpg
+2025-04-08 16:19:36,557 - INFO - Connecting to 192.168.2.3...
+2025-04-08 16:19:37,575 - INFO - Client connect loop for ('192.168.2.3', 7147) finished.
+2025-04-08 16:19:37,578 - INFO - Stopping ioloop <tornado.platform.asyncio.AsyncIOLoop object at 0x7b6a2ab18130>
+2025-04-08 16:19:37,585 - INFO - Managed tornado IOloop <tornado.platform.asyncio.AsyncIOLoop object at 0x7b6a2ab18130> stopped
+2025-04-08 16:19:37,586 - INFO - Client connect loop for ('192.168.2.3', 7147) finished.
+2025-04-08 16:19:37,588 - INFO - Stopping ioloop <tornado.platform.asyncio.AsyncIOLoop object at 0x7b6a2ab191e0>
+2025-04-08 16:19:37,591 - INFO - Managed tornado IOloop <tornado.platform.asyncio.AsyncIOLoop object at 0x7b6a2ab191e0> stopped
+2025-04-08 16:19:37,799 - INFO - Programming FPGA with rfsoc4x2_tut_spec_cx/output/rfsoc4x2_tut_spec_cx_2023-04-03_1141.fpg...
+2025-04-08 16:19:39,354 - INFO - Done
+2025-04-08 16:19:39,354 - INFO - Configuring accumulation period...
+2025-04-08 16:19:39,457 - INFO - Done
+2025-04-08 16:19:39,458 - INFO - Setting capture on ADC port 0
+2025-04-08 16:19:39,561 - INFO - Done
+2025-04-08 16:19:39,562 - INFO - Resetting counters...
+2025-04-08 16:19:44,573 - INFO - Done
+2025-04-08 16:19:44,574 - INFO - Starting data acquisition...
+2025-04-08 16:19:44,574 - INFO - Data acquisition and saving in progress...
+2025-04-08 16:25:38,047 - INFO - Received termination signal. Cleaning up...
+2025-04-08 16:25:38,508 - INFO - Data acquisition stopped.
+2025-04-08 16:25:38,509 - INFO - Cleaning up...
+2025-04-08 16:25:38,510 - INFO - Script terminated.
