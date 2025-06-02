@@ -4,6 +4,10 @@ project(bcp_sag VERSION 0.1 LANGUAGES C)
 
 include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
+# Find required packages
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(JSON_C REQUIRED json-c)
+
 add_subdirectory(
     ../bvex-link/bcp-fetch-client
     ../bvex-link/bcp-fetch-client/build
@@ -20,6 +24,7 @@ add_executable(
 
 target_include_directories(main PRIVATE 
     .
+    ${JSON_C_INCLUDE_DIRS}
     # /usr/include/glib-2.0
     # /usr/lib/x86_64-linux-gnu/glib-2.0/include
 )
@@ -29,4 +34,5 @@ target_link_libraries(main
     bcp-fetch
     pthread
     config
+    ${JSON_C_LIBRARIES}
 )
