@@ -8,17 +8,17 @@ CC=gcc
 # Set compiler flags
 CFLAGS="-Wall -Wextra -g"
 
-# Set libraries to link
-LIBS="-lconfig -lpthread"
+# Set libraries to link (added json-c for gpsd client)
+LIBS="-lconfig -lpthread -lm -ljson-c"
 
 # Set the name of the output executable
 OUTPUT="bcp_Sag"
 
 # Create necessary directories
-sudo mkdir -p /home/saggitarius/flight_code_dev/log
+sudo mkdir -p /home/saggitarius/flight_code/log
 sudo mkdir -p /media/saggitarius/T7/GPS_data
 
-# Set permissions for GPS device
+# Set permissions for GPS device (not needed for gpsd client, but keeping for compatibility)
 sudo chmod 666 /dev/ttyGPS
 
 # Compile the source files
@@ -36,9 +36,20 @@ $CC $CFLAGS main_Sag.o file_io_Sag.o cli_Sag.o gps.o -o $OUTPUT $LIBS
 if [ $? -eq 0 ]; then
     echo "Compilation successful."
     
+    # Copy Python scripts to the same directory
+    echo "Copying Python scripts to current directory..."
+    cp -f rfsoc_spec*.py ./
+    chmod +x rfsoc_spec*.py
+    
+    # Note: Using gpsd client interface - no need to stop gpsd service
+    echo "Using gpsd client interface - GPS data via gpsd socket."
+    
     # Run the executable with sudo
     echo "Running BCP Saggitarius..."
     sudo ./$OUTPUT bcp_Sag.config
+    
+    echo "BCP session completed."
+    
 else
     echo "Compilation failed."
 fi

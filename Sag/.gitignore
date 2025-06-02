@@ -6,4 +6,4 @@ CMakeFiles/
 pkgs/
 bvex-link/
 vcpkg_installed/
-log/
+log/__pycache__/
