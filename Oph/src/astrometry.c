@@ -25,9 +25,9 @@
 
 #define _USE_MATH_DEFINES
 /* Longitude and latitude constants (deg) */
-#define backyard_lat  44.2246063
-#define backyard_long -76.4978
-#define backyard_hm   58.17
+#define backyard_lat  44.224327
+#define backyard_long -76.498007
+#define backyard_hm   50
 
 engine_t * engine = NULL;
 solver_t * solver = NULL;
@@ -300,18 +300,10 @@ int lostInSpace(FILE* logfile,double * star_x, double * star_y, double * star_ma
 		// we achieved a solution!
 		sol_status = 1;
 	} else {
-		if ((fptr = fopen(datafile, "a")) == NULL) {
-		    fprintf(logfile, "[%ld][astrometry.c][lostInSpace] Could not open observing file: %s.\n", time(NULL), 
-					strerror(errno));
-		    return sol_status;
-		}
-		// if no solution was found, write a line of 0s to the data file for ease of post-run data analysis
-		if (fprintf(fptr, "0\t0\t0\t0\t0\t0\t0\t0\t0\t") < 0) {
-            		fprintf(logfile, "[%ld][astrometry.c][lostInSpace] Unable to write time and blob count to observing file: %s.\n", time(NULL), strerror(errno));
-		}
-		
-		fflush(fptr);
-		fclose(fptr);
+		all_astro_params.az = 0;
+		all_astro_params.alt = 0;
+		all_astro_params.ra = 0;
+		all_astro_params.dec = 0;
     	}
 	
 	// clean everything up and return the status

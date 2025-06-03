@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 #include <math.h>
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <curses.h>
 #include <pthread.h>
-
+#include "coords.h"
 #include "motor_control.h"
 #include "ec_motor.h"
 #include "file_io_Oph.h"
+#include "lazisusan.h"
 
 AxesModeStruct axes_mode = {
 	.dir = 1,
@@ -22,6 +24,10 @@ ScanModeStruct scan_mode = {
 	.scanning = 0,
 };
 
+SkyCoord target = {
+	.type = "RaDec",
+};
+
 static const double lpfilter_coefs[5] = {256778.303/LPFILTER_GAIN, -1414378.297/LPFILTER_GAIN,//{6019.292/LPFILTER_GAIN, -36208.791/LPFILTER_GAIN, 
 							3123497.587/LPFILTER_GAIN, -3457533.033/LPFILTER_GAIN, //87859.296/LPFILTER_GAIN,-107614.067/LPFILTER_GAIN,
 							1918772.870/LPFILTER_GAIN};//66635.858/LPFILTER_GAIN}; 
@@ -30,6 +36,10 @@ extern int motor_index;
 extern FILE* motor_log;
 pthread_t motors;
 extern int comms_ok;
+extern double motor_offset;
+float p_pub = 0;
+float i_pub = 0;
+float d_pub = 0;
 
 void lpfilter(float *lp_in,float *lp_out, float x){
 	for(int i=1;i<6;i++){
@@ -44,7 +54,11 @@ void lpfilter(float *lp_in,float *lp_out, float x){
         	              + (lpfilter_coefs[3] * lp_out[3]) + (lpfilter_coefs[4] * lp_out[4]);
 }
 
-
+void print_motor_PID(){
+	mvprintw(11,0,"Motor P: %lf\n",p_pub);
+	mvprintw(12,0,"Motor I: %lf\n",i_pub);
+	mvprintw(13,0,"Motor D: %lf\n",d_pub);
+}
 
 static int16_t calculate_current(float v_req){
 	
@@ -76,13 +90,17 @@ static int16_t calculate_current(float v_req){
 	double friction = 0.0;
 	static double friction_in[2] = {0.0};
 	static double friction_out[2] = {0.0};
+	static float prev_v = 0.0;
 
+	if(v_req != prev_v){
+		I_term = 0.0;
+	}
+
+	prev_v = v_req;
 	K_p = config.motor.velP; //25.0 Replace these with actual values once we know what they are.
 	T_i = config.motor.velI; //0.5
 	T_d = config.motor.velD; //1.0
 	I_db = config.motor.velI_db;//10.0
-
-	v_req = v_req/config.motor.velfactor;//0.94
 
 
 
@@ -115,6 +133,10 @@ static int16_t calculate_current(float v_req){
         
         milliamp_return = P_term + I_term + D_term;
         
+	p_pub = P_term;
+	i_pub = I_term;
+	d_pub = D_term;
+
         if (milliamp_return > config.motor.friction_db){
     		friction = config.motor.friction;
     	}else if(milliamp_return < ((-1)*config.motor.friction_db)){
@@ -273,6 +295,71 @@ void do_enc_dither(){
 	}
 
 }
+void track(){
+	double el_delta;
+	double az_delta;
+	SkyCoord azel_coord;
+	axes_mode.mode = POS;
+	AzEl_from_RaDec(&target,&azel_coord);
+	axes_mode.dest = azel_coord.lat;
+	axes_mode.dest_az = azel_coord.lon;
+
+	if(config.lazisusan.enabled && config.motor.enabled){
+		el_delta = fabs(MotorData[GETREADINDEX(motor_index)].position-axes_mode.dest);
+		az_delta = fabs(axes_mode.dest_az-get_angle());
+		if((az_delta < 0.1) && (el_delta <0.1)){
+			axes_mode.on_target = 1;
+		}else{
+			axes_mode.on_target = 0;
+		}
+	}else if(!config.lazisusan.enabled){
+		el_delta = fabs(MotorData[GETREADINDEX(motor_index)].position-axes_mode.dest);
+		if(el_delta < 0.1){
+			axes_mode.on_target = 1;
+		}else{
+			axes_mode.on_target = 0;
+		}
+	}else if(!config.motor.enabled){
+		az_delta = fabs(axes_mode.dest_az-get_angle());
+		if(az_delta <0.1){
+			axes_mode.on_target = 1;
+		}else{
+			axes_mode.on_target = 0;
+		}
+
+	}
+
+}
+
+void enc_onoff(){
+	static int firsttime = 1;
+	static double t_start;
+	double t_now;
+	struct timeval time;
+	gettimeofday(&time,NULL);
+	t_now = time.tv_sec+time.tv_usec/1e6;
+	track();
+	if(firsttime){
+		scan_mode.on_position = 0;
+		if(axes_mode.on_target ){
+			firsttime = 0;
+			scan_mode.on_position = 1;
+			t_start = t_now;
+		}
+	}else if((t_now-t_start)>scan_mode.time){
+		t_start = t_now;
+		if(scan_mode.on_position){
+			scan_mode.on_position = 0;
+			scan_mode.scan++;
+		}else{
+			scan_mode.on_position = 1;
+		}
+	}
+	if(!scan_mode.on_position){
+		axes_mode.dest += scan_mode.offset;
+	}
+
+}
 
 void command_motor(void){
 	
@@ -282,12 +369,21 @@ void command_motor(void){
 	if(scan_mode.scanning){
 		if(scan_mode.mode == ENC_DITHER){
 			do_enc_dither();
+		}else if(scan_mode.mode == ENC_TRACK){
+			track();
+		}else if(scan_mode.mode == EL_ONOFF){
+			enc_onoff();
 		}
 	}
 	
 	v_req = calculate_velocity_enc();
 	current = calculate_current(v_req);
 	set_current(current);
+}
+
+void set_el_offset(double cal_angle){
+	double curr_ang = MotorData[GETREADINDEX(motor_index)].position;
+	motor_offset = motor_offset -cal_angle+curr_ang;
 }
 
 int start_motor(void){
