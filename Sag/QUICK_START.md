@@ -11,7 +11,8 @@ git clone https://github.com/fissellab/bcp.git
 cd bcp/Sag
 ./install_dependencies.sh
 source ~/.bashrc
-./build_and_run.sh
+./build_and_run.sh     # Build (no sudo)
+sudo ./start.sh        # Run (with sudo for GPS)
 ```
 
 This will automatically install:
@@ -31,21 +32,32 @@ Make sure you have:
 
 ## Building and Running
 
-### Option 1: Using the automated script (recommended)
+### Two-Step Process
 
+**Step 1: Build (no sudo required)**
 ```bash
 ./build_and_run.sh
 ```
 
-This script will:
-1. Check all prerequisites and provide installation instructions if missing
-2. Initialize git submodules if needed
-3. Install vcpkg dependencies
-4. Configure the project with CMake
-5. Build the project
-6. Ask if you want to run it immediately
+**Step 2: Run (sudo required for GPS access)**
+```bash
+sudo ./start.sh
+```
 
-### Option 2: Manual build steps
+### What each script does:
+
+**`build_and_run.sh`** (run without sudo):
+1. Checks all prerequisites and provides installation instructions if missing
+2. Initializes git submodules if needed
+3. Installs vcpkg dependencies
+4. Configures the project with CMake
+5. Builds the project
+
+**`start.sh`** (requires sudo):
+1. Checks if application was built
+2. Starts the application with GPS device access privileges
+
+### Manual build steps (alternative)
 
 ```bash
 # 1. Initialize submodules (if not done already)
@@ -57,8 +69,8 @@ cmake --preset=default
 # 3. Build the project
 cmake --build build
 
-# 4. Run the application
-./build/main bcp_Sag.config
+# 4. Run the application (with sudo for GPS)
+sudo ./start.sh
 ```
 
 ### Clean Build
@@ -102,16 +114,26 @@ cd bcp/Sag
 # Reload environment
 source ~/.bashrc
 
-# Build and run
+# Build the application (no sudo)
 ./build_and_run.sh
+
+# Run the application (with sudo for GPS)
+sudo ./start.sh
 ```
+
+## Why Two Separate Scripts?
+
+- **Building** doesn't need root privileges and should preserve user environment variables (like `VCPKG_ROOT`)
+- **Running** requires root privileges to access GPS hardware (`/dev/ttyGPS`)
+- This separation prevents environment variable issues while maintaining hardware access
 
 ## Troubleshooting
 
 - **Don't use `sudo` with `build_and_run.sh`** - Run it as a regular user to preserve environment variables
+- **Do use `sudo` with `start.sh`** - Required for GPS device access
 - If you get "No such file or directory" errors, ensure submodules are initialized
 - If CMake configuration fails, check that `VCPKG_ROOT` is set correctly
 - GPS errors are normal if `/dev/ttyGPS` doesn't exist or is in use
 - The application works fine even without GPS hardware for testing purposes
 - On non-Ubuntu/Debian systems, use manual installation and refer to your system's package manager
-- If you get "vcpkg not found" errors when using sudo, run without sudo instead 
+- If you get "vcpkg not found" errors when using sudo, run the build script without sudo first 
