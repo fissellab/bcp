@@ -108,8 +108,10 @@ source ~/.bashrc
 
 ## Troubleshooting
 
+- **Don't use `sudo` with `build_and_run.sh`** - Run it as a regular user to preserve environment variables
 - If you get "No such file or directory" errors, ensure submodules are initialized
 - If CMake configuration fails, check that `VCPKG_ROOT` is set correctly
 - GPS errors are normal if `/dev/ttyGPS` doesn't exist or is in use
 - The application works fine even without GPS hardware for testing purposes
-- On non-Ubuntu/Debian systems, use manual installation and refer to your system's package manager 
+- On non-Ubuntu/Debian systems, use manual installation and refer to your system's package manager
+- If you get "vcpkg not found" errors when using sudo, run without sudo instead 

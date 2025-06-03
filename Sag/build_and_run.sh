@@ -2,6 +2,24 @@
 
 # Build and Run script for BCP Saggitarius
 echo "=== BCP Saggitarius Build and Run Script ==="
+
+# Check if running as root and warn
+if [ "$EUID" -eq 0 ]; then
+    echo "⚠️  WARNING: You are running this script as root (with sudo)."
+    echo "   This can cause issues with environment variables like VCPKG_ROOT."
+    echo "   Please run without sudo:"
+    echo "   ./build_and_run.sh"
+    echo ""
+    read -p "Do you want to continue anyway? (y/n): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Exiting. Run without sudo for best results."
+        exit 1
+    fi
+    echo "Continuing with root privileges..."
+    echo ""
+fi
+
 echo "Checking prerequisites..."
 
 # Function to check if a command exists
