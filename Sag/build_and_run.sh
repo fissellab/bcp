@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Build and Run script for BCP Saggitarius
-echo "=== BCP Saggitarius Build and Run Script ==="
+# Build script for BCP Saggitarius
+echo "=== BCP Saggitarius Build Script ==="
 
 # Check if running as root and warn
 if [ "$EUID" -eq 0 ]; then
@@ -160,27 +160,20 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Build successful!"
-echo "Executable: ./build/main"
-echo "Config file: bcp_Sag.config"
 echo ""
-echo "To run the application:"
-echo "  ./build/main bcp_Sag.config"
+echo "🎉 Build successful!"
 echo ""
-echo "Available commands in the application:"
-echo "  - start spec     : Start the spectrometer"
-echo "  - stop spec      : Stop the spectrometer"
-echo "  - start gps      : Start GPS logging"
-echo "  - stop gps       : Stop GPS logging"
-echo "  - gps status     : Show GPS status"
-echo "  - print <msg>    : Print a message"
-echo "  - exit           : Exit the program"
+echo "📁 Executable: ./build/main"
+echo "⚙️  Config file: bcp_Sag.config"
 echo ""
-
-# Ask if user wants to run it now
-read -p "Do you want to run the application now? (y/n): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Starting BCP Saggitarius..."
-    ./build/main bcp_Sag.config
-fi 
+echo "🚀 To run the application (requires sudo for GPS access):"
+echo "   sudo ./start.sh"
+echo ""
+echo "📖 Available commands in the application:"
+echo "   - start spec     : Start the spectrometer"
+echo "   - stop spec      : Stop the spectrometer"
+echo "   - start gps      : Start GPS logging"
+echo "   - stop gps       : Stop GPS logging"
+echo "   - gps status     : Show GPS status"
+echo "   - print <msg>    : Print a message"
+echo "   - exit           : Exit the program" 
