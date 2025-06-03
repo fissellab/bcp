@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <sys/time.h>
 #include <string.h>
 #include <errno.h>
 #include <ueye.h>
@@ -128,6 +129,7 @@ int initCamera(FILE* log) {
     double min_exposure, max_exposure;
     unsigned int enable = 1;   
 
+    all_camera_params.exposure_time = config.bvexcam.t_exp;
     // load the camera parameters
     if (loadCamera(log) < 0) {
         return -1;
@@ -1081,18 +1083,19 @@ int doCameraAndAstrometry(FILE* log) {
     char datafile[100], buff[100], date[256];
     static char af_filename[256];
     wchar_t filename[200] = L"";
-    struct timespec camera_tp_beginning, camera_tp_end; 
-    time_t seconds = time(NULL);
+    struct timespec camera_tp_beginning, camera_tp_end;
+    struct timeval tv; 
     struct tm * tm_info;
 
+    gettimeofday(&tv,NULL);
     // uncomment line below for testing the values of each field in the global 
     // structure for blob_params
     if (verbose) {
         verifyBlobParams();
     }
 
-    tm_info = gmtime(&seconds);
-    all_astro_params.rawtime = seconds;
+    tm_info = gmtime(&tv.tv_sec);
+    all_astro_params.rawtime = tv.tv_sec;
     // if it is a leap year, adjust tm_info accordingly before it is passed to 
     // calculations in lostInSpace
     if (isLeapYear(tm_info->tm_year)) {
@@ -1305,10 +1308,11 @@ int doCameraAndAstrometry(FILE* log) {
         return -1;
     }
 */
-    // find the blobs in the image
-    blob_count = findBlobs(memory, CAMERA_WIDTH, CAMERA_HEIGHT, &star_x, 
+    if(all_camera_params.solve_img||all_camera_params.focus_mode){
+    	// find the blobs in the image
+    	blob_count = findBlobs(memory, CAMERA_WIDTH, CAMERA_HEIGHT, &star_x, 
                            &star_y, &star_mags, output_buffer);
-
+    }
     // make kst display the filtered image 
     memcpy(memory, output_buffer, CAMERA_WIDTH*CAMERA_HEIGHT); 
 
@@ -1479,51 +1483,49 @@ int doCameraAndAstrometry(FILE* log) {
             printf(">> No longer auto-focusing!\n");
         }
 
-        strftime(date, sizeof(date), join_path(config.bvexcam.workdir,"/pics/saved_image_%Y-%m-%d_%H:%M:%S.bmp"), tm_info);
-        swprintf(filename, 200, L"%s", date);
-
+        strftime(date, sizeof(date), join_path(config.bvexcam.workdir,"/pics/saved_image_%Y-%m-%d_%H:%M:%S"), tm_info);
+        swprintf(filename, 200, L"%s:%ld.bmp", date,tv.tv_usec);
+	if(all_camera_params.solve_img){
         // write blob and time information to data file
-        strftime(buff, sizeof(buff), "%b %d %H:%M:%S", tm_info); 
-        fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Time going into Astrometry.net: %s\n", time(NULL), buff);
+        	strftime(buff, sizeof(buff), "%b %d %H:%M:%S", tm_info); 
+        	fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Time going into Astrometry.net: %s\n", time(NULL), buff);
 
-        if (fprintf(fptr, "\r%li|%s|", seconds, buff) < 0) {
-            fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Unable to write time and blob count to observing "
+        	if (fprintf(fptr, "\r%li|%s|", tv.tv_sec, buff) < 0) {
+            		fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Unable to write time and blob count to observing "
                             "file: %s.\n", time(NULL), strerror(errno));
-        }
-        fflush(fptr);
+        	}
+        	fflush(fptr);
 
-        // solve astrometry
-        if (verbose) {
-            printf("\n> Trying to solve astrometry...\n");
-        }
+        	// solve astromety
+        	if (verbose) {
+            		printf("\n> Trying to solve astrometry...\n");
+       	 	}
 
-        if (lostInSpace(log,star_x, star_y, star_mags, blob_count, tm_info, 
-                        datafile) != 1) {
-            write_to_log(log,"camera.c","doCameraAndAstrometry","Could not solve Astrometry.");
-        }
+        	if (lostInSpace(log,star_x, star_y, star_mags, blob_count, tm_info, 
+                	        datafile) != 1) {
+            		write_to_log(log,"camera.c","doCameraAndAstrometry","Could not solve Astrometry.");
+        	}
 
-        // get current time right after solving
-        if (clock_gettime(CLOCK_REALTIME, &camera_tp_end) == -1) {
-            fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Error ending timer: %s.\n", time(NULL), strerror(errno));
-        }
+        	// get current time right after solving
+        	if (clock_gettime(CLOCK_REALTIME, &camera_tp_end) == -1) {
+            		fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Error ending timer: %s.\n", time(NULL), strerror(errno));
+        	}
 
-        // calculate time it took camera program to run in nanoseconds
-	    start = (double) (camera_tp_beginning.tv_sec*1e9) + 
-                (double) camera_tp_beginning.tv_nsec;
-	    end = (double) (camera_tp_end.tv_sec*1e9) + 
-              (double) camera_tp_end.tv_nsec;
-        camera_time = end - start;
-	    fprintf(log,"[%ld][camera.c][doCamreaAndAstrometry] Camera completed one round in %f msec.\n", time(NULL), 
-               camera_time*1e-6);
+        	// calculate time it took camera program to run in nanoseconds
+	    	start = (double) (camera_tp_beginning.tv_sec*1e9) + (double) camera_tp_beginning.tv_nsec;
+	    	end = (double) (camera_tp_end.tv_sec*1e9) + (double) camera_tp_end.tv_nsec;
+        	camera_time = end - start;
+	    	fprintf(log,"[%ld][camera.c][doCamreaAndAstrometry] Camera completed one round in %f msec.\n", time(NULL), camera_time*1e-6);
 
-        // write this time to the data file
-        if (fprintf(fptr, "|%f", camera_time*1e-6) < 0) {
-            fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Unable to write Astrometry solution time to "
+        	// write this time to the data file
+        	if (fprintf(fptr, "|%f", camera_time*1e-6) < 0) {
+            		fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Unable to write Astrometry solution time to "
                             "observing file: %s.\n", time(NULL), strerror(errno));
-        }
-        fflush(fptr);
-        fclose(fptr);
-        fptr = NULL;
+        	}
+        	fflush(fptr);
+        	fclose(fptr);
+        	fptr = NULL;
+	}
     }
 
     // save image for future reference
@@ -1541,10 +1543,11 @@ int doCameraAndAstrometry(FILE* log) {
     symlink(date, join_path(config.bvexcam.workdir,"/latest_saved_image.bmp"));
 
     // make a table of blobs for Kst
-    if (makeTable("makeTable.txt", star_mags, star_x, star_y, blob_count) != 1) {
-        write_to_log(log,"camera,.c","doCameraAndAstrometry","Error (above) writing blob table for Kst.\n");
+    if (all_camera_params.solve_img){
+    	if (makeTable("makeTable.txt", star_mags, star_x, star_y, blob_count) != 1) {
+        	write_to_log(log,"camera,.c","doCameraAndAstrometry","Error (above) writing blob table for Kst.\n");
+    	}
     }
-
     // free alloc'd variables when we are shutting down
     if (shutting_down) {
         if (verbose) {

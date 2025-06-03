@@ -92,6 +92,12 @@ void read_in_config(char* filepath) {
     }
     config.bvexcam.configdir = strdup(tmpstr);
 
+    if(!config_lookup_int(&conf, "bvexcam.t_exp",&tmpint)){
+        printf("Missing bvexcam.t_exp in %s\n", filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.bvexcam.t_exp = tmpint;
     // Accelerometer configuration
     if (!config_lookup_int(&conf, "accelerometer.enabled", &tmpint)) {
         printf("Missing accelerometer.enabled in %s\n", filepath);
@@ -172,12 +178,12 @@ void read_in_config(char* filepath) {
     }
     config.motor.port = strdup(tmpstr);
 
-    if(!config_lookup_string(&conf,"motor.datafile",&tmpstr)){
-        printf("Missing motor.dataflie in %s\n",filepath);
+    if(!config_lookup_string(&conf,"motor.datadir",&tmpstr)){
+        printf("Missing motor.datadir in %s\n",filepath);
         config_destroy(&conf);
         exit(0);
     }
-    config.motor.datafile = strdup(tmpstr);
+    config.motor.datadir = strdup(tmpstr);
 
     if(!config_lookup_float(&conf,"motor.velP",&tmpfloat)){
 	printf("Missing motor.velP in %s\n",filepath);
@@ -206,13 +212,6 @@ void read_in_config(char* filepath) {
         exit(0);
     }
     config.motor.velI_db = tmpfloat;
-
-    if(!config_lookup_float(&conf,"motor.velfactor",&tmpfloat)){
-	printf("Missing motor.velfactor in %s\n", filepath);
-        config_destroy(&conf);
-        exit(0);
-    }
-    config.motor.velfactor = tmpfloat;
 
     if(!config_lookup_int(&conf,"motor.max_delta",&tmpint)){
         printf("Missing motor.max_delta in %s\n", filepath);
@@ -270,6 +269,120 @@ void read_in_config(char* filepath) {
     }
     config.motor.pos_tol = tmpfloat;
 
+    //Lazisusan config
+
+    if(!config_lookup_int(&conf,"lazisusan.enabled",&tmpint)){
+        printf("Missing lazisusan.enabled in %s\n", filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.enabled = tmpint;
+
+    if(!config_lookup_string(&conf,"lazisusan.logfile",&tmpstr)){
+	printf("Missing lazisusan.logfile in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.logfile = strdup(tmpstr);
+
+    if(!config_lookup_string(&conf,"lazisusan.datadir",&tmpstr)){
+        printf("Missing lazisusan.datadir in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.datadir = strdup(tmpstr);
+
+    if(!config_lookup_string(&conf,"lazisusan.port",&tmpstr)){
+	printf("Missing lazisusan.port in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.port = strdup(tmpstr);
+
+    if(!config_lookup_float(&conf,"lazisusan.gear_ratio",&tmpfloat)){
+	printf("Missing lazisusan.gear_ratio in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.gear_ratio = tmpfloat;
+
+    if(!config_lookup_float(&conf,"lazisusan.offset",&tmpfloat)){
+	printf("Missing lazisusan.offset in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.offset = tmpfloat;
+
+    if(!config_lookup_float(&conf,"lazisusan.g_az",&tmpfloat)){
+	printf("Missing lazisusan.g_az in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.g_az = tmpfloat;
+
+    if(!config_lookup_float(&conf,"lazisusan.max_freq",&tmpfloat)){
+	printf("Missing lazisusan.max_freq in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.max_freq = tmpfloat;
+
+    if(!config_lookup_float(&conf,"lazisusan.deltav",&tmpfloat)){
+        printf("Missing lazisusan.deltav in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.lazisusan.deltav = tmpfloat;
+
+    if(!config_lookup_float(&conf,"lazisusan.stretch",&tmpfloat)){
+	printf("Missing lazisusan.stretch in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.stretch = tmpfloat;
+
+    if(!config_lookup_float(&conf,"lazisusan.vdb",&tmpfloat)){
+	printf("Missing lazisusan.vdb in %s\n",filepath);
+        config_destroy(&conf);
+	exit(0);
+    }
+    config.lazisusan.vdb = tmpfloat;
+    //Lockpin
+    if(!config_lookup_string(&conf,"lockpin.logfile",&tmpstr)){
+	printf("Missing lockpin.logfile in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lockpin.logfile = strdup(tmpstr);
+
+    if(!config_lookup_int(&conf,"lockpin.enabled",&tmpint)){
+	printf("Missing lockpin.enabledin %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lockpin.enabled = tmpint;
+
+    if(!config_lookup_int(&conf,"lockpin.baud",&tmpint)){
+        printf("Missing lockpin.baud in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lockpin.baud = tmpint;
+
+    if(!config_lookup_string(&conf,"lockpin.serialport",&tmpstr)){
+	printf("Missing lockpin.serialport in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lockpin.serialport = strdup(tmpstr);
+
+    if(!config_lookup_int(&conf,"lockpin.duration",&tmpint)){
+	printf("Missing lockpin.duration in %s\n",filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.lockpin.duration = tmpint;
+
     config_destroy(&conf);
 }
 
@@ -294,6 +407,7 @@ void print_config() {
     printf("  port = %d;\n", config.bvexcam.port);
     printf("  workdir = %s;\n", config.bvexcam.workdir);
     printf("  configdir = %s;\n",config.bvexcam.configdir);
+    printf("  t_exp = %d;\n", config.bvexcam.t_exp);
     printf("};\n\n");
     printf("accelerometer:{\n");
     printf("  enabled = %d;\n", config.accelerometer.enabled);
@@ -309,12 +423,11 @@ void print_config() {
     printf(" enabled = %d;\n", config.motor.enabled);
     printf(" logfile = %s;\n", config.motor.logfile);
     printf(" port = %s;\n", config.motor.port);
-    printf(" datafile = %s;\n", config.motor.datafile);
+    printf(" datadir = %s;\n", config.motor.datadir);
     printf(" velP = %lf;\n", config.motor.velP);
     printf(" velI = %lf;\n", config.motor.velI);
     printf(" velD = %lf;\n", config.motor.velD);
     printf(" velI_db = %lf;\n", config.motor.velI_db);
-    printf(" velfactor = %lf;\n", config.motor.velfactor);
     printf(" max_delta = %d;\n", config.motor.max_delta);
     printf(" friction = %lf;\n", config.motor.friction);
     printf(" friction_db = %d;\n", config.motor.friction_db);
@@ -324,4 +437,24 @@ void print_config() {
     printf(" max_velocity = %lf;\n", config.motor.max_velocity);
     printf(" pos_tol = %lf;\n", config.motor.pos_tol);
     printf("};\n\n");
+    printf("lazisusan:{\n");
+    printf(" enabled = %d;\n",config.lazisusan.enabled);
+    printf(" logfile = %s;\n",config.lazisusan.logfile);
+    printf(" datadir = %s;\n",config.lazisusan.datadir);
+    printf(" port = %s;\n", config.lazisusan.port);
+    printf(" gear_ratio = %lf;\n",config.lazisusan.gear_ratio);
+    printf(" offset = %lf;\n",config.lazisusan.offset);
+    printf(" g_az = %lf;\n", config.lazisusan.g_az);
+    printf(" max_freq = %lf\n",config.lazisusan.max_freq);
+    printf(" deltav = %lf\n",config.lazisusan.deltav);
+    printf(" stretch = %lf\n",config.lazisusan.stretch);
+    printf(" vdb = %lf\n",config.lazisusan.vdb);
+    printf("};\n\n");
+    printf("lockpin:{\n");
+    printf(" enabled = %d;\n",config.lockpin.enabled);
+    printf(" logfile = %s;\n",config.lockpin.logfile);
+    printf(" baud = %d;\n",config.lockpin.baud);
+    printf(" serialport = %s;\n",config.lockpin.serialport);
+    printf(" duration = %d;\n",config.lockpin.duration);
+    printf("};\n\n"); 
 }

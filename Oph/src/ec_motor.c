@@ -10,6 +10,7 @@
 #include <ethercatdc.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <sys/time.h>
 #include <time.h>
 #include <glib.h>
 #include <unistd.h>
@@ -41,8 +42,10 @@ static uint16_t *control_word = (uint16_t*) &dummy_var;
 static int16_t *target_current = (int16_t*) &dummy_var;
 
 static ec_device_state_t controller_state = {0};
-static double motor_offset = 0.0;
+double motor_offset = 0.0;
 static int firsttime = 1;
+
+extern ScanModeStruct scan_mode;
 
 motor_data_t MotorData[3] = {{0}};
 int motor_index = 0;
@@ -903,8 +906,11 @@ void *do_motors(void*){
 	int expectedWKC, wkc;
 	int ret;
 	int count = 0;
-	time_t t;
+	double t;
+	struct timeval current_time;
 	char * ifname = config.motor.port;
+	int flen = strlen(config.motor.datadir)+25;
+	char fname[flen];
 	FILE* outfile;
 	
 	write_to_log(motor_log,"ec_motor.c","do_motors","Initializing NIC...");
@@ -924,11 +930,14 @@ void *do_motors(void*){
 	
 	expectedWKC = (ec_group[0].outputsWKC*2) + ec_group[0].inputsWKC;
 	
-	outfile = fopen(config.motor.datafile, "w");
+	snprintf(fname,flen,"%s/motor_pv_%ld.txt",config.motor.datadir,time(NULL));
+	
+	outfile = fopen(fname, "w");
 	
 	start_loop:
 		while(!stop){
-			t = time(NULL);
+			gettimeofday(&current_time, NULL);
+			t = current_time.tv_sec+current_time.tv_usec/1e6;
 			enable();
 			ec_send_processdata();
 			wkc = ec_receive_processdata(EC_TIMEOUTRET);
@@ -945,8 +954,7 @@ void *do_motors(void*){
 				firsttime = 0;
 			}
 			command_motor();
-			fprintf(outfile,"%ld;%lf;%lf;%lf\n",t,MotorData[GETREADINDEX(motor_index)].position,MotorData[GETREADINDEX(motor_index)].velocity,MotorData[GETREADINDEX(motor_index)].current);
-
+			fprintf(outfile,"%lf;%lf;%lf;%lf;%d;%d;%d\n",t,MotorData[GETREADINDEX(motor_index)].position,MotorData[GETREADINDEX(motor_index)].velocity,MotorData[GETREADINDEX(motor_index)].current,scan_mode.scan,scan_mode.turnaround,scan_mode.scanning);
 			usleep(4600);
 		}
 	fclose(outfile);
@@ -955,7 +963,6 @@ void *do_motors(void*){
 	
 	reset:
 	if(!stop){
-		system("clear");
 		reset_ec_motor();
 		ready = 1;
 		goto start_loop;

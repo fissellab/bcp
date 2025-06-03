@@ -21,6 +21,7 @@ typedef struct bvexcam_conf {
     int port;
     char* workdir;
     char* configdir;
+    int t_exp;
 } bvexcam_conf;
 
 typedef struct accelerometer_conf {
@@ -38,12 +39,11 @@ typedef struct motor_conf {
     int enabled;
     char* logfile;
     char* port;
-    char* datafile;
+    char* datadir;
     float velP;
     float velI;
     float velD;
     float velI_db;
-    float velfactor;
     int max_delta;
     double friction;
     int friction_db;
@@ -55,11 +55,35 @@ typedef struct motor_conf {
     
 } motor_conf;
 
+typedef struct lazisusan_conf{
+    int enabled;
+    char* logfile;
+    char* datadir;
+    char* port;
+    double gear_ratio;
+    double offset;
+    double g_az;
+    double max_freq;
+    double deltav;
+    double stretch;
+    double vdb;
+} lazisusan_conf;
+
+typedef struct lockpin_conf{
+	char *logfile;
+	int enabled;
+	int baud;
+	char *serialport;
+	int duration;
+} lockpin_conf;
+
 typedef struct conf_params {
     struct main_conf main;
     struct bvexcam_conf bvexcam;
     struct accelerometer_conf accelerometer;
     struct motor_conf motor;
+    struct lazisusan_conf lazisusan;
+    struct lockpin_conf lockpin;
 } conf_params;
 
 extern struct conf_params config;

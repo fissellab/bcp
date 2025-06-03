@@ -82,15 +82,16 @@ struct camera_params all_camera_params = {
     .current_aperture = 0,     // current aperture position
     .min_focus_pos = 0,        // current min focus position
     .max_focus_pos = 0,        // current max focus position
-    .exposure_time = 700,      // current exposure time (800 msec is default)
+    .exposure_time = 800,      // current exposure time (800 msec is default)
     .change_exposure_bool = 0, // does user want to change exposure
-    .begin_auto_focus = 1,     // auto-focus at beginning of camera's run
-    .focus_mode = 1,           // camera begins in auto-focusing mode by default
+    .begin_auto_focus = 0,     // auto-focus at beginning of camera's run
+    .focus_mode = 0,           // camera begins in auto-focusing mode by default
     .start_focus_pos = 0,      // starting focus for auto-focusing search
     .end_focus_pos = 0,        // ending focus position also set below
     .focus_step = 5,           // by default, check every fifth focus position
     .photos_per_focus = 3,     // take 3 pictures per focus position by default
     .flux = 0,                 // first auto-focus max flux found will set this
+    .solve_img = 0,            // Flips to 1 if star camera solves
 };
 
 char * birger_output, * buffer;

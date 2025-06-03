@@ -10,6 +10,9 @@
 #include "accelerometer.h"
 #include "ec_motor.h"
 #include "motor_control.h"
+#include "lazisusan.h"
+#include "coords.h"
+#include "lockpin.h"
 
 int exiting = 0;
 extern int shutting_down; // set this to one to shutdown star camera
@@ -23,6 +26,11 @@ extern ScanModeStruct scan_mode;
 extern int motor_index;
 extern int ready; //This determines if the motor setup has completed
 extern int comms_ok; //This determines if the motor setup was successful
+extern SkyCoord target;
+extern int lock_tel;
+extern int unlock_tel;
+extern int is_locked;
+extern int reset;
 // This executes the commands, we can simply add commands by adding if statements
 void exec_command(char* input) {
     char* arg;
@@ -69,8 +77,13 @@ void exec_command(char* input) {
                     mvprintw(2, 0, "Auto-focus stop: %d\n", all_camera_params.end_focus_pos);
                     mvprintw(3, 0, "Auto-focus step: %d\n", all_camera_params.focus_step);
                     mvprintw(4, 0, "Current focus position: %d\n", all_camera_params.focus_position);
+		    mvprintw(5, 0, "Exposure Time (msec): %f\n", all_camera_params.exposure_time);
                 } else {
-                    mvprintw(0, 0, "bvexcam mode: Solving  \b\b\n");
+                    if(all_camera_params.solve_img){
+                    	mvprintw(0, 0, "bvexcam mode: Solving  \b\b\n");
+		    }else{
+			mvprintw(0, 0, "bvexcam mode: Taking Images\n");
+		    }
                     mvprintw(1, 0, "Raw time (sec): %.1f\n", all_astro_params.rawtime);
                     mvprintw(2, 0, "Observed RA (deg): %lf\n", all_astro_params.ra);
                     mvprintw(3, 0, "Observed DEC (deg): %lf\n", all_astro_params.dec);
@@ -79,6 +92,7 @@ void exec_command(char* input) {
                     mvprintw(6, 0, "Pixel scale (arcsec/px): %lf\n", all_astro_params.ps);
                     mvprintw(7, 0, "Altitude (deg): %.15f\n", all_astro_params.alt);
                     mvprintw(8, 0, "Azimuth (deg): %.15f\n", all_astro_params.az);
+                    mvprintw(9, 0, "Exposure Time (msec): %f\n", all_camera_params.exposure_time);
                 }
                 input = getch();
             }
@@ -94,6 +108,18 @@ void exec_command(char* input) {
         } else {
             printf("bvexcam is not enabled.\n");
         }
+    } else if (strcmp(cmd, "bvexcam_solve_start")==0){
+	if (config.bvexcam.enabled){
+	   all_camera_params.solve_img = 1;
+	}else{
+	   printf("bvexcam is not enabled.\n");
+	}
+    } else if (strcmp(cmd, "bvexcam_solve_stop")==0){
+	if (config.bvexcam.enabled){
+	   all_camera_params.solve_img = 0;
+	}else{
+	   printf("bvexcam is not enabled. \n");
+	}
     } else if (strcmp(cmd, "accl_status") == 0) {
         if (config.accelerometer.enabled) {
             AccelerometerStatus status;
@@ -172,7 +198,7 @@ void exec_command(char* input) {
 	}else{
 	    printf("Motor is not enabled in configuration.\n");
 	}
-    } else if (strcmp(cmd,"motor_control")==0){
+    } else if (strcmp(cmd,"motor_control")==0 &&(config.motor.enabled || config.lazisusan.enabled)){
 	SCREEN* s;
 	char c =0;
 	char* input;
@@ -181,55 +207,79 @@ void exec_command(char* input) {
 	int motor_i = 0;
 	int inputlen = 0;
 	int ret = 0;
+	double az;
+	double el;
 
 	s=newterm(NULL,stdin,stdout);
 	noecho();
 	timeout(100);
 	input = (char*)malloc(sizeof(char));
-	mvprintw(20,0,"Command:_");
+	mvprintw(33,0,"Command:_");
 
 	while(!ret){
 		motor_i = GETREADINDEX(motor_index);
 
 		print_motor_data();
-		if((axes_mode.mode == POS) && !scan_mode.scanning){
-			mvprintw(11,0,"Commanded pointing(deg): %lf\n", axes_mode.dest);
-			mvprintw(12,0,"                                      ");
-			mvprintw(13,0,"                                      ");
-                        mvprintw(14,0,"                                      ");
-			mvprintw(15,0,"                                      ");
-			mvprintw(16,0,"                                      ");
-			mvprintw(17,0,"                                      ");
-                        mvprintw(18,0,"                                      ");
-		}else if((axes_mode.mode == VEL) && !scan_mode.scanning){
-			mvprintw(11,0,"Commanded velocity(dps): %lf\n", axes_mode.vel);
-			mvprintw(12,0,"                                      ");
-			mvprintw(13,0,"                                      ");
-			mvprintw(14,0,"                                      ");
+                print_motor_PID();
+		if(axes_mode.mode == POS){
+			mvprintw(14,0,"Commanded pointing(deg): %lf\n", axes_mode.dest);
+		}else if(axes_mode.mode == VEL){
+			mvprintw(14,0,"Commanded velocity(dps): %lf\n", axes_mode.vel);
+		}
+		if(scan_mode.scanning){
+			mvprintw(15,0,"Scan mode: %d\n", scan_mode.mode);
+			mvprintw(16,0,"Start elevation(deg): %lf\n", scan_mode.start_el);
+			mvprintw(17,0,"Stop elevation(deg): %lf\n", scan_mode.stop_el);
+			mvprintw(18,0,"Dither speed(dps): %lf\n", scan_mode.vel);
+			mvprintw(19,0,"Number of scans: %d\n", scan_mode.nscans);
+			mvprintw(20,0,"Current Scan: %d\n", scan_mode.scan+1);
+		}else{
 			mvprintw(15,0,"                                      ");
                         mvprintw(16,0,"                                      ");
-			mvprintw(17,0,"                                      ");
+                        mvprintw(17,0,"                                      ");
                         mvprintw(18,0,"                                      ");
-		}else if(scan_mode.scanning){
-			mvprintw(11,0,"Commanded velocity(dps): %lf\n", axes_mode.vel);
-			mvprintw(12,0,"Scan mode: %d\n", scan_mode.mode);
-			mvprintw(13,0,"Start elevation(deg): %lf\n", scan_mode.start_el);
-			mvprintw(14,0,"Stop elevation(deg): %lf\n", scan_mode.stop_el);
-			mvprintw(15,0,"Dither speed(dps): %lf\n", scan_mode.vel);
-			mvprintw(16,0,"Number of scans: %d\n", scan_mode.nscans);
-			mvprintw(17,0,"Current Scan: %d\n", scan_mode.scan+1);
+                        mvprintw(19,0,"                                      ");
+                        mvprintw(20,0,"                                      ");
+		}
+		if(config.lazisusan.enabled){
+			mvprintw(21,0,"Lazisusan angle (degrees): %lf\n",get_act_angle());
+			if (axes_mode.mode==POS){
+				mvprintw(22,0,"Lazisusan commanded angle (degrees):%lf\n",axes_mode.dest_az);
+			}else if (axes_mode.mode==VEL){
+				mvprintw(22,0,"Lazisusan commanded velocity (degrees):%lf\n",axes_mode.vel_az);
+			}
+			//print_direction();
+		}
+		if(config.bvexcam.enabled){
+			if (all_camera_params.focus_mode == 1) {
+                    		mvprintw(23, 0, "bvexcam mode: Autofocus\n");
+                    		mvprintw(24, 0, "Auto-focus start: %d\n", all_camera_params.start_focus_pos);
+                    		mvprintw(25, 0, "Auto-focus stop: %d\n", all_camera_params.end_focus_pos);
+                    		mvprintw(26, 0, "Auto-focus step: %d\n", all_camera_params.focus_step);
+                    		mvprintw(27, 0, "Current focus position: %d\n", all_camera_params.focus_position);
+                	} else {
+                    		mvprintw(23, 0, "bvexcam mode: Solving  \b\b\n");
+                    		mvprintw(24, 0, "Raw time (sec): %.1f\n", all_astro_params.rawtime);
+                    		mvprintw(25, 0, "Observed RA (deg): %lf\n", all_astro_params.ra);
+                    		mvprintw(26, 0, "Observed DEC (deg): %lf\n", all_astro_params.dec);
+                    		mvprintw(27, 0, "Field rotation (deg): %f\n", all_astro_params.fr);
+                    		mvprintw(28, 0, "Image rotation (deg): %lf\n", all_astro_params.ir);
+                    		mvprintw(29, 0, "Pixel scale (arcsec/px): %lf\n", all_astro_params.ps);
+                    		mvprintw(30, 0, "Altitude (deg): %.15f\n", all_astro_params.alt);
+                    		mvprintw(31, 0, "Azimuth (deg): %.15f\n", all_astro_params.az);
+                	}
 		}
 
 		c = getch();
 		if((c != '\n') && (c != EOF)){
-			mvprintw(20,8+inputlen,"%c_",c);
+			mvprintw(33,8+inputlen,"%c_",c);
 			input[inputlen++] = c;
 			input = (char*)realloc(input,inputlen+1);
 		}else if(c == '\n'){
 			input[inputlen] = '\0';
-			mvprintw(20,8,"_");
+			mvprintw(33,8,"_");
 			for(int i = 1; i<inputlen+1; i++){
-				mvprintw(20,8+i," ");
+				mvprintw(33,8+i," ");
 			}
 
 			cmd = (char*) malloc(strlen(input) * sizeof(char));
@@ -240,16 +290,50 @@ void exec_command(char* input) {
 			if(strcmp(cmd,"exit") == 0){
 				ret = 1;
 			}else if(strcmp(cmd,"gotoenc") == 0){
-				go_to_enc(atof(arg));
+				scan_mode.scanning = 0;
+				if(config.lazisusan.enabled && config.motor.enabled){
+					sscanf(arg, "%lf,%lf",&az,&el);
+					go_to_enc(el);
+					move_to(az);
+				}else if(!config.lazisusan.enabled){
+					go_to_enc(atof(arg));
+				}else if(!config.motor.enabled){
+					move_to(atof(arg));
+				}
 			}else if(strcmp(cmd,"encdither") == 0){
 				sscanf(arg, "%lf,%lf,%lf,%d",&scan_mode.start_el, &scan_mode.stop_el, &scan_mode.vel, &scan_mode.nscans);
 				scan_mode.mode = ENC_DITHER;
 				scan_mode.scanning = 1;
+			}else if(strcmp(cmd,"enctrack") == 0){
+				sscanf(arg,"%lf,%lf",&target.lon,&target.lat);
+				scan_mode.mode = ENC_TRACK;
+				scan_mode.scanning = 1;
+			}else if(strcmp(cmd,"enconoff")==0){
+				sscanf(arg,"%lf,%lf,%lf,%lf",&target.lon,&target.lat,&scan_mode.offset,&scan_mode.time);
+				scan_mode.mode = EL_ONOFF;
+				scan_mode.scanning = 1;
 			}else if(strcmp(cmd,"stop") == 0){
 				scan_mode.scanning = 0;
+				scan_mode.nscans = 0;
+				scan_mode.scan = 0;
+				scan_mode.turnaround = 1;
+				scan_mode.time = 0;
+				scan_mode.on_position = 0;
+				scan_mode.offset = 0;
 				axes_mode.mode = VEL;
 				axes_mode.vel = 0.0;
+				axes_mode.vel_az = 0.0;
 				axes_mode.on_target = 0;
+			}else if(strcmp(cmd,"set_offset") == 0){
+				if(config.lazisusan.enabled && config.motor.enabled){
+					sscanf(arg, "%lf,%lf",&az,&el);
+					set_offset(az);
+					set_el_offset(el);
+				}else if(!config.lazisusan.enabled){
+					set_el_offset(atof(arg));
+				}else if(!config.motor.enabled){
+					set_offset(atof(arg));
+				}
 			}
 
 			input = (char*)malloc(sizeof(char));
@@ -258,8 +342,52 @@ void exec_command(char* input) {
 	}
 	endwin();
 	delscreen(s);
+    }else if(strcmp(cmd,"lock_tel")==0 && config.lockpin.enabled){
+	if(config.lockpin.enabled&& !is_locked){
+		lock_tel = 1;
+		printf("Locking telescope...\n");
+		while(1){
+			if(is_locked){
+				printf("Telescope locked\n");
+				break;
+			}
+		}
+	}else if(config.lockpin.enabled && is_locked){
+		printf("Telescope already locked\n");
+	}else{
+		printf("Lockpin is not enabled\n");
+	}
 
-    } else {
+    }else if(strcmp(cmd,"unlock_tel")==0 && config.lockpin.enabled){
+	if(config.lockpin.enabled&& is_locked){
+		unlock_tel = 1;
+		printf("Unlocking telescope...\n");
+		while(1){
+			if(!is_locked){
+				printf("Telescope unlocked\n");
+				break;
+			}
+		}
+	}else if(config.lockpin.enabled && !is_locked){
+		printf("Telescope already unlocked\n");
+	}else{
+		printf("Lockpin is not enabled\n");
+	} 
+    }else if (strcmp(cmd,"reset_lock")==0){
+	if(config.lockpin.enabled){
+		reset = 1;
+		printf("Resetting lockpin...\n");
+		while(1){
+			if(!reset){
+				printf("Lockpin reset");
+				break;
+			}
+		}
+	}
+
+    }
+
+    else {
         printf("%s: Unknown command\n", cmd);
     }
 

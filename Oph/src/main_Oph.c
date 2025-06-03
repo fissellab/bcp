@@ -13,6 +13,8 @@
 #include "accelerometer.h"
 #include "ec_motor.h"
 #include "motor_control.h"
+#include "lazisusan.h"
+#include "lockpin.h"
 
 // This is the main struct that stores all the config parameters
 struct conf_params config;
@@ -21,9 +23,16 @@ extern pthread_t motors;//Motor pthread
 extern int sockfd; // Star Camera Socket port
 extern int * astro_ptr; // Pointer for returning from astrometry thread
 extern FILE* motor_log; //motor log
+extern FILE* ls_log;
 extern AxesModeStruct axes_mode;//Pointing mode
 extern int ready;//This flag keeps track of the motor thread being ready or not
 extern int stop;//This flag is the queue to shut down the motor
+extern int fd_az;
+extern int az_is_ready;
+extern int motor_off;
+extern int exit_lock;
+pthread_t ls_thread;
+pthread_t lock_thread;
 
 int main(int argc, char* argv[]) {
     printf("This is BCP on Ophiuchus\n");
@@ -107,19 +116,56 @@ int main(int argc, char* argv[]) {
     	motor_log = fopen(config.motor.logfile,"w");
 
         if(motor_log == NULL){
-		printf("Error opening motor log %s: No such file or directory", config.motor.logfile);
+		printf("Error opening motor log %s: No such file or directory\n", config.motor.logfile);
                 write_to_log(main_log, "main_Oph.c", "main", "Error opening motor log: No such file or directory");
 	}else{
 		printf("Starting motors\n");
 		write_to_log(main_log,"main_Oph.c","main","Starting motors");
 		if(start_motor()){
-			printf("Motor startup successful");
+			printf("Motor startup successful\n");
 			write_to_log(main_log,"main_Oph.c","main","Motor startup successful");
 		}else{
-			printf("Error starting up motor see motor log");
+			printf("Error starting up motor see motor log\n");
 			write_to_log(main_log,"main_Oph.c","main","Error starting up motor see motor log");
 		}
 
+	}
+    }
+    if (config.lazisusan.enabled){
+	printf("Starting lazisusan log.\n");
+	write_to_log(main_log,"main_Oph.c","main","Starting motor log");
+	ls_log = fopen(config.lazisusan.logfile,"w");
+
+	if(ls_log == NULL){
+		printf("Error opening lazisusan log %s: No such file or directory", config.lazisusan.logfile);
+		write_to_log(main_log, "main_Oph.c", "main", "Error opening lazisusan log: No such file or directory");
+	}else{
+		printf("Starting lazisusan\n");
+		pthread_create(&ls_thread,NULL,do_az_motor,NULL);
+		write_to_log(main_log,"main_Oph.c","main","Starting lazisusan");
+		while(!az_is_ready){
+			if(fd_az <0){
+				printf("Error starting lazisusan\n");
+				write_to_log(main_log,"main_Oph.c","main","Error starting lazisusan");
+				break;
+			}
+		}
+		if(az_is_ready){
+			printf("Successfully started lazisusan\n");
+			write_to_log(main_log,"main_Oph.c","main","Successfully started lazisusan");
+		}
+	}
+    }
+    if(config.lockpin.enabled){
+	printf("Starting lockpin...");
+	write_to_log(main_log,"main_Oph.c","main","Starting lockpin");
+	pthread_create(&lock_thread,NULL,do_lockpin,NULL);
+	while(!lockpin_ready){
+		if(lockpin_ready){
+			printf("Successfully started lockpin\n");
+			write_to_log(main_log,"main_Oph.c","main","Successfully started lockpin");
+			break;
+		}
 	}
     }
     printf("\n");
@@ -158,14 +204,33 @@ int main(int argc, char* argv[]) {
             pthread_join(motors,NULL);
             printf("Motor shutdown complete\n");
 	    write_to_log(main_log,"main_Oph.c","main","Motor shutdown complete");
+	    fclose(motor_log);
         }else{
             printf("Motor already shutdown \n");
             write_to_log(main_log,"main_Oph.c","main","Motor already shutdown\n");
 	}
     }
 
+    if (config.lazisusan.enabled){
+	printf("Shutting down lazisusan\n");
+	write_to_log(main_log,"main_Oph.c","main","Shutting down lazisusan");
+	motor_off = 1;
+	pthread_join(ls_thread,NULL);
+	printf("Lazisusan shutdown complete\n");
+	write_to_log(main_log,"main_Oph.c","main","Lazisusan shutdown complete");
+	fclose(ls_log);
+    }
+
+    if (config.lockpin.enabled){
+	printf("Shutting down lockpin\n");
+	write_to_log(main_log,"Main_Oph.c","main","Shutting down lockpin");
+	exit_lock = 1;
+	pthread_join(lock_thread,NULL);
+	printf("Lockpin shutdown complete\n");
+	write_to_log(main_log,"main_Oph.c","main","Lockpin shutdown complete");
+    }
+
     fclose(cmd_log);
     fclose(main_log);
-    fclose(motor_log);
     return 0;
 }

@@ -10,6 +10,10 @@
 #define POS 1
 #define NONE 0
 #define ENC_DITHER 1
+#define ENC_TRACK 2
+#define EL_ONOFF 3
+
+#include "coords.h"
 
 typedef struct{
 
@@ -17,6 +21,8 @@ typedef struct{
 	int dir;
 	double dest;
 	double vel;
+        double vel_az;
+	double dest_az;
 	int on_target; 
 
 }AxesModeStruct;
@@ -31,16 +37,21 @@ typedef struct{
 	int nscans;
 	int turnaround;
 	int scanning;
+	double offset;
+	double time;
+	int on_position;
 }ScanModeStruct;
 
 void command_motor(void);
 void go_to_enc(double angle);
+void set_el_offset(double cal_angle);
 int start_motor(void);
+void print_motor_PID();
 
 extern AxesModeStruct axes_mode;
 extern ScanModeStruct scan_mode;
 extern pthread_t motors;
-
+extern SkyCoord target;
 
 
 
