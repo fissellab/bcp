@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+// next line will give squiggly error because idk how to get linter to know
+// nanopb definitions
+import "nanopb.proto";
+import "primitive.proto";
+
+message Sample
+{
+    string metric_id = 1 [ (nanopb).max_size = 64 ];
+    float timestamp = 2; // s since last epoch
+    oneof data
+    {
+        primitive.Primitive primitive = 3;
+        File file = 4;
+    }
+}
+
+message File
+{
+    string filepath = 1 [ (nanopb).max_size = 128 ];
+    string extension = 2 [ (nanopb).max_size = 16 ];
+}

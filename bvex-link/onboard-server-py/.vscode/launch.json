@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run server (debug)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "run",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "setup-venv",
+            "python": "${workspaceFolder}/venv/bin/python"
+        },
+        {
+            "name": "Debug Unit Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "setup-venv",
+            "python": "${workspaceFolder}/venv/bin/python"
+        }
+    ]
+}

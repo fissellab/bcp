@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Define the documentation output directory
+DOCS_DIR="$SCRIPT_DIR/docs/html"
+
+# Check if dot is installed
+if ! command -v dot &> /dev/null; then
+    echo "Error: dot (Graphviz) is not installed. Please install it and try again."
+    exit 1
+fi
+
+# Remove the existing documentation directory if it exists
+if [ -d "$DOCS_DIR" ]; then
+    rm -rf "$DOCS_DIR"
+fi
+
+# Run Doxygen
+doxygen
+
+# Open the generated index.html file in the default web browser
+xdg-open "$DOCS_DIR/index.html"

@@ -1,0 +1,9 @@
+python-dotenv
+matplotlib
+pillow
+protobuf
+click
+click_shell
+-e file:../codec --config-settings editable_mode=strict
+netCDF4
+aiofiles

@@ -1,0 +1,3 @@
+pytest
+pydantic
+-e file:. --config-settings editable_mode=strict
