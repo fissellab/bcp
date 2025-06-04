@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_CXX_FLAGS_INIT": "@${sourceDir}/compiler-flags",
+        "DEBUG_SAMPLE_RECEPTION": "ON",
+        "DEBUG_REQUEST_RECEPTION": "ON",
+        "REQUEST_SERVER_PORT": "\"8080\""
+      }
+    }
+  ]
+}

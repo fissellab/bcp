@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// next line will give squiggly error because idk how to get linter to know nanopb
+// definitions
+import "nanopb.proto";
+import "primitive.proto";
+
+message Response
+{
+    string metric_id = 1 [ (nanopb).max_size = 64 ];
+    primitive.Primitive primitive = 2;
+}

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+message PrimitiveChannels {
+    oneof value {
+        Int32Array int_channels = 1;
+        FloatArray float_channels = 2;
+        DoubleArray double_channels = 3;
+    }
+}
+
+message Int32Array {
+    repeated int32 values = 1;
+}
+
+message FloatArray {
+    repeated float values = 1;
+}
+
+message DoubleArray {
+    repeated double values = 1;
+}

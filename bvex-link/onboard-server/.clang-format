@@ -1,0 +1,15 @@
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
+ColumnLimit: 80
+PenaltyBreakAssignment: 2
+PenaltyReturnTypeOnItsOwnLine: 200
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+SpaceBeforeParens: Never # or SBPO_ControlStatements
+
+BreakBeforeBraces: Linux

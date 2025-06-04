@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "nanopb.proto";
+
+message Ack {
+    uint32 sample_id = 1;
+    string metric_id = 2 [ (nanopb).max_length = 16 ];
+    bytes data = 3;
+}
+
+message SetMaxBps {
+    uint32 max_bps = 1;
+}
+
+message TelecommandFrame {
+    oneof command {
+        Ack ack = 1;
+    }
+}

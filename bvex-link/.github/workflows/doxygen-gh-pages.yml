@@ -1,0 +1,49 @@
+# https://www.thisdot.co/blog/deploying-multiple-apps-from-a-monorepo-to-github-pages
+# https://github.com/DenverCoder1/doxygen-github-pages-action
+name: Doxygen GitHub Pages Deploy Action
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: "recursive"
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y wget graphviz
+      shell: bash
+
+    - name: Install Doxygen
+      run: |
+        version=1.12.0
+        transformed_version=$(echo "${version}" | tr '.' '_')
+        wget https://github.com/doxygen/doxygen/releases/download/Release_${transformed_version}/doxygen-${version}.linux.bin.tar.gz
+        tar -xzf doxygen-${version}.linux.bin.tar.gz
+        sudo mv doxygen-${version}/bin/doxygen /usr/local/bin/doxygen
+      shell: bash
+
+    - name: Enter bcp-fetch-client directory and generate Doxygen
+      run: cd bcp-fetch-client && doxygen
+      shell: bash
+      
+    - name: Create .nojekyll (ensures pages with underscores work on gh pages)
+      run: touch bcp-fetch-client/docs/html/.nojekyll
+      shell: bash
+
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        folder: bcp-fetch-client/docs/html

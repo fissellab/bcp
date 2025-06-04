@@ -1,0 +1,7 @@
+{
+  "dependencies": [
+    "cjson",
+    "hiredis",
+    "gtest"
+  ]
+}

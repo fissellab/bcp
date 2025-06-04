@@ -1,0 +1,1 @@
+-Wall -Wextra -Wpedantic -Wfloat-equal -Wundef -Wpointer-arith -Wcast-align -Wstrict-overflow=1 -Wwrite-strings -Wcast-qual -Wswitch-default -Wswitch-enum -Wconversion -Wunreachable-code -Wuninitialized -Winit-self -fsanitize=address -fsanitize=undefined -Werror

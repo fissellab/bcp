@@ -1,0 +1,16 @@
+# CMake build files
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+main
+build/
+
+.vscode/
+
+docs/
+
+vcpkg_installed/
+
+# For temp/temp-env/ used in nanopb header generation
+temp/

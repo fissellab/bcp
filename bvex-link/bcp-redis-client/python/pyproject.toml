@@ -1,0 +1,26 @@
+[project]
+name = "bcp-redis-client"
+version = "0.1.0"
+description = "A Redis client for BCP"
+authors = [
+    { name = "Oliver", email = "oliver@example.com" },
+]
+dependencies = [
+    "redis>=5.0.0",
+    "pytest>=7.0.0",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = { text = "MIT" }
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["bcp_redis_client*"]
+
+[tool.pytest.ini_options]
+python_files = ["test_*.py", "*_test.py"]
+testpaths = ["tests"]

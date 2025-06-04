@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "nanopb.proto";
+
+message SampleFrame {
+  string metric_id = 1 [ (nanopb).max_length = 16 ];
+  uint32 sample_id = 2;
+  float timestamp = 3; // s since last epoch
+  string data_type = 4
+      [ (nanopb).max_length = 16 ]; // "file" or "primitive"
+  Segment segment = 5;
+}
+
+message Segment {
+  uint32 num_segments = 1;
+  uint32 sequence_num = 2;
+  bytes data = 3;
+}
