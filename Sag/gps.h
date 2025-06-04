@@ -44,6 +44,11 @@ typedef struct {
     int baud_rate;
     char data_path[256];
     int file_rotation_interval;
+    
+    // Simple telemetry configuration
+    bool telemetry_enabled;
+    char telemetry_host[64];
+    char telemetry_port[8];
 } gps_config_t;
 
 // Initialize the GPS system

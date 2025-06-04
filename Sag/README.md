@@ -1,127 +1,93 @@
-# BCP Saggitarius
+# BCP Saggitarius with GPS Telemetry
 
-BCP (Basic Control Program) Saggitarius is a data acquisition and control system designed for radio astronomy applications. It integrates an RFSoC spectrometer and GPS logging capabilities for precise timing and location data collection.
+BCP (Basic Control Program) Saggitarius with integrated bvex-link GPS telemetry support.
 
-## Features
+## What's New: GPS Telemetry Integration
 
-- RFSoC-based spectrometer control and data acquisition
-- GPS logging with automatic file rotation
-- Command-line interface for system control
-- Configurable parameters via config file
-- Automatic data saving with customizable intervals
-- Multi-threaded architecture for concurrent operations
+The GPS system now automatically sends telemetry data to a bvex-link server:
+
+- **gps_lat**, **gps_lon**, **gps_alt** - Position data
+- **gps_heading** - Compass heading 
+- **gps_hour**, **gps_minute**, **gps_second** - GPS time
+- **gps_valid_pos** - Position validity flag
+
+## Quick Start
+
+1. **Start bvex-link server**:
+   ```bash
+   cd /home/mayukh/bvex-link
+   ./start-bvex-cpp.sh
+   ```
+
+2. **Build and run BCP**:
+   ```bash
+   ./build_and_run.sh
+   sudo ./start.sh
+   ```
+
+## Telemetry Configuration
+
+Edit `bcp_Sag.config` to configure GPS telemetry:
+
+```
+gps:
+{
+  enabled = 1;
+  port = "/dev/ttyGPS";
+  baud_rate = 19200;
+  data_save_path = "/media/saggitarius/T7/GPS_data";
+  file_rotation_interval = 14400;
+  
+  # Telemetry settings
+  telemetry_enabled = 1;        # 1 = enabled, 0 = disabled
+  telemetry_host = "localhost"; # bvex-link server host
+  telemetry_port = "3000";      # bvex-link server port
+};
+```
+
+## Testing
+
+Run the test script to verify everything is working:
+
+```bash
+./test_telemetry.sh
+```
 
 ## System Requirements
 
 - Linux-based operating system
 - GCC compiler
+- CMake 3.24+
+- vcpkg (with $VCPKG_ROOT set)
 - libconfig library
-- Python 3.x
-- CASPER FPGA tools (casperfpga)
-- NumPy
-- Appropriate permissions for GPS device access
+- libjson-c-dev
+- bvex-link built and available
+- GPS device permissions
 
-## Directory Structure
+## Architecture
 
 ```
-.
-├── bcp_Sag.config     # Configuration file
-├── cli_Sag.c          # Command-line interface implementation
-├── cli_Sag.h          # CLI header file
-├── file_io_Sag.c      # File I/O operations
-├── file_io_Sag.h      # File I/O header file
-├── gps.c              # GPS functionality implementation
-├── gps.h              # GPS header file
-├── main_Sag.c         # Main program entry point
-├── rfsoc_spec.py      # RFSoC spectrometer control script
-└── run_bcp_Sag.sh     # Build and run script
+GPS Hardware → BCP GPS Module → bvex-link Client → bvex-link Server → Target System
 ```
 
-## Installation
+When GPS data is received, it's automatically sent via UDP to the bvex-link server, which forwards it to the configured target system for telemetry monitoring.
 
-1. Clone the repository:
-```bash
-git clone https://github.com/fissellab/bcp
-```
+## Building
 
-2. Install dependencies:
-```bash
-sudo apt-get install gcc libconfig-dev python3-pip
-pip3 install numpy casperfpga
-```
-
-[Install Cmake >3.24](https://apt.kitware.com/)
-
-[Install vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-bash)
-
-3. Set up device permissions:
-```bash
-sudo chmod 666 /dev/ttyGPS
-```
-
-## Configuration
-
-Edit `bcp_Sag.config` to set your system parameters:
-
-- RFSoC spectrometer settings (IP address, mode, data paths)
-- GPS settings (port, baud rate, save intervals)
-- Log file locations
-- Data save paths
-
-## Building and Running
-
-Use the provided shell script to build and run the program:
+The system uses CMake and includes bvex-link as a dependency:
 
 ```bash
-cd bcp/Sag
-chmod +x start.sh
-./start.sh
+./build_and_run.sh  # Builds everything including bvex-link integration
+sudo ./start.sh     # Runs with GPS device permissions
 ```
 
 ## Command Line Interface
 
-The system provides the following commands:
-
+Available commands in the BCP application:
 - `start spec` - Start the spectrometer
-- `stop spec` - Stop the spectrometer
+- `stop spec` - Stop the spectrometer  
 - `start gps` - Start GPS logging
 - `stop gps` - Stop GPS logging
-- `print <message>` - Print a message to console
+- `gps status` - Show GPS status
+- `print <msg>` - Print a message
 - `exit` - Exit the program
-
-## Data Output
-
-### Spectrometer Data
-- Spectrum data files: `YYYY-MM-DD_HH-MM-SS_spectrum_data.txt`
-- Integrated power data: `YYYY-MM-DD_HH-MM-SS_integrated_power_data.txt`
-
-### GPS Data
-- Binary GPS data files: `YYYYMMDD_HHMMSS_GPS_data/gps_log_YYYYMMDD_HHMMSS.bin`
-
-## Logging
-
-The system maintains two types of logs:
-- Main system log: `/home/saggitarius/flight_code_dev/log/main_sag.log`
-- Command log: `/home/saggitarius/flight_code_dev/log/cmds_sag.log`
-
-## Development
-
-### Adding New Features
-
-1. Modify the relevant source files
-2. Update the configuration file if needed
-3. Update the CLI commands in `cli_Sag.c` if required
-
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-
-## Acknowledgments
-
-- CASPER (Collaboration for Astronomy Signal Processing and Electronics Research)
-
-## Support
-
-For support, please open an issue in the GitHub repository or contact the maintainers directly.

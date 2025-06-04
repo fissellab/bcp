@@ -25,6 +25,7 @@ add_executable(
 target_include_directories(main PRIVATE 
     .
     ${JSON_C_INCLUDE_DIRS}
+    ../bvex-link/bcp-fetch-client/include
     # /usr/include/glib-2.0
     # /usr/lib/x86_64-linux-gnu/glib-2.0/include
 )
