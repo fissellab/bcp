@@ -14,7 +14,7 @@ fi
 
 # Build and start C++ onboard server
 echo "Building C++ onboard server (this may take a few minutes first time)..."
-cd ~/bvex-link/onboard-server
+cd "$(dirname "$0")/onboard-server"
 
 # Check if already built
 if [ ! -d "build" ] || [ ! -f "build/main" ]; then

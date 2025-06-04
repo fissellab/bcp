@@ -8,6 +8,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+// strlcpy implementation for Linux compatibility
+#ifndef __has_include
+    #define __has_include(x) 0
+#endif
+
+#if !__has_include(<sys/strlcpy.h>) && !defined(__OpenBSD__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__) && !defined(__APPLE__)
+static size_t strlcpy(char *dst, const char *src, size_t dstsize) {
+    size_t srclen = strlen(src);
+    if (dstsize > 0) {
+        size_t copylen = (srclen < dstsize - 1) ? srclen : dstsize - 1;
+        memcpy(dst, src, copylen);
+        dst[copylen] = '\0';
+    }
+    return srclen;
+}
+#endif
+
 typedef struct {
     int socket_fd;
     Sample sample;
