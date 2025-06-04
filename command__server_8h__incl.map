@@ -1,0 +1,9 @@
+<map id="include/command_server.h" name="include/command_server.h">
+<area shape="rect" id="Node000001" title="A TCP server implementation for handling command&#45;based communication." alt="" coords="69,5,267,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,79,101,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,33,85,74,82,69,148,28"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="126,79,210,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="171,31,171,65,165,65,165,31"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="234,79,337,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="188,28,256,69,253,74,185,33"/>
+</map>
