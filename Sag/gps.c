@@ -797,7 +797,20 @@ static void *udp_server_thread_func(void *arg) {
                 sendto(udp_server_socket, response, strlen(response), 0,
                       (const struct sockaddr *)&client_addr, client_len);
                 
-                snprintf(log_msg, sizeof(log_msg), "Sent GPS data to client: %.100s", response);  // Limit response length in log
+                snprintf(log_msg, sizeof(log_msg), "Sent GPS data to client: %.100s", response);
+                log_udp_message(log_msg);
+            } else if (strncmp(buffer, "gps_lat", 7) == 0 || 
+                      strncmp(buffer, "gps_lon", 7) == 0 || 
+                      strncmp(buffer, "gps_alt", 7) == 0 || 
+                      strncmp(buffer, "gps_head", 8) == 0) {
+                // Handle individual parameter requests (client compatibility)
+                format_gps_response(response, gps_udp_buffer_size);
+                
+                // Send response
+                sendto(udp_server_socket, response, strlen(response), 0,
+                      (const struct sockaddr *)&client_addr, client_len);
+                
+                snprintf(log_msg, sizeof(log_msg), "Sent GPS data for parameter request '%.20s': %.100s", buffer, response);
                 log_udp_message(log_msg);
             } else {
                 // Unknown request
@@ -805,7 +818,7 @@ static void *udp_server_thread_func(void *arg) {
                 sendto(udp_server_socket, error_msg, strlen(error_msg), 0,
                       (const struct sockaddr *)&client_addr, client_len);
                 
-                snprintf(log_msg, sizeof(log_msg), "Invalid request from client: %.100s", buffer);  // Limit buffer length in log
+                snprintf(log_msg, sizeof(log_msg), "Invalid request from client: %.100s", buffer);
                 log_udp_message(log_msg);
             }
         } else {
@@ -863,8 +876,8 @@ static void log_udp_message(const char *message) {
         fflush(udp_log_file);
     }
     
-    // Also print to stderr for immediate feedback
-    fprintf(stderr, "GPS UDP: %s\n", message);
+    // Removed stderr logging to prevent CLI spam
+    // Only log to file now
 }
 
 // Public UDP Server API functions

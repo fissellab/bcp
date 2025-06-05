@@ -49,6 +49,14 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
             printf("Stopped spec script\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped spec script");
         }
+        
+        // Stop GPS UDP server first if running
+        if (gps_is_udp_server_running()) {
+            gps_stop_udp_server();
+            printf("Stopped GPS UDP server\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped GPS UDP server");
+        }
+        
         if (gps_is_logging()) {
             gps_stop_logging();
             printf("Stopped GPS logging\n");
