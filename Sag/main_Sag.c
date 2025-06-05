@@ -135,15 +135,19 @@ int main(int argc, char* argv[]) {
               config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
 
     // Cleanup
-    if (config.gps.enabled && gps_is_logging()) {
-        // Stop GPS UDP server first
+    if (config.gps.enabled) {
+        // Stop GPS UDP server if running
         if (gps_is_udp_server_running()) {
             gps_stop_udp_server();
+            printf("GPS UDP server stopped during cleanup\n");
             write_to_log(main_log, "main_Sag.c", "main", "GPS UDP server stopped during cleanup");
         }
         
-        gps_stop_logging();
-        write_to_log(main_log, "main_Sag.c", "main", "GPS logging stopped during cleanup");
+        // Stop GPS logging if running
+        if (gps_is_logging()) {
+            gps_stop_logging();
+            write_to_log(main_log, "main_Sag.c", "main", "GPS logging stopped during cleanup");
+        }
     }
 
     fclose(cmd_log);
