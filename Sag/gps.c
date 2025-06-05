@@ -744,6 +744,14 @@ static void *udp_server_thread_func(void *arg) {
         return NULL;
     }
     
+    // Set socket timeout to prevent hanging during shutdown
+    struct timeval timeout;
+    timeout.tv_sec = 1;  // 1 second timeout
+    timeout.tv_usec = 0;
+    if (setsockopt(udp_server_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+        log_udp_message("Warning: Could not set socket timeout");
+    }
+    
     // Setup server address
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
@@ -771,10 +779,12 @@ static void *udp_server_thread_func(void *arg) {
         
         if (n < 0) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                usleep(10000); // 10ms
+                // Timeout occurred - check if we should still be running
                 continue;
             }
-            log_udp_message("Error receiving UDP data");
+            if (udp_server_running) {
+                log_udp_message("Error receiving UDP data");
+            }
             break;
         }
         
@@ -916,6 +926,7 @@ void gps_stop_udp_server(void) {
         return;
     }
     
+    log_udp_message("GPS UDP server shutdown initiated");
     udp_server_running = false;
     
     // Close socket to unblock recvfrom
@@ -924,8 +935,26 @@ void gps_stop_udp_server(void) {
         udp_server_socket = -1;
     }
     
-    // Wait for thread to finish
+    // Give the thread a moment to notice the socket closure
+    usleep(100000); // 100ms
+    
+    // Try to join the thread with a reasonable timeout approach
+    // Since pthread_join doesn't have a timeout, we'll use pthread_tryjoin_np if available
+    #ifdef _GNU_SOURCE
+    struct timespec timeout_spec;
+    timeout_spec.tv_sec = 2;  // 2 second timeout
+    timeout_spec.tv_nsec = 0;
+    
+    int join_result = pthread_timedjoin_np(udp_server_thread, NULL, &timeout_spec);
+    if (join_result == ETIMEDOUT) {
+        log_udp_message("GPS UDP server thread join timed out - proceeding anyway");
+    } else if (join_result != 0) {
+        log_udp_message("GPS UDP server thread join failed - proceeding anyway");
+    }
+    #else
+    // Fallback for non-GNU systems - just join normally
     pthread_join(udp_server_thread, NULL);
+    #endif
     
     if (udp_log_file != NULL) {
         log_udp_message("GPS UDP server stopped");
