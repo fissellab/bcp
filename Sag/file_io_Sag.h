@@ -29,11 +29,6 @@ typedef struct conf_params {
         int baud_rate;
         char data_save_path[256];
         int file_rotation_interval;
-        
-        // Telemetry configuration
-        int telemetry_enabled;
-        char telemetry_host[64];
-        char telemetry_port[8];
     } gps;
 } conf_params_t;
 

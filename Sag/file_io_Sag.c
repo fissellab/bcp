@@ -86,18 +86,5 @@ void read_in_config(const char* filepath) {
 
     config_lookup_int(&cfg, "gps.file_rotation_interval", &config.gps.file_rotation_interval);
 
-    // Read GPS telemetry configuration
-    config_lookup_int(&cfg, "gps.telemetry_enabled", &config.gps.telemetry_enabled);
-
-    if (config_lookup_string(&cfg, "gps.telemetry_host", &tmpstr)) {
-        strncpy(config.gps.telemetry_host, tmpstr, sizeof(config.gps.telemetry_host) - 1);
-        config.gps.telemetry_host[sizeof(config.gps.telemetry_host) - 1] = '\0';
-    }
-
-    if (config_lookup_string(&cfg, "gps.telemetry_port", &tmpstr)) {
-        strncpy(config.gps.telemetry_port, tmpstr, sizeof(config.gps.telemetry_port) - 1);
-        config.gps.telemetry_port[sizeof(config.gps.telemetry_port) - 1] = '\0';
-    }
-
     config_destroy(&cfg);
 }
