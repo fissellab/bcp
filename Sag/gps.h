@@ -9,6 +9,7 @@
 #define GPS_PORT "/dev/ttyGPS"
 #define GPS_DATA_PATH "/media/saggitarius/T7/GPS_data"
 #define GPS_FILE_ROTATION_INTERVAL 600 // 10 minutes in seconds
+#define MAX_UDP_CLIENTS 10  // Maximum number of UDP clients supported
 
 // GPS data structure to hold the parsed information
 typedef struct {
@@ -48,7 +49,8 @@ typedef struct {
     // UDP server configuration
     int udp_server_enabled;
     int udp_server_port;
-    char udp_client_ip[16];
+    char udp_client_ips[MAX_UDP_CLIENTS][16];  // Array of client IPs
+    int udp_client_count;                      // Number of authorized clients
     int udp_buffer_size;
 } gps_config_t;
 

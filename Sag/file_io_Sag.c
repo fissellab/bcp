@@ -90,9 +90,24 @@ void read_in_config(const char* filepath) {
     config_lookup_int(&cfg, "gps.udp_server_enabled", &config.gps.udp_server_enabled);
     config_lookup_int(&cfg, "gps.udp_server_port", &config.gps.udp_server_port);
     
-    if (config_lookup_string(&cfg, "gps.udp_client_ip", &tmpstr)) {
-        strncpy(config.gps.udp_client_ip, tmpstr, sizeof(config.gps.udp_client_ip) - 1);
-        config.gps.udp_client_ip[sizeof(config.gps.udp_client_ip) - 1] = '\0';
+    // Read UDP client IPs array
+    config_setting_t *client_ips_array = config_lookup(&cfg, "gps.udp_client_ips");
+    if (client_ips_array != NULL && config_setting_is_array(client_ips_array)) {
+        int count = config_setting_length(client_ips_array);
+        if (count > MAX_UDP_CLIENTS) {
+            count = MAX_UDP_CLIENTS;  // Limit to max supported clients
+        }
+        config.gps.udp_client_count = count;
+        
+        for (int i = 0; i < count; i++) {
+            const char *ip = config_setting_get_string_elem(client_ips_array, i);
+            if (ip != NULL) {
+                strncpy(config.gps.udp_client_ips[i], ip, 15);
+                config.gps.udp_client_ips[i][15] = '\0';
+            }
+        }
+    } else {
+        config.gps.udp_client_count = 0;
     }
     
     config_lookup_int(&cfg, "gps.udp_buffer_size", &config.gps.udp_buffer_size);
