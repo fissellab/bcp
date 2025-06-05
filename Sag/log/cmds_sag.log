@@ -1,5 +1,0 @@
-Mon Jun  2 17:31:09 2025 : cli_Sag.c : cmdprompt : gps status
-Mon Jun  2 17:31:09 2025 : cli_Sag.c : exec_command : Started GPS status display
-Mon Jun  2 17:31:12 2025 : cli_Sag.c : exec_command : Stopped GPS status display
-Mon Jun  2 17:31:15 2025 : cli_Sag.c : cmdprompt : exit
-Mon Jun  2 17:31:15 2025 : cli_Sag.c : exec_command : Stopped GPS logging
