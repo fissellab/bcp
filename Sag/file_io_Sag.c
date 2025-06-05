@@ -86,5 +86,16 @@ void read_in_config(const char* filepath) {
 
     config_lookup_int(&cfg, "gps.file_rotation_interval", &config.gps.file_rotation_interval);
 
+    // Read UDP server settings
+    config_lookup_int(&cfg, "gps.udp_server_enabled", &config.gps.udp_server_enabled);
+    config_lookup_int(&cfg, "gps.udp_server_port", &config.gps.udp_server_port);
+    
+    if (config_lookup_string(&cfg, "gps.udp_client_ip", &tmpstr)) {
+        strncpy(config.gps.udp_client_ip, tmpstr, sizeof(config.gps.udp_client_ip) - 1);
+        config.gps.udp_client_ip[sizeof(config.gps.udp_client_ip) - 1] = '\0';
+    }
+    
+    config_lookup_int(&cfg, "gps.udp_buffer_size", &config.gps.udp_buffer_size);
+
     config_destroy(&cfg);
 }

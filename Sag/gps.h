@@ -44,6 +44,12 @@ typedef struct {
     int baud_rate;
     char data_path[256];
     int file_rotation_interval;
+    
+    // UDP server configuration
+    int udp_server_enabled;
+    int udp_server_port;
+    char udp_client_ip[16];
+    int udp_buffer_size;
 } gps_config_t;
 
 // Initialize the GPS system
@@ -69,5 +75,14 @@ bool gps_is_status_active(void);
 
 // Stop status display
 void gps_stop_status_display(void);
+
+// Start GPS UDP server for network clients
+bool gps_start_udp_server(void);
+
+// Stop GPS UDP server
+void gps_stop_udp_server(void);
+
+// Check if UDP server is running
+bool gps_is_udp_server_running(void);
 
 #endif // GPS_H

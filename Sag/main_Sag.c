@@ -32,6 +32,10 @@ void print_config() {
     printf("  Baud Rate: %d\n", config.gps.baud_rate);
     printf("  Data Save Path: %s\n", config.gps.data_save_path);
     printf("  File Rotation Interval: %d seconds\n", config.gps.file_rotation_interval);
+    printf("  UDP Server Enabled: %s\n", config.gps.udp_server_enabled ? "Yes" : "No");
+    printf("  UDP Server Port: %d\n", config.gps.udp_server_port);
+    printf("  UDP Client IP: %s\n", config.gps.udp_client_ip);
+    printf("  UDP Buffer Size: %d\n", config.gps.udp_buffer_size);
 }
 
 int main(int argc, char* argv[]) {
@@ -81,6 +85,13 @@ int main(int argc, char* argv[]) {
         strncpy(gps_config.data_path, config.gps.data_save_path, sizeof(gps_config.data_path) - 1);
         gps_config.data_path[sizeof(gps_config.data_path) - 1] = '\0';
         gps_config.file_rotation_interval = config.gps.file_rotation_interval;
+        
+        // Set UDP server configuration
+        gps_config.udp_server_enabled = config.gps.udp_server_enabled;
+        gps_config.udp_server_port = config.gps.udp_server_port;
+        strncpy(gps_config.udp_client_ip, config.gps.udp_client_ip, sizeof(gps_config.udp_client_ip) - 1);
+        gps_config.udp_client_ip[sizeof(gps_config.udp_client_ip) - 1] = '\0';
+        gps_config.udp_buffer_size = config.gps.udp_buffer_size;
 
         int gps_init_result = gps_init(&gps_config);
         if (gps_init_result == 0) {
@@ -90,6 +101,22 @@ int main(int argc, char* argv[]) {
             if (gps_start_logging()) {
                 printf("GPS logging started automatically.\n");
                 write_to_log(main_log, "main_Sag.c", "main", "GPS logging started automatically");
+                
+                // Start GPS UDP server only if enabled
+                if (config.gps.udp_server_enabled) {
+                    if (gps_start_udp_server()) {
+                        char udp_msg[256];
+                        snprintf(udp_msg, sizeof(udp_msg), "GPS UDP server started on port %d for client %s", 
+                                config.gps.udp_server_port, config.gps.udp_client_ip);
+                        printf("%s\n", udp_msg);
+                        write_to_log(main_log, "main_Sag.c", "main", udp_msg);
+                    } else {
+                        printf("Failed to start GPS UDP server.\n");
+                        write_to_log(main_log, "main_Sag.c", "main", "Failed to start GPS UDP server");
+                    }
+                } else {
+                    write_to_log(main_log, "main_Sag.c", "main", "GPS UDP server disabled in configuration");
+                }
             } else {
                 printf("Failed to start GPS logging automatically.\n");
                 write_to_log(main_log, "main_Sag.c", "main", "Failed to start GPS logging automatically");
@@ -109,6 +136,12 @@ int main(int argc, char* argv[]) {
 
     // Cleanup
     if (config.gps.enabled && gps_is_logging()) {
+        // Stop GPS UDP server first
+        if (gps_is_udp_server_running()) {
+            gps_stop_udp_server();
+            write_to_log(main_log, "main_Sag.c", "main", "GPS UDP server stopped during cleanup");
+        }
+        
         gps_stop_logging();
         write_to_log(main_log, "main_Sag.c", "main", "GPS logging stopped during cleanup");
     }
