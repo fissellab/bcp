@@ -20,6 +20,11 @@
 #define GPSD_PORT 2947
 #define GPSD_BUFFER_SIZE 4096
 
+// UDP Server configuration - will be set from config file
+static int gps_udp_port = 8080;
+static char gps_udp_client_ip[16] = "172.20.3.11";
+static int gps_udp_buffer_size = 1024;
+
 static int gpsd_socket = -1;
 static FILE *logfile = NULL;
 static bool logging = false;
@@ -36,9 +41,20 @@ static bool nmea_thread_running = false;
 static int flush_counter = 0;
 static int nmea_flush_counter = 0;
 
+// UDP Server variables
+static int udp_server_socket = -1;
+static pthread_t udp_server_thread;
+static bool udp_server_running = false;
+static FILE *udp_log_file = NULL;
+
 // Forward declarations
 static int open_nmea_device(void);
 static void *nmea_reading_thread(void *arg);
+
+// UDP Server functions
+static void *udp_server_thread_func(void *arg);
+static void format_gps_response(char *buffer, size_t buffer_size);
+static void log_udp_message(const char *message);
 
 static void create_timestamp(char *buffer, size_t size) {
     time_t now;
@@ -411,6 +427,12 @@ static void *status_display_thread(void *arg) {
 int gps_init(const gps_config_t *config) {
     memcpy(&current_config, config, sizeof(gps_config_t));
 
+    // Store UDP configuration
+    gps_udp_port = config->udp_server_port;
+    strncpy(gps_udp_client_ip, config->udp_client_ip, sizeof(gps_udp_client_ip) - 1);
+    gps_udp_client_ip[sizeof(gps_udp_client_ip) - 1] = '\0';
+    gps_udp_buffer_size = config->udp_buffer_size;
+
     if (connect_to_gpsd() < 0) {
         return -1;
     }
@@ -696,4 +718,209 @@ static void *nmea_reading_thread(void *arg) {
     }
     
     return NULL;
+}
+
+// UDP Server functions
+static void *udp_server_thread_func(void *arg) {
+    (void)arg;
+    struct sockaddr_in server_addr, client_addr;
+    char *buffer = malloc(gps_udp_buffer_size);
+    char *response = malloc(gps_udp_buffer_size);
+    socklen_t client_len = sizeof(client_addr);
+    
+    if (!buffer || !response) {
+        log_udp_message("Error allocating UDP buffers");
+        if (buffer) free(buffer);
+        if (response) free(response);
+        return NULL;
+    }
+    
+    // Create UDP socket
+    udp_server_socket = socket(AF_INET, SOCK_DGRAM, 0);
+    if (udp_server_socket < 0) {
+        log_udp_message("Error creating UDP socket");
+        free(buffer);
+        free(response);
+        return NULL;
+    }
+    
+    // Setup server address
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(gps_udp_port);
+    
+    // Bind socket
+    if (bind(udp_server_socket, (const struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        log_udp_message("Error binding UDP socket");
+        close(udp_server_socket);
+        udp_server_socket = -1;
+        free(buffer);
+        free(response);
+        return NULL;
+    }
+    
+    char start_msg[256];
+    snprintf(start_msg, sizeof(start_msg), "GPS UDP server started and listening on port %d", gps_udp_port);
+    log_udp_message(start_msg);
+    
+    while (udp_server_running) {
+        // Receive request from client
+        ssize_t n = recvfrom(udp_server_socket, buffer, gps_udp_buffer_size - 1, 0,
+                            (struct sockaddr *)&client_addr, &client_len);
+        
+        if (n < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                usleep(10000); // 10ms
+                continue;
+            }
+            log_udp_message("Error receiving UDP data");
+            break;
+        }
+        
+        buffer[n] = '\0';
+        
+        // Check if request is from expected client
+        char client_ip[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
+        
+        if (strcmp(client_ip, gps_udp_client_ip) == 0) {
+            char log_msg[512];  // Increased buffer size
+            snprintf(log_msg, sizeof(log_msg), "GPS client connected from %s", client_ip);
+            log_udp_message(log_msg);
+            
+            // Process request
+            if (strncmp(buffer, "GET_GPS", 7) == 0) {
+                format_gps_response(response, gps_udp_buffer_size);
+                
+                // Send response
+                sendto(udp_server_socket, response, strlen(response), 0,
+                      (const struct sockaddr *)&client_addr, client_len);
+                
+                snprintf(log_msg, sizeof(log_msg), "Sent GPS data to client: %.100s", response);  // Limit response length in log
+                log_udp_message(log_msg);
+            } else {
+                // Unknown request
+                const char *error_msg = "gps_lat:INVALID_REQUEST,gps_lon:INVALID_REQUEST,gps_alt:INVALID_REQUEST,gps_head:INVALID_REQUEST";
+                sendto(udp_server_socket, error_msg, strlen(error_msg), 0,
+                      (const struct sockaddr *)&client_addr, client_len);
+                
+                snprintf(log_msg, sizeof(log_msg), "Invalid request from client: %.100s", buffer);  // Limit buffer length in log
+                log_udp_message(log_msg);
+            }
+        } else {
+            char log_msg[512];  // Increased buffer size
+            snprintf(log_msg, sizeof(log_msg), "Rejected request from unauthorized client: %s", client_ip);
+            log_udp_message(log_msg);
+        }
+    }
+    
+    if (udp_server_socket >= 0) {
+        close(udp_server_socket);
+        udp_server_socket = -1;
+    }
+    
+    free(buffer);
+    free(response);
+    log_udp_message("GPS UDP server thread stopped");
+    return NULL;
+}
+
+static void format_gps_response(char *buffer, size_t buffer_size) {
+    gps_data_t gps_data;
+    
+    if (gps_get_data(&gps_data)) {
+        // Format response with current GPS data
+        if (gps_data.valid_position) {
+            if (gps_data.valid_heading) {
+                snprintf(buffer, buffer_size, "gps_lat:%.6f,gps_lon:%.6f,gps_alt:%.1f,gps_head:%.1f",
+                        gps_data.latitude, gps_data.longitude, gps_data.altitude, gps_data.heading);
+            } else {
+                snprintf(buffer, buffer_size, "gps_lat:%.6f,gps_lon:%.6f,gps_alt:%.1f,gps_head:N/A",
+                        gps_data.latitude, gps_data.longitude, gps_data.altitude);
+            }
+        } else {
+            if (gps_data.valid_heading) {
+                snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:%.1f",
+                        gps_data.heading);
+            } else {
+                snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:N/A");
+            }
+        }
+    } else {
+        // No GPS data available
+        snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:N/A");
+    }
+}
+
+static void log_udp_message(const char *message) {
+    if (udp_log_file != NULL) {
+        time_t now;
+        time(&now);
+        char *date = ctime(&now);
+        date[strlen(date) - 1] = '\0'; // Remove newline
+        fprintf(udp_log_file, "%s : gps.c : udp_server : %s\n", date, message);
+        fflush(udp_log_file);
+    }
+    
+    // Also print to stderr for immediate feedback
+    fprintf(stderr, "GPS UDP: %s\n", message);
+}
+
+// Public UDP Server API functions
+bool gps_start_udp_server(void) {
+    if (udp_server_running) {
+        log_udp_message("GPS UDP server is already running");
+        return false;
+    }
+    
+    // Open UDP log file in the session folder
+    char udp_log_path[576];
+    snprintf(udp_log_path, sizeof(udp_log_path), "%s/gps_udp_server.log", session_folder);
+    udp_log_file = fopen(udp_log_path, "a");
+    if (udp_log_file == NULL) {
+        fprintf(stderr, "Warning: Could not open UDP log file: %s\n", strerror(errno));
+        // Continue anyway, we'll log to stderr
+    }
+    
+    udp_server_running = true;
+    
+    if (pthread_create(&udp_server_thread, NULL, udp_server_thread_func, NULL) != 0) {
+        log_udp_message("Error creating GPS UDP server thread");
+        udp_server_running = false;
+        if (udp_log_file != NULL) {
+            fclose(udp_log_file);
+            udp_log_file = NULL;
+        }
+        return false;
+    }
+    
+    return true;
+}
+
+void gps_stop_udp_server(void) {
+    if (!udp_server_running) {
+        return;
+    }
+    
+    udp_server_running = false;
+    
+    // Close socket to unblock recvfrom
+    if (udp_server_socket >= 0) {
+        close(udp_server_socket);
+        udp_server_socket = -1;
+    }
+    
+    // Wait for thread to finish
+    pthread_join(udp_server_thread, NULL);
+    
+    if (udp_log_file != NULL) {
+        log_udp_message("GPS UDP server stopped");
+        fclose(udp_log_file);
+        udp_log_file = NULL;
+    }
+}
+
+bool gps_is_udp_server_running(void) {
+    return udp_server_running;
 }
