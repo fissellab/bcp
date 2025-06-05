@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "gps.h"
 
+#define MAX_UDP_CLIENTS 10  // Maximum number of UDP clients supported
+
 void write_to_log(FILE* logfile, const char* file, const char* function, const char* message);
 
 typedef struct conf_params {
@@ -33,7 +35,8 @@ typedef struct conf_params {
         // UDP server settings
         int udp_server_enabled;
         int udp_server_port;
-        char udp_client_ip[16];
+        char udp_client_ips[MAX_UDP_CLIENTS][16];  // Array of client IPs
+        int udp_client_count;                      // Number of authorized clients
         int udp_buffer_size;
     } gps;
 } conf_params_t;

@@ -19,10 +19,12 @@
 #define GPSD_HOST "127.0.0.1"
 #define GPSD_PORT 2947
 #define GPSD_BUFFER_SIZE 4096
+#define MAX_UDP_CLIENTS 10
 
 // UDP Server configuration - will be set from config file
 static int gps_udp_port = 8080;
-static char gps_udp_client_ip[16] = "172.20.3.11";
+static char gps_udp_client_ips[MAX_UDP_CLIENTS][16];
+static int gps_udp_client_count = 0;
 static int gps_udp_buffer_size = 1024;
 
 static int gpsd_socket = -1;
@@ -55,6 +57,7 @@ static void *nmea_reading_thread(void *arg);
 static void *udp_server_thread_func(void *arg);
 static void format_gps_response(char *buffer, size_t buffer_size);
 static void log_udp_message(const char *message);
+static bool is_authorized_client(const char *client_ip);
 
 static void create_timestamp(char *buffer, size_t size) {
     time_t now;
@@ -429,8 +432,11 @@ int gps_init(const gps_config_t *config) {
 
     // Store UDP configuration
     gps_udp_port = config->udp_server_port;
-    strncpy(gps_udp_client_ip, config->udp_client_ip, sizeof(gps_udp_client_ip) - 1);
-    gps_udp_client_ip[sizeof(gps_udp_client_ip) - 1] = '\0';
+    for (int i = 0; i < config->udp_client_count; i++) {
+        strncpy(gps_udp_client_ips[i], config->udp_client_ips[i], sizeof(gps_udp_client_ips[i]) - 1);
+        gps_udp_client_ips[i][sizeof(gps_udp_client_ips[i]) - 1] = '\0';
+    }
+    gps_udp_client_count = config->udp_client_count;
     gps_udp_buffer_size = config->udp_buffer_size;
 
     if (connect_to_gpsd() < 0) {
@@ -794,7 +800,7 @@ static void *udp_server_thread_func(void *arg) {
         char client_ip[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
         
-        if (strcmp(client_ip, gps_udp_client_ip) == 0) {
+        if (is_authorized_client(client_ip)) {
             char log_msg[512];  // Increased buffer size
             snprintf(log_msg, sizeof(log_msg), "GPS client connected from %s", client_ip);
             log_udp_message(log_msg);
@@ -965,4 +971,13 @@ void gps_stop_udp_server(void) {
 
 bool gps_is_udp_server_running(void) {
     return udp_server_running;
+}
+
+static bool is_authorized_client(const char *client_ip) {
+    for (int i = 0; i < gps_udp_client_count; i++) {
+        if (strcmp(client_ip, gps_udp_client_ips[i]) == 0) {
+            return true;
+        }
+    }
+    return false;
 }

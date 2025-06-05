@@ -34,7 +34,14 @@ void print_config() {
     printf("  File Rotation Interval: %d seconds\n", config.gps.file_rotation_interval);
     printf("  UDP Server Enabled: %s\n", config.gps.udp_server_enabled ? "Yes" : "No");
     printf("  UDP Server Port: %d\n", config.gps.udp_server_port);
-    printf("  UDP Client IP: %s\n", config.gps.udp_client_ip);
+    printf("  UDP Client IPs (%d): ", config.gps.udp_client_count);
+    for (int i = 0; i < config.gps.udp_client_count; i++) {
+        printf("%s", config.gps.udp_client_ips[i]);
+        if (i < config.gps.udp_client_count - 1) {
+            printf(", ");
+        }
+    }
+    printf("\n");
     printf("  UDP Buffer Size: %d\n", config.gps.udp_buffer_size);
 }
 
@@ -89,8 +96,11 @@ int main(int argc, char* argv[]) {
         // Set UDP server configuration
         gps_config.udp_server_enabled = config.gps.udp_server_enabled;
         gps_config.udp_server_port = config.gps.udp_server_port;
-        strncpy(gps_config.udp_client_ip, config.gps.udp_client_ip, sizeof(gps_config.udp_client_ip) - 1);
-        gps_config.udp_client_ip[sizeof(gps_config.udp_client_ip) - 1] = '\0';
+        gps_config.udp_client_count = config.gps.udp_client_count;
+        for (int i = 0; i < config.gps.udp_client_count; i++) {
+            strncpy(gps_config.udp_client_ips[i], config.gps.udp_client_ips[i], sizeof(gps_config.udp_client_ips[i]) - 1);
+            gps_config.udp_client_ips[i][sizeof(gps_config.udp_client_ips[i]) - 1] = '\0';
+        }
         gps_config.udp_buffer_size = config.gps.udp_buffer_size;
 
         int gps_init_result = gps_init(&gps_config);
@@ -106,8 +116,8 @@ int main(int argc, char* argv[]) {
                 if (config.gps.udp_server_enabled) {
                     if (gps_start_udp_server()) {
                         char udp_msg[256];
-                        snprintf(udp_msg, sizeof(udp_msg), "GPS UDP server started on port %d for client %s", 
-                                config.gps.udp_server_port, config.gps.udp_client_ip);
+                        snprintf(udp_msg, sizeof(udp_msg), "GPS UDP server started on port %d for %d authorized clients", 
+                                config.gps.udp_server_port, config.gps.udp_client_count);
                         printf("%s\n", udp_msg);
                         write_to_log(main_log, "main_Sag.c", "main", udp_msg);
                     } else {
