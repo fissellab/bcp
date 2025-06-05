@@ -32,11 +32,6 @@ void print_config() {
     printf("  Baud Rate: %d\n", config.gps.baud_rate);
     printf("  Data Save Path: %s\n", config.gps.data_save_path);
     printf("  File Rotation Interval: %d seconds\n", config.gps.file_rotation_interval);
-    printf("  Telemetry: %s\n", config.gps.telemetry_enabled ? "Enabled" : "Disabled");
-    if (config.gps.telemetry_enabled) {
-        printf("    Host: %s\n", config.gps.telemetry_host);
-        printf("    Port: %s\n", config.gps.telemetry_port);
-    }
 }
 
 int main(int argc, char* argv[]) {
@@ -86,13 +81,6 @@ int main(int argc, char* argv[]) {
         strncpy(gps_config.data_path, config.gps.data_save_path, sizeof(gps_config.data_path) - 1);
         gps_config.data_path[sizeof(gps_config.data_path) - 1] = '\0';
         gps_config.file_rotation_interval = config.gps.file_rotation_interval;
-        
-        // Set telemetry configuration
-        gps_config.telemetry_enabled = config.gps.telemetry_enabled;
-        strncpy(gps_config.telemetry_host, config.gps.telemetry_host, sizeof(gps_config.telemetry_host) - 1);
-        gps_config.telemetry_host[sizeof(gps_config.telemetry_host) - 1] = '\0';
-        strncpy(gps_config.telemetry_port, config.gps.telemetry_port, sizeof(gps_config.telemetry_port) - 1);
-        gps_config.telemetry_port[sizeof(gps_config.telemetry_port) - 1] = '\0';
 
         int gps_init_result = gps_init(&gps_config);
         if (gps_init_result == 0) {

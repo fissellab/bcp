@@ -16,10 +16,6 @@
 #include <fcntl.h>
 #include <termios.h>
 
-// bvex-link telemetry headers
-#include <send_sample.h>
-#include <connected_udp_socket.h>
-
 #define GPSD_HOST "127.0.0.1"
 #define GPSD_PORT 2947
 #define GPSD_BUFFER_SIZE 4096
@@ -39,9 +35,6 @@ static pthread_t nmea_thread;
 static bool nmea_thread_running = false;
 static int flush_counter = 0;
 static int nmea_flush_counter = 0;
-
-// Simple telemetry socket
-static int telemetry_socket = -1;
 
 // Forward declarations
 static int open_nmea_device(void);
@@ -167,11 +160,6 @@ static void parse_hehdt_sentence(const char *sentence) {
             current_gps_data.valid_heading = true;
             current_gps_data.last_update = time(NULL);
             pthread_mutex_unlock(&current_gps_data.mutex);
-            
-            // Send telemetry if enabled
-            if (telemetry_socket >= 0) {
-                send_sample_float(telemetry_socket, "gps_heading", (float)time(NULL), (float)current_gps_data.heading);
-            }
         }
     }
     
@@ -246,28 +234,11 @@ static void parse_gprmc_sentence(const char *sentence) {
             current_gps_data.last_update = time(NULL);
             
             pthread_mutex_unlock(&current_gps_data.mutex);
-            
-            // Send telemetry if enabled
-            if (telemetry_socket >= 0) {
-                float timestamp = (float)time(NULL);
-                send_sample_double(telemetry_socket, "gps_lat", timestamp, current_gps_data.latitude);
-                send_sample_double(telemetry_socket, "gps_lon", timestamp, current_gps_data.longitude);
-                send_sample_float(telemetry_socket, "gps_alt", timestamp, (float)current_gps_data.altitude);
-                send_sample_int32(telemetry_socket, "gps_hour", timestamp, current_gps_data.hour);
-                send_sample_int32(telemetry_socket, "gps_minute", timestamp, current_gps_data.minute);
-                send_sample_int32(telemetry_socket, "gps_second", timestamp, current_gps_data.second);
-            }
         } else {
             // Invalid fix
             pthread_mutex_lock(&current_gps_data.mutex);
             current_gps_data.valid_position = false;
             pthread_mutex_unlock(&current_gps_data.mutex);
-            
-            // Send status update for invalid fix
-            if (telemetry_socket >= 0) {
-                float timestamp = (float)time(NULL);
-                send_sample_bool(telemetry_socket, "gps_valid_pos", timestamp, false);
-            }
         }
     }
     
@@ -450,18 +421,6 @@ int gps_init(const gps_config_t *config) {
     current_gps_data.valid_position = false;
     current_gps_data.valid_heading = false;
 
-    // Initialize telemetry if enabled
-    if (config->telemetry_enabled) {
-        telemetry_socket = connected_udp_socket(config->telemetry_host, config->telemetry_port);
-        if (telemetry_socket < 0) {
-            fprintf(stderr, "Warning: Failed to connect to telemetry server %s:%s\n", 
-                    config->telemetry_host, config->telemetry_port);
-        } else {
-            printf("GPS telemetry connected to %s:%s\n", 
-                   config->telemetry_host, config->telemetry_port);
-        }
-    }
-
     create_session_folder();
     printf("GPS initialized via gpsd connection\n");
     return 0;
@@ -545,12 +504,6 @@ void gps_stop_logging(void) {
     if (logfile != NULL) {
         fclose(logfile);
         logfile = NULL;
-    }
-
-    // Clean up telemetry
-    if (telemetry_socket >= 0) {
-        close(telemetry_socket);
-        telemetry_socket = -1;
     }
 
     printf("GPS logging stopped.\n");
