@@ -1,5 +1,5 @@
-Thu Jun  5 17:15:33 2025 : main_Sag.c : main : Started logfile
-Thu Jun  5 17:15:33 2025 : main_Sag.c : main : Starting command log
-Thu Jun  5 17:15:33 2025 : main_Sag.c : main : GPS initialized
-Thu Jun  5 17:15:33 2025 : main_Sag.c : main : GPS logging started automatically
-Thu Jun  5 17:15:33 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for client 100.118.151.75
+Thu Jun  5 18:13:36 2025 : main_Sag.c : main : Started logfile
+Thu Jun  5 18:13:36 2025 : main_Sag.c : main : Starting command log
+Thu Jun  5 18:13:36 2025 : main_Sag.c : main : GPS initialized
+Thu Jun  5 18:13:36 2025 : main_Sag.c : main : GPS logging started automatically
+Thu Jun  5 18:13:36 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for 2 authorized clients
