@@ -7,6 +7,7 @@ import casperfpga
 import atexit
 import logging
 import signal
+import mmap
 from optparse import OptionParser
 
 # Global Variables
@@ -17,6 +18,12 @@ running = True
 DATA_SAVE_INTERVAL = 600  # Default value, will be overwritten by command line argument
 DATA_SAVE_PATH = '/media/saggitarius/T7'  # Default value, will be overwritten by command line argument
 data_folder = None
+
+# Shared memory variables
+shared_memory_fd = None
+shared_memory_mm = None
+SHM_NAME = "/bcp_spectrometer_data"
+SPEC_TYPE_120KHZ = 2
 
 # System Parameters for 120 kHz resolution using 16384-point FFT
 SAMPLE_RATE = 3932.16  # Sample rate in MSPS
@@ -39,11 +46,86 @@ def signal_handler(sig, frame):
     global running
     logging.info("Received termination signal. Cleaning up...")
     running = False
+    cleanup_shared_memory()
     close_files()
     sys.exit(0)
 
 signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGINT, signal_handler)
+
+def init_shared_memory():
+    """Initialize shared memory for communication with UDP server"""
+    global shared_memory_fd, shared_memory_mm
+    try:
+        # Try to open existing shared memory
+        shared_memory_fd = open(f"/dev/shm{SHM_NAME}", "r+b")
+        
+        # Calculate shared memory size to match C structure:
+        # ready(4) + active_type(4) + timestamp(8) + data_size(4) + data(16384*8) = 131096 bytes
+        # Note: C compiler adds padding for alignment
+        shm_size = 131096  # Exact size from C structure
+        shared_memory_mm = mmap.mmap(shared_memory_fd.fileno(), shm_size)
+        
+        logging.info("Connected to existing shared memory for UDP server communication")
+        return True
+        
+    except Exception as e:
+        logging.warning(f"Could not connect to shared memory: {e}")
+        logging.warning("UDP server may not be running - spectrum data will only be saved to files")
+        return False
+
+def cleanup_shared_memory():
+    """Cleanup shared memory resources"""
+    global shared_memory_fd, shared_memory_mm
+    try:
+        if shared_memory_mm:
+            shared_memory_mm.close()
+            shared_memory_mm = None
+        if shared_memory_fd:
+            shared_memory_fd.close()
+            shared_memory_fd = None
+    except Exception as e:
+        logging.error(f"Error cleaning up shared memory: {e}")
+
+def write_to_shared_memory(raw_spectrum_data, timestamp):
+    """Write raw 16384-point spectrum data to shared memory for UDP server to filter"""
+    global shared_memory_mm
+    
+    if shared_memory_mm is None:
+        return  # Shared memory not available
+    
+    try:
+        # Ensure we have exactly 16384 points and correct data type
+        if len(raw_spectrum_data) != 16384:
+            logging.error(f"Invalid spectrum size: {len(raw_spectrum_data)}, expected 16384")
+            return
+            
+        # Convert to numpy array if needed and ensure float64
+        if not isinstance(raw_spectrum_data, np.ndarray):
+            raw_spectrum_data = np.array(raw_spectrum_data, dtype=np.float64)
+        else:
+            raw_spectrum_data = raw_spectrum_data.astype(np.float64)
+        
+        shared_memory_mm.seek(0)
+        
+        # Write header matching C structure: ready(4) + active_type(4) + timestamp(8) + data_size(4)
+        shared_memory_mm.write(struct.pack('I', 0))  # ready = 0 (writing) - 4 bytes
+        shared_memory_mm.write(struct.pack('I', SPEC_TYPE_120KHZ))  # active_type - 4 bytes
+        shared_memory_mm.write(struct.pack('d', timestamp))  # timestamp - 8 bytes
+        shared_memory_mm.write(struct.pack('I', len(raw_spectrum_data) * 8))  # data_size in bytes - 4 bytes
+        
+        # Write raw spectrum data (16384 points for server-side filtering) - 16384 * 8 bytes
+        for value in raw_spectrum_data:
+            shared_memory_mm.write(struct.pack('d', float(value)))
+        
+        # Set ready flag to indicate data is available
+        shared_memory_mm.seek(0)
+        shared_memory_mm.write(struct.pack('I', 1))  # ready = 1 - 4 bytes
+        
+        shared_memory_mm.flush()
+        
+    except Exception as e:
+        logging.error(f"Error writing to shared memory: {e}")
 
 # Helper functions for stable FPGA readout
 def wait_for_dump(fpga, last_cnt, poll=0.0005):
@@ -99,11 +181,15 @@ def get_vacc_data(fpga, last_cnt=None):
         # Write timestamp and data to file BEFORE any transformations
         timestamp = time.time()
         
+        # Write to file (existing functionality) - save raw data
         if spectrum_file:
             # Store RAW data with no transformations
             spectrum_file.write(f"{timestamp} " + " ".join(map(str, raw_spectrum)) + "\n")
             spectrum_file.flush()
             os.fsync(spectrum_file.fileno())
+        
+        # Write raw 16384-point data to shared memory for UDP server to filter
+        write_to_shared_memory(raw_spectrum, timestamp)
             
         return acc_n, raw_spectrum
     except Exception as e:
@@ -178,7 +264,12 @@ def close_files():
     except Exception as e:
         logging.error(f"Error closing files: {e}")
 
-atexit.register(close_files)
+def cleanup_all():
+    """Cleanup function for atexit"""
+    close_files()
+    cleanup_shared_memory()
+
+atexit.register(cleanup_all)
 
 def start_data_acquisition(fpga):
     global running, data_folder
@@ -343,11 +434,16 @@ if __name__ == "__main__":
         except Exception as e:
             logging.warning(f"Issue with counter reset: {e}")
         
+        # Initialize shared memory for UDP server communication
+        init_shared_memory()
+        
         # Start acquisition
         start_data_acquisition(fpga)
     except KeyboardInterrupt:
         logging.info('Interrupted by user')
     except Exception as e:
         logging.error(f'Exception during data acquisition: {e}')
+    finally:
+        cleanup_shared_memory()
 
     logging.info('Script finished') 

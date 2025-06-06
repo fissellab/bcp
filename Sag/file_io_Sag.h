@@ -39,6 +39,20 @@ typedef struct conf_params {
         int udp_client_count;                      // Number of authorized clients
         int udp_buffer_size;
     } gps;
+    struct {
+        int enabled;
+        int udp_server_port;
+        char udp_client_ips[MAX_UDP_CLIENTS][16];  // Array of client IPs
+        int udp_client_count;                      // Number of authorized clients
+        int udp_buffer_size;
+        int max_request_rate;                      // Max requests per second per client
+        
+        // High-res filtering parameters for water maser
+        double water_maser_freq;                   // 22.235 GHz
+        double zoom_window_width;                  // 0.010 GHz (±10 MHz)
+        double if_lower;                           // 20.96608 GHz
+        double if_upper;                           // 22.93216 GHz
+    } spectrometer_server;
 } conf_params_t;
 
 extern conf_params_t config;

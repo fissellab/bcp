@@ -1,5 +1,26 @@
-Thu Jun  5 18:13:36 2025 : main_Sag.c : main : Started logfile
-Thu Jun  5 18:13:36 2025 : main_Sag.c : main : Starting command log
-Thu Jun  5 18:13:36 2025 : main_Sag.c : main : GPS initialized
-Thu Jun  5 18:13:36 2025 : main_Sag.c : main : GPS logging started automatically
-Thu Jun  5 18:13:36 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for 2 authorized clients
+Fri Jun  6 01:40:48 2025 : main_Sag.c : main : Started logfile
+Fri Jun  6 01:40:48 2025 : main_Sag.c : main : Starting command log
+Fri Jun  6 01:40:48 2025 : main_Sag.c : main : GPS initialized
+Fri Jun  6 01:40:48 2025 : main_Sag.c : main : GPS logging started automatically
+Fri Jun  6 01:40:48 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for 2 authorized clients
+Fri Jun  6 01:40:48 2025 : main_Sag.c : main : Spectrometer server initialized
+Fri Jun  6 01:40:48 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081 for 2 authorized clients
+2025-06-06 01:40:57,556 - INFO - Using FPGA file at ./rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_2023-04-03_1141.fpg
+2025-06-06 01:40:57,557 - INFO - Connecting to 172.20.3.12...
+2025-06-06 01:40:58,574 - INFO - Client connect loop for ('172.20.3.12', 7147) finished.
+2025-06-06 01:40:58,577 - INFO - Stopping ioloop <tornado.platform.asyncio.AsyncIOLoop object at 0x7c35b01ab160>
+2025-06-06 01:40:58,579 - INFO - Managed tornado IOloop <tornado.platform.asyncio.AsyncIOLoop object at 0x7c35b01ab160> stopped
+2025-06-06 01:40:58,587 - INFO - Client connect loop for ('172.20.3.12', 7147) finished.
+2025-06-06 01:40:58,590 - INFO - Stopping ioloop <tornado.platform.asyncio.AsyncIOLoop object at 0x7c35b01f4850>
+2025-06-06 01:40:58,592 - INFO - Managed tornado IOloop <tornado.platform.asyncio.AsyncIOLoop object at 0x7c35b01f4850> stopped
+2025-06-06 01:40:58,799 - INFO - Programming FPGA with ./rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_2023-04-03_1141.fpg...
+2025-06-06 01:41:00,366 - INFO - Done
+2025-06-06 01:41:00,367 - INFO - Configuring accumulation period...
+2025-06-06 01:41:00,472 - INFO - Done
+2025-06-06 01:41:00,472 - INFO - Setting capture on ADC port 0
+2025-06-06 01:41:00,577 - INFO - Done
+2025-06-06 01:41:00,577 - INFO - Resetting counters...
+2025-06-06 01:41:05,589 - INFO - Done
+2025-06-06 01:41:05,590 - INFO - Connected to existing shared memory for UDP server communication
+2025-06-06 01:41:05,590 - INFO - Starting data acquisition...
+2025-06-06 01:41:05,590 - INFO - Data acquisition and saving in progress...

@@ -9,6 +9,7 @@
 #include "file_io_Sag.h"
 #include "cli_Sag.h"
 #include "gps.h"
+#include "spectrometer_server.h"
 
 void print_config() {
     printf("Configuration parameters:\n");
@@ -43,6 +44,22 @@ void print_config() {
     }
     printf("\n");
     printf("  UDP Buffer Size: %d\n", config.gps.udp_buffer_size);
+    printf("\nSpectrometer Server settings:\n");
+    printf("  Enabled: %s\n", config.spectrometer_server.enabled ? "Yes" : "No");
+    printf("  UDP Server Port: %d\n", config.spectrometer_server.udp_server_port);
+    printf("  UDP Client IPs (%d): ", config.spectrometer_server.udp_client_count);
+    for (int i = 0; i < config.spectrometer_server.udp_client_count; i++) {
+        printf("%s", config.spectrometer_server.udp_client_ips[i]);
+        if (i < config.spectrometer_server.udp_client_count - 1) {
+            printf(", ");
+        }
+    }
+    printf("\n");
+    printf("  UDP Buffer Size: %d\n", config.spectrometer_server.udp_buffer_size);
+    printf("  Max Request Rate: %d req/sec\n", config.spectrometer_server.max_request_rate);
+    printf("  Water Maser Freq: %.3f GHz\n", config.spectrometer_server.water_maser_freq);
+    printf("  Zoom Window Width: %.3f GHz\n", config.spectrometer_server.zoom_window_width);
+    printf("  IF Range: %.5f - %.5f GHz\n", config.spectrometer_server.if_lower, config.spectrometer_server.if_upper);
 }
 
 int main(int argc, char* argv[]) {
@@ -140,11 +157,64 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "GPS disabled in configuration");
     }
 
+    // Initialize and start Spectrometer Server if enabled
+    if (config.spectrometer_server.enabled) {
+        spec_server_config_t spec_config;
+        spec_config.udp_server_enabled = 1;  // Always enabled if spectrometer_server is enabled
+        spec_config.udp_server_port = config.spectrometer_server.udp_server_port;
+        spec_config.udp_client_count = config.spectrometer_server.udp_client_count;
+        for (int i = 0; i < config.spectrometer_server.udp_client_count; i++) {
+            strncpy(spec_config.udp_client_ips[i], config.spectrometer_server.udp_client_ips[i], 
+                    sizeof(spec_config.udp_client_ips[i]) - 1);
+            spec_config.udp_client_ips[i][sizeof(spec_config.udp_client_ips[i]) - 1] = '\0';
+        }
+        spec_config.udp_buffer_size = config.spectrometer_server.udp_buffer_size;
+        spec_config.max_request_rate = config.spectrometer_server.max_request_rate;
+        
+        // Water maser filtering parameters
+        spec_config.water_maser_freq = config.spectrometer_server.water_maser_freq;
+        spec_config.zoom_window_width = config.spectrometer_server.zoom_window_width;
+        spec_config.if_lower = config.spectrometer_server.if_lower;
+        spec_config.if_upper = config.spectrometer_server.if_upper;
+
+        int spec_init_result = spec_server_init(&spec_config);
+        if (spec_init_result == 0) {
+            write_to_log(main_log, "main_Sag.c", "main", "Spectrometer server initialized");
+            
+            // Start spectrometer UDP server
+            if (spec_server_start()) {
+                char spec_msg[256];
+                snprintf(spec_msg, sizeof(spec_msg), "Spectrometer UDP server started on port %d for %d authorized clients", 
+                        config.spectrometer_server.udp_server_port, config.spectrometer_server.udp_client_count);
+                printf("%s\n", spec_msg);
+                write_to_log(main_log, "main_Sag.c", "main", spec_msg);
+            } else {
+                printf("Failed to start Spectrometer UDP server.\n");
+                write_to_log(main_log, "main_Sag.c", "main", "Failed to start Spectrometer UDP server");
+            }
+        } else {
+            char error_msg[100];
+            snprintf(error_msg, sizeof(error_msg), "Failed to initialize Spectrometer server. Error code: %d", spec_init_result);
+            write_to_log(main_log, "main_Sag.c", "main", error_msg);
+        }
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "Spectrometer server disabled in configuration");
+    }
+
     // Start the command prompt
     cmdprompt(cmd_log, config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, 
               config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
 
     // Cleanup
+    if (config.spectrometer_server.enabled) {
+        // Stop Spectrometer UDP server if running
+        if (spec_server_is_running()) {
+            spec_server_stop();
+            printf("Spectrometer UDP server stopped during cleanup\n");
+            write_to_log(main_log, "main_Sag.c", "main", "Spectrometer UDP server stopped during cleanup");
+        }
+    }
+    
     if (config.gps.enabled) {
         // Stop GPS UDP server if running
         if (gps_is_udp_server_running()) {

@@ -20,6 +20,7 @@ add_executable(
         main_Sag.c
         cli_Sag.c
         gps.c
+        spectrometer_server.c
 )
 
 target_include_directories(main PRIVATE 
