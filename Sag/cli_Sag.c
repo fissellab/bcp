@@ -9,10 +9,10 @@
 #include "file_io_Sag.h"
 #include "cli_Sag.h"
 #include "gps.h"
+#include "spectrometer_server.h"
 
 int exiting = 0;
 int spec_running = 0;
-int spec_479khz = 0; // Flag to track if 479kHz spectrometer is running
 int spec_120khz = 0; // Flag to track if 120kHz spectrometer is running
 pid_t python_pid;
 
@@ -28,7 +28,7 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
     char* arg = (char*) malloc(strlen(input) * sizeof(char));
     char* cmd = (char*) malloc(strlen(input) * sizeof(char));
     
-    // Additional argument to capture optional "479khz" or "120khz" parameter
+    // Additional argument to capture optional "120khz" parameter
     char* sub_arg = (char*) malloc(strlen(input) * sizeof(char));
     sub_arg[0] = '\0'; // Initialize to empty string
     
@@ -48,7 +48,6 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
             waitpid(python_pid, NULL, 0);
             printf("Stopped spec script\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped spec script");
-        }
         
         // Stop GPS UDP server first if running
         if (gps_is_udp_server_running()) {
@@ -61,10 +60,11 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
             gps_stop_logging();
             printf("Stopped GPS logging\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped GPS logging");
+            }
         }
         exiting = 1;
     } else if (strcmp(cmd, "start") == 0) {
-        // Check for "start spec" or "start spec 479khz" or "start spec 120khz"
+        // Check for "start spec" or "start spec 120khz"
         sscanf(arg, "%s %s", sub_arg, arg + strlen(sub_arg) + 1);
         
         if (strcmp(sub_arg, "spec") == 0) {
@@ -74,7 +74,6 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
                 // Check if we're starting the 120khz version
                 if (strlen(arg) > strlen(sub_arg) && strstr(arg, "120khz") != NULL) {
                     spec_120khz = 1;
-                    spec_479khz = 0;
                     python_pid = fork();
                     if (python_pid == 0) {
                         // Child process for 120khz spectrometer
@@ -88,29 +87,12 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
                         // Parent process
                         printf("Started 120kHz spec script\n");
                         write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started 120kHz spec script");
-                    }
-                }
-                // Check if we're starting the 479khz version
-                else if (strlen(arg) > strlen(sub_arg) && strstr(arg, "479khz") != NULL) {
-                    spec_479khz = 1;
-                    spec_120khz = 0;
-                    python_pid = fork();
-                    if (python_pid == 0) {
-                        // Child process for 479khz spectrometer
-                        run_python_script("rfsoc_spec_479khz.py", logpath, hostname, mode, data_save_interval, data_save_path);
-                        exit(0);  // Should never reach here
-                    } else if (python_pid < 0) {
-                        perror("fork failed");
-                        spec_running = 0;
-                        spec_479khz = 0;
-                    } else {
-                        // Parent process
-                        printf("Started 479kHz spec script\n");
-                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started 479kHz spec script");
+                        
+                        // Set spectrometer server type
+                        spec_server_set_active_type(SPEC_TYPE_120KHZ);
                     }
                 } else {
                     // Standard spectrometer (960kHz)
-                    spec_479khz = 0;
                     spec_120khz = 0;
                     python_pid = fork();
                     if (python_pid == 0) {
@@ -124,6 +106,9 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
                         // Parent process
                         printf("Started spec script\n");
                         write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started spec script");
+                        
+                        // Set spectrometer server type
+                        spec_server_set_active_type(SPEC_TYPE_STANDARD);
                     }
                 }
             } else {
@@ -146,7 +131,7 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
             printf("Unknown start command: %s\n", sub_arg);
         }
     } else if (strcmp(cmd, "stop") == 0) {
-        // Check for "stop spec" or "stop spec 479khz" or "stop spec 120khz"
+        // Check for "stop spec" or "stop spec 120khz"
         sscanf(arg, "%s %s", sub_arg, arg + strlen(sub_arg) + 1);
         
         if (strcmp(sub_arg, "spec") == 0) {
@@ -162,18 +147,17 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
                 while (timeout > 0) {
                     pid_t result = waitpid(python_pid, &status, WNOHANG);
                     if (result == python_pid) {
-                        if (spec_479khz) {
-                            printf("Stopped 479kHz spec script\n");
-                            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped 479kHz spec script");
-                        } else if (spec_120khz) {
+                        if (spec_120khz) {
                             printf("Stopped 120kHz spec script\n");
                             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped 120kHz spec script");
                         } else {
                             printf("Stopped spec script\n");
                             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped spec script");
                         }
-                        spec_479khz = 0; // Reset the spectrometer type flags
-                        spec_120khz = 0;
+                        spec_120khz = 0; // Reset the spectrometer type flag
+                        
+                        // Clear spectrometer server type
+                        spec_server_set_active_type(SPEC_TYPE_NONE);
                         break;
                     } else if (result == -1) {
                         perror("waitpid failed");
@@ -187,18 +171,17 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
                 if (timeout == 0) {
                     kill(python_pid, SIGKILL);
                     waitpid(python_pid, NULL, 0);
-                    if (spec_479khz) {
-                        printf("Forcefully stopped 479kHz spec script\n");
-                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Forcefully stopped 479kHz spec script");
-                    } else if (spec_120khz) {
+                    if (spec_120khz) {
                         printf("Forcefully stopped 120kHz spec script\n");
                         write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Forcefully stopped 120kHz spec script");
                     } else {
                         printf("Forcefully stopped spec script\n");
                         write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Forcefully stopped spec script");
                     }
-                    spec_479khz = 0; // Reset the spectrometer type flags
-                    spec_120khz = 0;
+                    spec_120khz = 0; // Reset the spectrometer type flag
+                    
+                    // Clear spectrometer server type
+                    spec_server_set_active_type(SPEC_TYPE_NONE);
                 }
             } else {
                 printf("Spec script is not running\n");

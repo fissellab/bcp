@@ -7,6 +7,7 @@ import casperfpga
 import atexit
 import logging
 import signal
+import mmap
 from optparse import OptionParser
 
 # Global Variables
@@ -18,6 +19,12 @@ DATA_SAVE_INTERVAL = 600  # Default value, will be overwritten by command line a
 DATA_SAVE_PATH = '/media/saggitarius/T7'  # Default value, will be overwritten by command line argument
 data_folder = None
 
+# Shared memory variables
+shared_memory_fd = None
+shared_memory_mm = None
+SHM_NAME = "/bcp_spectrometer_data"
+SPEC_TYPE_STANDARD = 1
+
 def setup_logging(logpath):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
                         handlers=[logging.FileHandler(logpath), logging.StreamHandler()])
@@ -26,9 +33,82 @@ def signal_handler(sig, frame):
     global running
     logging.info("Received termination signal. Cleaning up...")
     running = False
+    cleanup_shared_memory()
 
 signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGINT, signal_handler)
+
+def init_shared_memory():
+    """Initialize shared memory for communication with UDP server"""
+    global shared_memory_fd, shared_memory_mm
+    try:
+        # Try to open existing shared memory
+        shared_memory_fd = open(f"/dev/shm{SHM_NAME}", "r+b")
+        
+        # Calculate shared memory size to match C structure:
+        # ready(4) + active_type(4) + timestamp(8) + data_size(4) + data(16384*8) = 131096 bytes
+        # Note: C compiler adds padding for alignment
+        shm_size = 131096  # Exact size from C structure
+        shared_memory_mm = mmap.mmap(shared_memory_fd.fileno(), shm_size)
+        
+        logging.info("Connected to existing shared memory for UDP server communication")
+        return True
+        
+    except Exception as e:
+        logging.warning(f"Could not connect to shared memory: {e}")
+        logging.warning("UDP server may not be running - spectrum data will only be saved to files")
+        return False
+
+def cleanup_shared_memory():
+    """Cleanup shared memory resources"""
+    global shared_memory_fd, shared_memory_mm
+    try:
+        if shared_memory_mm:
+            shared_memory_mm.close()
+            shared_memory_mm = None
+        if shared_memory_fd:
+            shared_memory_fd.close()
+            shared_memory_fd = None
+    except Exception as e:
+        logging.error(f"Error cleaning up shared memory: {e}")
+
+def write_to_shared_memory(spectrum_data, timestamp):
+    """Write spectrum data to shared memory for UDP server"""
+    global shared_memory_mm
+    
+    if shared_memory_mm is None:
+        return  # Shared memory not available
+    
+    try:
+        # Convert spectrum data to numpy array if it isn't already
+        if not isinstance(spectrum_data, np.ndarray):
+            spectrum_data = np.array(spectrum_data, dtype=np.float64)
+        
+        # Ensure we have the right data type
+        spectrum_data = spectrum_data.astype(np.float64)
+        
+        shared_memory_mm.seek(0)
+        
+        # Write header matching C structure EXACTLY with proper alignment:
+        # ready(4) + active_type(4) + timestamp(8) + data_size(4) + padding(4) = 24 bytes
+        shared_memory_mm.write(struct.pack('I', 0))  # ready = 0 (writing) - 4 bytes at offset 0
+        shared_memory_mm.write(struct.pack('I', SPEC_TYPE_STANDARD))  # active_type - 4 bytes at offset 4  
+        shared_memory_mm.write(struct.pack('d', timestamp))  # timestamp - 8 bytes at offset 8
+        shared_memory_mm.write(struct.pack('I', len(spectrum_data) * 8))  # data_size - 4 bytes at offset 16
+        shared_memory_mm.write(struct.pack('I', 0))  # padding - 4 bytes at offset 20 (for alignment)
+        
+        # Write spectrum data starting at offset 24 - matches C structure exactly
+        for value in spectrum_data:
+            shared_memory_mm.write(struct.pack('d', float(value)))
+        
+        # Set ready flag to indicate data is available
+        shared_memory_mm.seek(0)
+        shared_memory_mm.write(struct.pack('I', 1))  # ready = 1 - 4 bytes
+        
+        shared_memory_mm.flush()
+        
+    except Exception as e:
+        logging.error(f"Error writing to shared memory: {e}")
 
 def square_law_integrator(spectrum):
     power = np.abs(spectrum) ** 2
@@ -48,12 +128,21 @@ def get_vacc_data(fpga, nchannels, nfft):
                 interleave_q.append(raw[j, i])
 
         spectrum_data = np.array(interleave_q, dtype=np.float64)
+        
+        # Process the spectrum data (same processing for both file and UDP server)
+        processed_spectrum = np.fft.fftshift(np.flip(spectrum_data))
         timestamp = time.time()
 
+        # Write processed spectrum to file (existing functionality)
         if spectrum_file:
-            spectrum_file.write(f"{timestamp} " + " ".join(map(str, np.fft.fftshift(np.flip(spectrum_data)))) + "\n")
+            spectrum_file.write(f"{timestamp} " + " ".join(map(str, processed_spectrum)) + "\n")
             spectrum_file.flush()  # Flush the data to disk immediately
             os.fsync(spectrum_file.fileno())  # Ensure it's written to the physical disk
+        
+        # Write same processed spectrum to shared memory for UDP server (SAME DATA AS FILE)
+        write_to_shared_memory(processed_spectrum, timestamp)
+        
+        # Return raw spectrum_data for power calculation (unchanged from original)
         return acc_n, spectrum_data
     except Exception as e:
         logging.error(f"Error in get_vacc_data: {e}")
@@ -127,8 +216,12 @@ def close_files():
     except Exception as e:
         logging.error(f"Error closing files: {e}")
 
-atexit.register(close_files)
+def cleanup_all():
+    """Cleanup function for atexit"""
+    close_files()
+    cleanup_shared_memory()
 
+atexit.register(cleanup_all)
 
 def start_data_acquisition(fpga, mode, num_channels, num_fft_points):
     global running, data_folder
@@ -280,6 +373,9 @@ if __name__ == "__main__":
     time.sleep(5)
     logging.info('Done')
 
+    # Initialize shared memory for UDP server communication
+    init_shared_memory()
+
     try:
         logging.info('Starting data acquisition...')
         start_data_acquisition(fpga, mode, opts.num_channels, opts.num_fft_points)
@@ -288,5 +384,6 @@ if __name__ == "__main__":
     finally:
         logging.info('Cleaning up...')
         close_files()
+        cleanup_shared_memory()
         logging.info('Script terminated.')
 

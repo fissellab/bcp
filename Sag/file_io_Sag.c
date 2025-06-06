@@ -112,5 +112,37 @@ void read_in_config(const char* filepath) {
     
     config_lookup_int(&cfg, "gps.udp_buffer_size", &config.gps.udp_buffer_size);
 
+    // Read spectrometer_server section
+    config_lookup_int(&cfg, "spectrometer_server.enabled", &config.spectrometer_server.enabled);
+    config_lookup_int(&cfg, "spectrometer_server.udp_server_port", &config.spectrometer_server.udp_server_port);
+    config_lookup_int(&cfg, "spectrometer_server.udp_buffer_size", &config.spectrometer_server.udp_buffer_size);
+    config_lookup_int(&cfg, "spectrometer_server.max_request_rate", &config.spectrometer_server.max_request_rate);
+    
+    // Read spectrometer UDP client IPs array
+    config_setting_t *spec_client_ips_array = config_lookup(&cfg, "spectrometer_server.udp_client_ips");
+    if (spec_client_ips_array != NULL && config_setting_is_array(spec_client_ips_array)) {
+        int count = config_setting_length(spec_client_ips_array);
+        if (count > MAX_UDP_CLIENTS) {
+            count = MAX_UDP_CLIENTS;  // Limit to max supported clients
+        }
+        config.spectrometer_server.udp_client_count = count;
+        
+        for (int i = 0; i < count; i++) {
+            const char *ip = config_setting_get_string_elem(spec_client_ips_array, i);
+            if (ip != NULL) {
+                strncpy(config.spectrometer_server.udp_client_ips[i], ip, 15);
+                config.spectrometer_server.udp_client_ips[i][15] = '\0';
+            }
+        }
+    } else {
+        config.spectrometer_server.udp_client_count = 0;
+    }
+    
+    // Read water maser filtering parameters
+    config_lookup_float(&cfg, "spectrometer_server.water_maser_freq", &config.spectrometer_server.water_maser_freq);
+    config_lookup_float(&cfg, "spectrometer_server.zoom_window_width", &config.spectrometer_server.zoom_window_width);
+    config_lookup_float(&cfg, "spectrometer_server.if_lower", &config.spectrometer_server.if_lower);
+    config_lookup_float(&cfg, "spectrometer_server.if_upper", &config.spectrometer_server.if_upper);
+
     config_destroy(&cfg);
 }
