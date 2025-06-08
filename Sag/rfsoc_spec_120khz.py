@@ -108,15 +108,19 @@ def write_to_shared_memory(raw_spectrum_data, timestamp):
         
         shared_memory_mm.seek(0)
         
-        # Write header matching C structure: ready(4) + active_type(4) + timestamp(8) + data_size(4)
+        # Write header matching C structure exactly:
+        # ready(0), active_type(4), timestamp(8), data_size(16), data(24)
         shared_memory_mm.write(struct.pack('I', 0))  # ready = 0 (writing) - 4 bytes
-        shared_memory_mm.write(struct.pack('I', SPEC_TYPE_120KHZ))  # active_type - 4 bytes
+        shared_memory_mm.write(struct.pack('I', SPEC_TYPE_120KHZ))  # active_type - 4 bytes  
         shared_memory_mm.write(struct.pack('d', timestamp))  # timestamp - 8 bytes
-        shared_memory_mm.write(struct.pack('I', len(raw_spectrum_data) * 8))  # data_size in bytes - 4 bytes
+        shared_memory_mm.write(struct.pack('I', len(raw_spectrum_data) * 8))  # data_size - 4 bytes
+        
+        # Data starts at offset 24, but we're at offset 20. Add 4 bytes padding.
+        shared_memory_mm.seek(24)  # Jump to data start offset
         
         # Write raw spectrum data (16384 points for server-side filtering) - 16384 * 8 bytes
-        for value in raw_spectrum_data:
-            shared_memory_mm.write(struct.pack('d', float(value)))
+        data_bytes = struct.pack(f'{len(raw_spectrum_data)}d', *raw_spectrum_data)
+        shared_memory_mm.write(data_bytes)
         
         # Set ready flag to indicate data is available
         shared_memory_mm.seek(0)
@@ -141,6 +145,22 @@ def wait_for_dump(fpga, last_cnt, poll=0.0005):
             if fpga.read_uint('acc_cnt') == now:  # stable → done
                 return now
         time.sleep(poll)
+
+def read_spectrum_raw_integer(fpga):
+    """Return float64[16384] raw integer array WITHOUT scaling for shared memory."""
+    per_bram = []
+    for name in BRAM_NAMES:
+        raw = fpga.read(name, WORDS_PER_BRAM*BYTES_PER_WORD, 0)
+        per_bram.append(np.frombuffer(raw, dtype=">u8").astype(np.float64))
+
+    interwoven = np.empty(NFFT, dtype=np.float64)
+    idx = 0
+    for w in range(WORDS_PER_BRAM):
+        for b in range(NPAR):
+            interwoven[idx] = per_bram[b][w]
+            idx += 1
+
+    return interwoven      # Return raw counts WITHOUT scaling
 
 def read_spectrum(fpga):
     """Return float64[16384] linear power array."""
@@ -175,7 +195,12 @@ def get_vacc_data(fpga, last_cnt=None):
         # Wait for a complete FPGA dump
         acc_n = wait_for_dump(fpga, last_cnt)
         
-        # Use the stable read_spectrum function
+        # Get the raw integer data BEFORE scaling for shared memory
+        raw_integer_data = read_spectrum_raw_integer(fpga)
+        
+
+        
+        # Use the stable read_spectrum function for file output (scaled)
         raw_spectrum = read_spectrum(fpga)
         
         # Write timestamp and data to file BEFORE any transformations
@@ -188,7 +213,8 @@ def get_vacc_data(fpga, last_cnt=None):
             spectrum_file.flush()
             os.fsync(spectrum_file.fileno())
         
-        # Write raw 16384-point data to shared memory for UDP server to filter
+        # Send the same scaled data to shared memory that gets written to files
+        # The C server will apply 10*log10() conversion like the reference script
         write_to_shared_memory(raw_spectrum, timestamp)
             
         return acc_n, raw_spectrum
