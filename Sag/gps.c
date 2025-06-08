@@ -175,7 +175,8 @@ static void parse_hehdt_sentence(const char *sentence) {
         token = strtok(NULL, ","); // Get heading value
         if (token) {
             pthread_mutex_lock(&current_gps_data.mutex);
-            current_gps_data.heading = atof(token);
+            // Add +90 degree offset and wrap around if needed
+            current_gps_data.heading = fmod(atof(token) + 90.0, 360.0);
             current_gps_data.valid_heading = true;
             current_gps_data.last_update = time(NULL);
             pthread_mutex_unlock(&current_gps_data.mutex);
@@ -391,7 +392,7 @@ static void *status_display_thread(void *arg) {
             if (data.valid_position) {
                 if (data.valid_heading) {
                     snprintf(status_buffer, sizeof(status_buffer),
-                             "GPS Status: %04d-%02d-%02d %02d:%02d:%02d | Lat: %.6f | Lon: %.6f | Alt: %.1f | Heading: %.1f° | Press 'q' to exit",
+                             "GPS Status: %04d-%02d-%02d %02d:%02d:%02d | Lat: %.6f | Lon: %.6f | Alt: %.1f | Heading: %.2f° | Press 'q' to exit",
                              data.year, data.month, data.day,
                              data.hour, data.minute, data.second,
                              data.latitude, data.longitude, data.altitude,
@@ -405,7 +406,7 @@ static void *status_display_thread(void *arg) {
                 }
             } else if (data.valid_heading) {
                 snprintf(status_buffer, sizeof(status_buffer),
-                         "GPS Status: No valid position fix | Heading: %.1f° | Press 'q' to exit",
+                         "GPS Status: No valid position fix | Heading: %.2f° | Press 'q' to exit",
                          data.heading);
             } else {
                 snprintf(status_buffer, sizeof(status_buffer),
@@ -862,7 +863,7 @@ static void format_gps_response(char *buffer, size_t buffer_size) {
         // Format response with current GPS data
         if (gps_data.valid_position) {
             if (gps_data.valid_heading) {
-                snprintf(buffer, buffer_size, "gps_lat:%.6f,gps_lon:%.6f,gps_alt:%.1f,gps_head:%.1f",
+                snprintf(buffer, buffer_size, "gps_lat:%.6f,gps_lon:%.6f,gps_alt:%.1f,gps_head:%.2f",
                         gps_data.latitude, gps_data.longitude, gps_data.altitude, gps_data.heading);
             } else {
                 snprintf(buffer, buffer_size, "gps_lat:%.6f,gps_lon:%.6f,gps_alt:%.1f,gps_head:N/A",
@@ -870,7 +871,7 @@ static void format_gps_response(char *buffer, size_t buffer_size) {
             }
         } else {
             if (gps_data.valid_heading) {
-                snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:%.1f",
+                snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:%.2f",
                         gps_data.heading);
             } else {
                 snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:N/A");

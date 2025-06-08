@@ -112,22 +112,41 @@ static int calculate_zoom_bins(void) {
 // Process 120kHz spectrum data (apply filtering like read_latest_data_120khz.py)
 static void process_120khz_spectrum(const double *raw_data, int raw_size) {
     if (raw_size != 16384) {
-        log_spec_message("Invalid 120kHz spectrum size");
+        char error_msg[256];
+        snprintf(error_msg, sizeof(error_msg), "Invalid 120kHz spectrum size: %d, expected 16384", raw_size);
+        log_spec_message(error_msg);
         return;
     }
     
-    // Calculate zoom parameters
-    double freq_range = current_config.if_upper - current_config.if_lower;
-    double bin_width = freq_range / 16384.0;
-    int center_bin = (int)((current_config.water_maser_freq - current_config.if_lower) / bin_width);
-    int zoom_bins = (int)(current_config.zoom_window_width / bin_width);
-    int zoom_start = center_bin - zoom_bins > 0 ? center_bin - zoom_bins : 0;
-    int zoom_end = center_bin + zoom_bins < 16383 ? center_bin + zoom_bins : 16383;
-    int zoom_width = zoom_end - zoom_start + 1;
+    char debug_msg[512];
+    snprintf(debug_msg, sizeof(debug_msg), "Processing 120kHz spectrum: received %d points", raw_size);
+    log_spec_message(debug_msg);
     
-    if (zoom_width > MAX_ZOOM_BINS) {
-        zoom_width = MAX_ZOOM_BINS;
-        zoom_end = zoom_start + zoom_width - 1;
+    // HARDCODED bin parameters to match Python exactly (from read_latest_data_120khz.py)
+    // FREQ_RANGE = 22.93216 - 20.96608 = 1.96608 GHz
+    // BIN_WIDTH = 1.96608 / 16384 = 0.00012 GHz
+    // WATER_MASER_CENTER_BIN = int((22.235 - 20.96608) / 0.00012) = 10574
+    // ZOOM_BINS = int(0.010 / 0.00012) = 83
+    // ZOOM_START_BIN = 10574 - 83 = 10491
+    // ZOOM_END_BIN = 10574 + 83 = 10657
+    // ZOOM_WIDTH = 10657 - 10491 + 1 = 167
+    
+    const int WATER_MASER_CENTER_BIN = 10574;
+    const int ZOOM_BINS = 83;
+    const int ZOOM_START_BIN = 10491;
+    const int ZOOM_END_BIN = 10657;
+    const int ZOOM_WIDTH = 167;
+    
+    snprintf(debug_msg, sizeof(debug_msg), 
+        "Hardcoded bins: center=%d, zoom_bins=%d, start=%d, end=%d, width=%d", 
+        WATER_MASER_CENTER_BIN, ZOOM_BINS, ZOOM_START_BIN, ZOOM_END_BIN, ZOOM_WIDTH);
+    log_spec_message(debug_msg);
+    
+    if (ZOOM_WIDTH > MAX_ZOOM_BINS) {
+        snprintf(debug_msg, sizeof(debug_msg), 
+            "ERROR: Calculated zoom width %d exceeds MAX_ZOOM_BINS %d", ZOOM_WIDTH, MAX_ZOOM_BINS);
+        log_spec_message(debug_msg);
+        return;
     }
     
     pthread_mutex_lock(&current_spectrum_data.mutex);
@@ -139,16 +158,23 @@ static void process_120khz_spectrum(const double *raw_data, int raw_size) {
         return;
     }
     
-    // Convert to dB
+    // Convert already-processed data to dB (data is already scaled in Python)
     for (int i = 0; i < 16384; i++) {
         spectrum_db[i] = 10.0 * log10(raw_data[i] + 1e-10);
     }
+    
+    // Log sample values after dB conversion
+    snprintf(debug_msg, sizeof(debug_msg), 
+        "After dB conversion: [0]=%.3f, [8192]=%.3f, [16383]=%.3f dB", 
+        spectrum_db[0], spectrum_db[8192], spectrum_db[16383]);
+    log_spec_message(debug_msg);
     
     // Apply flip and fftshift (mimic numpy operations)
     double *flipped = malloc(16384 * sizeof(double));
     if (!flipped) {
         free(spectrum_db);
         pthread_mutex_unlock(&current_spectrum_data.mutex);
+        log_spec_message("ERROR: Failed to allocate memory for flipped spectrum");
         return;
     }
     
@@ -157,12 +183,19 @@ static void process_120khz_spectrum(const double *raw_data, int raw_size) {
         flipped[i] = spectrum_db[16383 - i];
     }
     
+    // Log sample values after flip
+    snprintf(debug_msg, sizeof(debug_msg), 
+        "After flip: [0]=%.3f, [8192]=%.3f, [16383]=%.3f dB", 
+        flipped[0], flipped[8192], flipped[16383]);
+    log_spec_message(debug_msg);
+    
     // FFT shift
     double *shifted = malloc(16384 * sizeof(double));
     if (!shifted) {
         free(spectrum_db);
         free(flipped);
         pthread_mutex_unlock(&current_spectrum_data.mutex);
+        log_spec_message("ERROR: Failed to allocate memory for shifted spectrum");
         return;
     }
     
@@ -172,36 +205,51 @@ static void process_120khz_spectrum(const double *raw_data, int raw_size) {
         shifted[i + half] = flipped[i];
     }
     
-    // Extract zoom window
-    double *zoomed = malloc(zoom_width * sizeof(double));
+    // Log sample values after FFT shift
+    snprintf(debug_msg, sizeof(debug_msg), 
+        "After FFT shift: [0]=%.3f, [8192]=%.3f, [16383]=%.3f dB", 
+        shifted[0], shifted[8192], shifted[16383]);
+    log_spec_message(debug_msg);
+    
+    // Extract zoom window using hardcoded bins
+    double *zoomed = malloc(ZOOM_WIDTH * sizeof(double));
     if (!zoomed) {
         free(spectrum_db);
         free(flipped);
         free(shifted);
         pthread_mutex_unlock(&current_spectrum_data.mutex);
+        log_spec_message("ERROR: Failed to allocate memory for zoomed spectrum");
         return;
     }
     
-    for (int i = 0; i < zoom_width; i++) {
-        zoomed[i] = shifted[zoom_start + i];
+    log_spec_message("Extracting zoom window from FFT-shifted spectrum");
+    for (int i = 0; i < ZOOM_WIDTH; i++) {
+        zoomed[i] = shifted[ZOOM_START_BIN + i];
     }
     
+    // Log sample values from zoomed spectrum for debugging
+    snprintf(debug_msg, sizeof(debug_msg), 
+        "Zoomed spectrum samples: [0]=%.3f, [%d]=%.3f, [%d]=%.3f", 
+        zoomed[0], ZOOM_WIDTH/2, zoomed[ZOOM_WIDTH/2], ZOOM_WIDTH-1, zoomed[ZOOM_WIDTH-1]);
+    log_spec_message(debug_msg);
+    
     // Calculate baseline (median)
-    double *sorted = malloc(zoom_width * sizeof(double));
+    double *sorted = malloc(ZOOM_WIDTH * sizeof(double));
     if (!sorted) {
         free(spectrum_db);
         free(flipped);
         free(shifted);
         free(zoomed);
         pthread_mutex_unlock(&current_spectrum_data.mutex);
+        log_spec_message("ERROR: Failed to allocate memory for sorted spectrum");
         return;
     }
     
-    memcpy(sorted, zoomed, zoom_width * sizeof(double));
+    memcpy(sorted, zoomed, ZOOM_WIDTH * sizeof(double));
     
     // Simple bubble sort for median calculation
-    for (int i = 0; i < zoom_width - 1; i++) {
-        for (int j = 0; j < zoom_width - i - 1; j++) {
+    for (int i = 0; i < ZOOM_WIDTH - 1; i++) {
+        for (int j = 0; j < ZOOM_WIDTH - i - 1; j++) {
             if (sorted[j] > sorted[j + 1]) {
                 double temp = sorted[j];
                 sorted[j] = sorted[j + 1];
@@ -210,20 +258,31 @@ static void process_120khz_spectrum(const double *raw_data, int raw_size) {
         }
     }
     
-    double baseline = sorted[zoom_width / 2];  // Median
+    double baseline = sorted[ZOOM_WIDTH / 2];  // Median
+    
+    snprintf(debug_msg, sizeof(debug_msg), "Calculated baseline (median): %.6f dB", baseline);
+    log_spec_message(debug_msg);
     
     // Update spectrum data
     current_spectrum_data.active_type = SPEC_TYPE_120KHZ;
     current_spectrum_data.high_res.timestamp = shared_memory->timestamp;
-    current_spectrum_data.high_res.num_points = zoom_width;
+    current_spectrum_data.high_res.num_points = ZOOM_WIDTH;
     current_spectrum_data.high_res.freq_start = current_config.water_maser_freq - current_config.zoom_window_width;
     current_spectrum_data.high_res.freq_end = current_config.water_maser_freq + current_config.zoom_window_width;
     current_spectrum_data.high_res.baseline = baseline;
     
     // Apply baseline subtraction and store
-    for (int i = 0; i < zoom_width; i++) {
+    double min_val = 1e10, max_val = -1e10;
+    for (int i = 0; i < ZOOM_WIDTH; i++) {
         current_spectrum_data.high_res.data[i] = zoomed[i] - baseline;
+        if (current_spectrum_data.high_res.data[i] < min_val) min_val = current_spectrum_data.high_res.data[i];
+        if (current_spectrum_data.high_res.data[i] > max_val) max_val = current_spectrum_data.high_res.data[i];
     }
+    
+    snprintf(debug_msg, sizeof(debug_msg), 
+        "Baseline-subtracted spectrum: min=%.6f, max=%.6f, points=%d", 
+        min_val, max_val, ZOOM_WIDTH);
+    log_spec_message(debug_msg);
     
     current_spectrum_data.ready = 1;
     current_spectrum_data.last_update = time(NULL);
@@ -314,8 +373,34 @@ static void format_120khz_response(char *buffer, size_t buffer_size) {
     
     if (current_spectrum_data.active_type != SPEC_TYPE_120KHZ || !current_spectrum_data.ready) {
         snprintf(buffer, buffer_size, "ERROR:NO_120KHZ_DATA_AVAILABLE");
+        char debug_msg[128];
+        snprintf(debug_msg, sizeof(debug_msg), 
+            "120kHz data not available: active_type=%d, ready=%d", 
+            current_spectrum_data.active_type, current_spectrum_data.ready);
+        log_spec_message(debug_msg);
         pthread_mutex_unlock(&current_spectrum_data.mutex);
         return;
+    }
+    
+    // Log what we're about to send
+    char debug_msg[512];
+    snprintf(debug_msg, sizeof(debug_msg), 
+        "Formatting 120kHz response: timestamp=%.6f, points=%d, baseline=%.6f",
+        current_spectrum_data.high_res.timestamp,
+        current_spectrum_data.high_res.num_points,
+        current_spectrum_data.high_res.baseline);
+    log_spec_message(debug_msg);
+    
+    // Log sample data values
+    if (current_spectrum_data.high_res.num_points > 0) {
+        snprintf(debug_msg, sizeof(debug_msg), 
+            "Sample data values: [0]=%.6f, [%d]=%.6f, [%d]=%.6f",
+            current_spectrum_data.high_res.data[0],
+            current_spectrum_data.high_res.num_points/2,
+            current_spectrum_data.high_res.data[current_spectrum_data.high_res.num_points/2],
+            current_spectrum_data.high_res.num_points-1,
+            current_spectrum_data.high_res.data[current_spectrum_data.high_res.num_points-1]);
+        log_spec_message(debug_msg);
     }
     
     // Start with header
@@ -333,6 +418,10 @@ static void format_120khz_response(char *buffer, size_t buffer_size) {
             "%.6f%s", current_spectrum_data.high_res.data[i],
             (i == current_spectrum_data.high_res.num_points - 1) ? "" : ",");
     }
+    
+    snprintf(debug_msg, sizeof(debug_msg), 
+        "120kHz response formatted: total_length=%d bytes", (int)strlen(buffer));
+    log_spec_message(debug_msg);
     
     pthread_mutex_unlock(&current_spectrum_data.mutex);
 }
@@ -406,6 +495,12 @@ static void *udp_server_thread_func(void *arg) {
         if (shared_memory && shared_memory->ready) {
             if (shared_memory->active_type == SPEC_TYPE_STANDARD) {
                 // Process standard spectrum
+                char debug_msg[256];
+                snprintf(debug_msg, sizeof(debug_msg), 
+                    "Received STANDARD spectrum: timestamp=%.6f, data_size=%d bytes", 
+                    shared_memory->timestamp, shared_memory->data_size);
+                log_spec_message(debug_msg);
+                
                 pthread_mutex_lock(&current_spectrum_data.mutex);
                 current_spectrum_data.active_type = SPEC_TYPE_STANDARD;
                 current_spectrum_data.standard.timestamp = shared_memory->timestamp;
@@ -420,7 +515,26 @@ static void *udp_server_thread_func(void *arg) {
                 pthread_mutex_unlock(&current_spectrum_data.mutex);
             } else if (shared_memory->active_type == SPEC_TYPE_120KHZ) {
                 // Process 120kHz spectrum with filtering
+                char debug_msg[256];
+                snprintf(debug_msg, sizeof(debug_msg), 
+                    "Received 120KHZ spectrum: timestamp=%.6f, data_size=%d bytes, points=%d", 
+                    shared_memory->timestamp, shared_memory->data_size, 
+                    shared_memory->data_size / (int)sizeof(double));
+                log_spec_message(debug_msg);
+                
+                // Log sample values from raw data
+                double *raw_data = (double*)shared_memory->data;
+                snprintf(debug_msg, sizeof(debug_msg), 
+                    "Raw spectrum samples: [0]=%.3e, [8192]=%.3e, [16383]=%.3e", 
+                    raw_data[0], raw_data[8192], raw_data[16383]);
+                log_spec_message(debug_msg);
+                
                 process_120khz_spectrum((double*)shared_memory->data, shared_memory->data_size / sizeof(double));
+            } else {
+                char debug_msg[128];
+                snprintf(debug_msg, sizeof(debug_msg), 
+                    "Received unknown spectrum type: %d", shared_memory->active_type);
+                log_spec_message(debug_msg);
             }
             shared_memory->ready = 0;  // Mark as processed
         }
