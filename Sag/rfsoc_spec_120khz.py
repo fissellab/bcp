@@ -38,6 +38,19 @@ WORDS_PER_BRAM = NFFT // NPAR      # 2048
 BYTES_PER_WORD = 8
 BRAM_NAMES = [f"q{i}" for i in range(1, NPAR+1)]
 
+# Water Maser Processing Constants (matching reference script exactly)
+WATER_MASER_FREQ = 22.235  # GHz
+ZOOM_WINDOW_WIDTH = 0.010  # GHz (±10 MHz)
+IF_LOWER = 20.96608  # GHz
+IF_UPPER = 22.93216  # GHz
+FREQ_RANGE = IF_UPPER - IF_LOWER  # 1.96608 GHz
+BIN_WIDTH = FREQ_RANGE / FFT_SIZE  # 0.00012 GHz per bin
+WATER_MASER_CENTER_BIN = int((WATER_MASER_FREQ - IF_LOWER) / BIN_WIDTH)  # 10574
+ZOOM_BINS = int(ZOOM_WINDOW_WIDTH / BIN_WIDTH)  # 83
+ZOOM_START_BIN = max(0, WATER_MASER_CENTER_BIN - ZOOM_BINS)  # 10491
+ZOOM_END_BIN = min(FFT_SIZE - 1, WATER_MASER_CENTER_BIN + ZOOM_BINS)  # 10657
+ZOOM_WIDTH = ZOOM_END_BIN - ZOOM_START_BIN + 1  # 167
+
 def setup_logging(logpath):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
                         handlers=[logging.FileHandler(logpath), logging.StreamHandler()])
@@ -61,9 +74,9 @@ def init_shared_memory():
         shared_memory_fd = open(f"/dev/shm{SHM_NAME}", "r+b")
         
         # Calculate shared memory size to match C structure:
-        # ready(4) + active_type(4) + timestamp(8) + data_size(4) + data(16384*8) = 131096 bytes
-        # Note: C compiler adds padding for alignment
-        shm_size = 131096  # Exact size from C structure
+        # ready(4) + active_type(4) + timestamp(8) + data_size(4) + baseline(8) + data(167*8) = 1364 bytes
+        # But keep larger size for compatibility - we'll update C server to match
+        shm_size = 131096  # Keep existing size for now
         shared_memory_mm = mmap.mmap(shared_memory_fd.fileno(), shm_size)
         
         logging.info("Connected to existing shared memory for UDP server communication")
@@ -87,39 +100,41 @@ def cleanup_shared_memory():
     except Exception as e:
         logging.error(f"Error cleaning up shared memory: {e}")
 
-def write_to_shared_memory(raw_spectrum_data, timestamp):
-    """Write raw 16384-point spectrum data to shared memory for UDP server to filter"""
+def write_processed_spectrum_to_shared_memory(processed_data, baseline, timestamp):
+    """Write processed 120kHz spectrum data to shared memory for UDP server"""
     global shared_memory_mm
     
     if shared_memory_mm is None:
         return  # Shared memory not available
     
     try:
-        # Ensure we have exactly 16384 points and correct data type
-        if len(raw_spectrum_data) != 16384:
-            logging.error(f"Invalid spectrum size: {len(raw_spectrum_data)}, expected 16384")
+        # Ensure we have the expected zoom window size
+        if len(processed_data) != ZOOM_WIDTH:
+            logging.error(f"Invalid processed spectrum size: {len(processed_data)}, expected {ZOOM_WIDTH}")
             return
             
         # Convert to numpy array if needed and ensure float64
-        if not isinstance(raw_spectrum_data, np.ndarray):
-            raw_spectrum_data = np.array(raw_spectrum_data, dtype=np.float64)
+        if not isinstance(processed_data, np.ndarray):
+            processed_data = np.array(processed_data, dtype=np.float64)
         else:
-            raw_spectrum_data = raw_spectrum_data.astype(np.float64)
+            processed_data = processed_data.astype(np.float64)
         
         shared_memory_mm.seek(0)
         
-        # Write header matching C structure exactly:
-        # ready(0), active_type(4), timestamp(8), data_size(16), data(24)
-        shared_memory_mm.write(struct.pack('I', 0))  # ready = 0 (writing) - 4 bytes
-        shared_memory_mm.write(struct.pack('I', SPEC_TYPE_120KHZ))  # active_type - 4 bytes  
-        shared_memory_mm.write(struct.pack('d', timestamp))  # timestamp - 8 bytes
-        shared_memory_mm.write(struct.pack('I', len(raw_spectrum_data) * 8))  # data_size - 4 bytes
+        # Write header matching C structure exactly with proper alignment:
+        # C struct layout with padding: ready(4) + active_type(4) + timestamp(8) + data_size(4) + padding(4) + baseline(8) + data
+        shared_memory_mm.write(struct.pack('I', 0))  # ready = 0 (writing) - 4 bytes, offset 0
+        shared_memory_mm.write(struct.pack('I', SPEC_TYPE_120KHZ))  # active_type - 4 bytes, offset 4  
+        shared_memory_mm.write(struct.pack('d', timestamp))  # timestamp - 8 bytes, offset 8
+        shared_memory_mm.write(struct.pack('I', len(processed_data) * 8))  # data_size - 4 bytes, offset 16
+        shared_memory_mm.write(struct.pack('I', 0))  # padding - 4 bytes, offset 20 (for 8-byte alignment)
+        shared_memory_mm.write(struct.pack('d', baseline))  # baseline - 8 bytes, offset 24
         
-        # Data starts at offset 24, but we're at offset 20. Add 4 bytes padding.
-        shared_memory_mm.seek(24)  # Jump to data start offset
+        # Data starts at offset 32 (after 8-byte baseline)
+        shared_memory_mm.seek(32)  # Jump to data start offset
         
-        # Write raw spectrum data (16384 points for server-side filtering) - 16384 * 8 bytes
-        data_bytes = struct.pack(f'{len(raw_spectrum_data)}d', *raw_spectrum_data)
+        # Write processed spectrum data (167 baseline-subtracted points) 
+        data_bytes = struct.pack(f'{len(processed_data)}d', *processed_data)
         shared_memory_mm.write(data_bytes)
         
         # Set ready flag to indicate data is available
@@ -129,7 +144,7 @@ def write_to_shared_memory(raw_spectrum_data, timestamp):
         shared_memory_mm.flush()
         
     except Exception as e:
-        logging.error(f"Error writing to shared memory: {e}")
+        logging.error(f"Error writing processed spectrum to shared memory: {e}")
 
 # Helper functions for stable FPGA readout
 def wait_for_dump(fpga, last_cnt, poll=0.0005):
@@ -182,6 +197,37 @@ def square_law_integrator(spectrum):
     power = np.abs(spectrum) ** 2
     return np.sum(power)
 
+def process_120khz_spectrum(raw_spectrum):
+    """
+    Process 120kHz spectrum data following the reference script pipeline exactly.
+    Input: raw_spectrum - 16384 linear power values (already scaled by 2^34)
+    Output: (baseband_subtracted, baseline) - processed zoom window and baseline value
+    """
+    try:
+        # Step 1: Convert to dB (same as reference script)
+        full_spectrum_db = 10 * np.log10(raw_spectrum + 1e-10)
+        
+        # Step 2: Flip the spectrum (same as reference script)
+        flipped_spectrum = np.flip(full_spectrum_db)
+        
+        # Step 3: Apply FFT shift (same as reference script)
+        spectrum_db = np.fft.fftshift(flipped_spectrum)
+        
+        # Step 4: Extract zoom window (same as reference script)
+        zoomed_spectrum = spectrum_db[ZOOM_START_BIN:ZOOM_END_BIN+1]
+        
+        # Step 5: Calculate median baseline (same as reference script)
+        baseline = np.median(zoomed_spectrum)
+        
+        # Step 6: Subtract baseline (same as reference script)
+        baseband_subtracted = zoomed_spectrum - baseline
+        
+        return baseband_subtracted, baseline
+        
+    except Exception as e:
+        logging.error(f"Error in process_120khz_spectrum: {e}")
+        return None, None
+
 def get_vacc_data(fpga, last_cnt=None):
     """
     Read accumulated spectral data from the FPGA with 16384-point FFT support.
@@ -195,12 +241,7 @@ def get_vacc_data(fpga, last_cnt=None):
         # Wait for a complete FPGA dump
         acc_n = wait_for_dump(fpga, last_cnt)
         
-        # Get the raw integer data BEFORE scaling for shared memory
-        raw_integer_data = read_spectrum_raw_integer(fpga)
-        
-
-        
-        # Use the stable read_spectrum function for file output (scaled)
+        # Use the stable read_spectrum function (scaled)
         raw_spectrum = read_spectrum(fpga)
         
         # Write timestamp and data to file BEFORE any transformations
@@ -213,9 +254,14 @@ def get_vacc_data(fpga, last_cnt=None):
             spectrum_file.flush()
             os.fsync(spectrum_file.fileno())
         
-        # Send the same scaled data to shared memory that gets written to files
-        # The C server will apply 10*log10() conversion like the reference script
-        write_to_shared_memory(raw_spectrum, timestamp)
+        # Process the spectrum using our new pipeline (Python-side processing)
+        processed_spectrum, baseline = process_120khz_spectrum(raw_spectrum)
+        
+        if processed_spectrum is not None and baseline is not None:
+            # Send processed data to shared memory for the C server to format and serve
+            write_processed_spectrum_to_shared_memory(processed_spectrum, baseline, timestamp)
+        else:
+            logging.error("Failed to process spectrum data for shared memory")
             
         return acc_n, raw_spectrum
     except Exception as e:
@@ -303,6 +349,9 @@ def start_data_acquisition(fpga):
     # Log basic configuration information
     logging.info(f"Starting 120 kHz resolution spectrometer acquisition")
     logging.info(f"FFT size: {NFFT}, Frequency resolution: {FREQUENCY_RESOLUTION:.6f} MHz")
+    logging.info(f"Water maser processing: center_bin={WATER_MASER_CENTER_BIN}, zoom_bins={ZOOM_BINS}")
+    logging.info(f"Zoom window: bins {ZOOM_START_BIN}-{ZOOM_END_BIN} ({ZOOM_WIDTH} points)")
+    logging.info(f"Frequency range: {WATER_MASER_FREQ-ZOOM_WINDOW_WIDTH:.6f}-{WATER_MASER_FREQ+ZOOM_WINDOW_WIDTH:.6f} GHz")
     logging.info("Data acquisition in progress...")
     
     # Initialize data structures

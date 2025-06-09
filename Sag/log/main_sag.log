@@ -1,21 +1,533 @@
-Sat Jun  7 21:50:26 2025 : main_Sag.c : main : Started logfile
-Sat Jun  7 21:50:26 2025 : main_Sag.c : main : Starting command log
-Sat Jun  7 21:50:26 2025 : main_Sag.c : main : GPS initialized
-Sat Jun  7 21:50:26 2025 : main_Sag.c : main : GPS logging started automatically
-Sat Jun  7 21:50:26 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for 3 authorized clients
-Sat Jun  7 21:50:26 2025 : main_Sag.c : main : Spectrometer server initialized
-Sat Jun  7 21:50:26 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081 for 3 authorized clients
-Sat Jun  7 21:53:37 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
-Sat Jun  7 21:53:37 2025 : main_Sag.c : main : GPS UDP server stopped during cleanup
-Sat Jun  7 21:53:37 2025 : main_Sag.c : main : GPS logging stopped during cleanup
-7 21:51:18,445 - INFO - Programming FPGA with rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
-2025-06-07 21:51:20,049 - INFO - FPGA programmed successfully
-2025-06-07 21:51:22,052 - INFO - Reading FPGA system information
-2025-06-07 21:51:22,500 - INFO - Setting acc_len to 32768
-2025-06-07 21:51:22,605 - INFO - Setting adc_chan_sel to 0
-2025-06-07 21:51:22,710 - INFO - Resetting counters
-2025-06-07 21:51:27,725 - INFO - Connected to existing shared memory for UDP server communication
-2025-06-07 21:51:27,725 - INFO - Starting 120 kHz resolution spectrometer acquisition
-2025-06-07 21:51:27,725 - INFO - FFT size: 16384, Frequency resolution: 0.120000 MHz
-2025-06-07 21:51:27,725 - INFO - Data acquisition in progress...
-2025-06-07 21:53:34,404 - INFO - Received termination signal. Cleaning up...
+Mon Jun  9 12:09:37 2025 : main_Sag.c : main : Started logfile
+Mon Jun  9 12:09:37 2025 : main_Sag.c : main : Starting command log
+Mon Jun  9 12:09:37 2025 : main_Sag.c : main : GPS initialized
+Mon Jun  9 12:09:37 2025 : main_Sag.c : main : GPS logging started automatically
+Mon Jun  9 12:09:37 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for 3 authorized clients
+Mon Jun  9 12:09:37 2025 : main_Sag.c : main : Spectrometer server initialized
+Mon Jun  9 12:09:37 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081 for 3 authorized clients
+2025-06-09 12:09:44,265 - INFO - Using FPGA file at rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
+2025-06-09 12:09:44,266 - INFO - Connecting to FPGA at 172.20.3.12...
+2025-06-09 12:09:44,480 - INFO - Connected to FPGA
+2025-06-09 12:09:44,480 - INFO - Programming FPGA with rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
+2025-06-09 12:09:46,796 - INFO - FPGA programmed successfully
+2025-06-09 12:09:48,798 - INFO - Reading FPGA system information
+2025-06-09 12:09:49,230 - INFO - Setting acc_len to 32768
+2025-06-09 12:09:49,334 - INFO - Setting adc_chan_sel to 0
+2025-06-09 12:09:49,439 - INFO - Resetting counters
+2025-06-09 12:09:54,448 - INFO - Connected to existing shared memory for UDP server communication
+2025-06-09 12:09:54,448 - INFO - Starting 120 kHz resolution spectrometer acquisition
+2025-06-09 12:09:54,448 - INFO - FFT size: 16384, Frequency resolution: 0.120000 MHz
+2025-06-09 12:09:54,449 - INFO - Water maser processing: center_bin=10574, zoom_bins=83
+2025-06-09 12:09:54,449 - INFO - Zoom window: bins 10491-10657 (167 points)
+2025-06-09 12:09:54,449 - INFO - Frequency range: 22.225000-22.245000 GHz
+2025-06-09 12:09:54,450 - INFO - Data acquisition in progress...
+2025-06-09 12:09:54,813 - INFO - Processed 120kHz spectrum: baseline=-44.290539 dB, range=[-0.271495, 12.474697], zoom_points=167
+2025-06-09 12:09:54,814 - INFO - Wrote to shared memory: 167 points, baseline=-44.290539 dB, range=[-0.271495, 12.474697]
+2025-06-09 12:09:55,204 - INFO - Processed 120kHz spectrum: baseline=-44.297775 dB, range=[-0.233407, 12.511029], zoom_points=167
+2025-06-09 12:09:55,204 - INFO - Wrote to shared memory: 167 points, baseline=-44.297775 dB, range=[-0.233407, 12.511029]
+2025-06-09 12:09:55,594 - INFO - Processed 120kHz spectrum: baseline=-44.296565 dB, range=[-0.250607, 12.516833], zoom_points=167
+2025-06-09 12:09:55,595 - INFO - Wrote to shared memory: 167 points, baseline=-44.296565 dB, range=[-0.250607, 12.516833]
+2025-06-09 12:09:55,984 - INFO - Processed 120kHz spectrum: baseline=-44.283829 dB, range=[-0.266584, 12.554668], zoom_points=167
+2025-06-09 12:09:55,985 - INFO - Wrote to shared memory: 167 points, baseline=-44.283829 dB, range=[-0.266584, 12.554668]
+2025-06-09 12:09:56,376 - INFO - Processed 120kHz spectrum: baseline=-44.299891 dB, range=[-0.272527, 12.620329], zoom_points=167
+2025-06-09 12:09:56,377 - INFO - Wrote to shared memory: 167 points, baseline=-44.299891 dB, range=[-0.272527, 12.620329]
+2025-06-09 12:09:56,768 - INFO - Processed 120kHz spectrum: baseline=-44.288978 dB, range=[-0.234183, 12.498901], zoom_points=167
+2025-06-09 12:09:56,769 - INFO - Wrote to shared memory: 167 points, baseline=-44.288978 dB, range=[-0.234183, 12.498901]
+2025-06-09 12:09:57,160 - INFO - Processed 120kHz spectrum: baseline=-44.285701 dB, range=[-0.297670, 12.517453], zoom_points=167
+2025-06-09 12:09:57,160 - INFO - Wrote to shared memory: 167 points, baseline=-44.285701 dB, range=[-0.297670, 12.517453]
+2025-06-09 12:09:57,553 - INFO - Processed 120kHz spectrum: baseline=-44.290688 dB, range=[-0.237066, 12.403725], zoom_points=167
+2025-06-09 12:09:57,553 - INFO - Wrote to shared memory: 167 points, baseline=-44.290688 dB, range=[-0.237066, 12.403725]
+2025-06-09 12:09:57,943 - INFO - Processed 120kHz spectrum: baseline=-44.297714 dB, range=[-0.219863, 12.446280], zoom_points=167
+2025-06-09 12:09:57,944 - INFO - Wrote to shared memory: 167 points, baseline=-44.297714 dB, range=[-0.219863, 12.446280]
+2025-06-09 12:09:58,335 - INFO - Processed 120kHz spectrum: baseline=-44.291068 dB, range=[-0.255714, 12.548203], zoom_points=167
+2025-06-09 12:09:58,336 - INFO - Wrote to shared memory: 167 points, baseline=-44.291068 dB, range=[-0.255714, 12.548203]
+2025-06-09 12:09:58,737 - INFO - Processed 120kHz spectrum: baseline=-44.282338 dB, range=[-0.259391, 12.653525], zoom_points=167
+2025-06-09 12:09:58,737 - INFO - Wrote to shared memory: 167 points, baseline=-44.282338 dB, range=[-0.259391, 12.653525]
+2025-06-09 12:09:59,128 - INFO - Processed 120kHz spectrum: baseline=-44.305528 dB, range=[-0.224586, 12.507543], zoom_points=167
+2025-06-09 12:09:59,128 - INFO - Wrote to shared memory: 167 points, baseline=-44.305528 dB, range=[-0.224586, 12.507543]
+2025-06-09 12:09:59,519 - INFO - Processed 120kHz spectrum: baseline=-44.305766 dB, range=[-0.286925, 12.675384], zoom_points=167
+2025-06-09 12:09:59,520 - INFO - Wrote to shared memory: 167 points, baseline=-44.305766 dB, range=[-0.286925, 12.675384]
+2025-06-09 12:09:59,909 - INFO - Processed 120kHz spectrum: baseline=-44.285836 dB, range=[-0.282200, 12.728157], zoom_points=167
+2025-06-09 12:09:59,909 - INFO - Wrote to shared memory: 167 points, baseline=-44.285836 dB, range=[-0.282200, 12.728157]
+2025-06-09 12:10:00,299 - INFO - Processed 120kHz spectrum: baseline=-44.283958 dB, range=[-0.272861, 12.623068], zoom_points=167
+2025-06-09 12:10:00,299 - INFO - Wrote to shared memory: 167 points, baseline=-44.283958 dB, range=[-0.272861, 12.623068]
+2025-06-09 12:10:00,703 - INFO - Processed 120kHz spectrum: baseline=-44.273836 dB, range=[-0.254700, 12.797849], zoom_points=167
+2025-06-09 12:10:00,704 - INFO - Wrote to shared memory: 167 points, baseline=-44.273836 dB, range=[-0.254700, 12.797849]
+2025-06-09 12:10:01,110 - INFO - Processed 120kHz spectrum: baseline=-44.286535 dB, range=[-0.203801, 12.929710], zoom_points=167
+2025-06-09 12:10:01,111 - INFO - Wrote to shared memory: 167 points, baseline=-44.286535 dB, range=[-0.203801, 12.929710]
+2025-06-09 12:10:01,515 - INFO - Processed 120kHz spectrum: baseline=-44.281552 dB, range=[-0.320881, 12.852876], zoom_points=167
+2025-06-09 12:10:01,516 - INFO - Wrote to shared memory: 167 points, baseline=-44.281552 dB, range=[-0.320881, 12.852876]
+2025-06-09 12:10:01,924 - INFO - Processed 120kHz spectrum: baseline=-44.305303 dB, range=[-0.204862, 12.569732], zoom_points=167
+2025-06-09 12:10:01,924 - INFO - Wrote to shared memory: 167 points, baseline=-44.305303 dB, range=[-0.204862, 12.569732]
+2025-06-09 12:10:02,330 - INFO - Processed 120kHz spectrum: baseline=-44.298333 dB, range=[-0.238601, 12.509733], zoom_points=167
+2025-06-09 12:10:02,331 - INFO - Wrote to shared memory: 167 points, baseline=-44.298333 dB, range=[-0.238601, 12.509733]
+2025-06-09 12:10:02,737 - INFO - Processed 120kHz spectrum: baseline=-44.286549 dB, range=[-0.272516, 12.605321], zoom_points=167
+2025-06-09 12:10:02,738 - INFO - Wrote to shared memory: 167 points, baseline=-44.286549 dB, range=[-0.272516, 12.605321]
+2025-06-09 12:10:03,150 - INFO - Processed 120kHz spectrum: baseline=-44.297585 dB, range=[-0.248298, 13.118986], zoom_points=167
+2025-06-09 12:10:03,150 - INFO - Wrote to shared memory: 167 points, baseline=-44.297585 dB, range=[-0.248298, 13.118986]
+2025-06-09 12:10:03,557 - INFO - Processed 120kHz spectrum: baseline=-44.295253 dB, range=[-0.298472, 12.762628], zoom_points=167
+2025-06-09 12:10:03,557 - INFO - Wrote to shared memory: 167 points, baseline=-44.295253 dB, range=[-0.298472, 12.762628]
+2025-06-09 12:10:03,963 - INFO - Processed 120kHz spectrum: baseline=-44.295579 dB, range=[-0.224631, 12.719183], zoom_points=167
+2025-06-09 12:10:03,963 - INFO - Wrote to shared memory: 167 points, baseline=-44.295579 dB, range=[-0.224631, 12.719183]
+2025-06-09 12:10:04,368 - INFO - Processed 120kHz spectrum: baseline=-44.287281 dB, range=[-0.261641, 12.611220], zoom_points=167
+2025-06-09 12:10:04,368 - INFO - Wrote to shared memory: 167 points, baseline=-44.287281 dB, range=[-0.261641, 12.611220]
+2025-06-09 12:10:04,774 - INFO - Processed 120kHz spectrum: baseline=-44.293643 dB, range=[-0.203388, 12.649184], zoom_points=167
+2025-06-09 12:10:04,775 - INFO - Wrote to shared memory: 167 points, baseline=-44.293643 dB, range=[-0.203388, 12.649184]
+2025-06-09 12:10:05,179 - INFO - Processed 120kHz spectrum: baseline=-44.284365 dB, range=[-0.226043, 12.735641], zoom_points=167
+2025-06-09 12:10:05,180 - INFO - Wrote to shared memory: 167 points, baseline=-44.284365 dB, range=[-0.226043, 12.735641]
+2025-06-09 12:10:05,585 - INFO - Processed 120kHz spectrum: baseline=-44.288618 dB, range=[-0.249272, 12.700062], zoom_points=167
+2025-06-09 12:10:05,585 - INFO - Wrote to shared memory: 167 points, baseline=-44.288618 dB, range=[-0.249272, 12.700062]
+2025-06-09 12:10:05,993 - INFO - Processed 120kHz spectrum: baseline=-44.301551 dB, range=[-0.272243, 12.824768], zoom_points=167
+2025-06-09 12:10:05,994 - INFO - Wrote to shared memory: 167 points, baseline=-44.301551 dB, range=[-0.272243, 12.824768]
+2025-06-09 12:10:06,405 - INFO - Processed 120kHz spectrum: baseline=-44.314168 dB, range=[-0.248177, 12.941959], zoom_points=167
+2025-06-09 12:10:06,406 - INFO - Wrote to shared memory: 167 points, baseline=-44.314168 dB, range=[-0.248177, 12.941959]
+2025-06-09 12:10:06,812 - INFO - Processed 120kHz spectrum: baseline=-44.300945 dB, range=[-0.256913, 12.890063], zoom_points=167
+2025-06-09 12:10:06,812 - INFO - Wrote to shared memory: 167 points, baseline=-44.300945 dB, range=[-0.256913, 12.890063]
+2025-06-09 12:10:07,217 - INFO - Processed 120kHz spectrum: baseline=-44.279107 dB, range=[-0.327041, 12.891543], zoom_points=167
+2025-06-09 12:10:07,217 - INFO - Wrote to shared memory: 167 points, baseline=-44.279107 dB, range=[-0.327041, 12.891543]
+2025-06-09 12:10:07,622 - INFO - Processed 120kHz spectrum: baseline=-44.293609 dB, range=[-0.263001, 12.858046], zoom_points=167
+2025-06-09 12:10:07,622 - INFO - Wrote to shared memory: 167 points, baseline=-44.293609 dB, range=[-0.263001, 12.858046]
+2025-06-09 12:10:08,026 - INFO - Processed 120kHz spectrum: baseline=-44.293466 dB, range=[-0.273536, 12.767725], zoom_points=167
+2025-06-09 12:10:08,026 - INFO - Wrote to shared memory: 167 points, baseline=-44.293466 dB, range=[-0.273536, 12.767725]
+2025-06-09 12:10:08,431 - INFO - Processed 120kHz spectrum: baseline=-44.280225 dB, range=[-0.332104, 12.692481], zoom_points=167
+2025-06-09 12:10:08,432 - INFO - Wrote to shared memory: 167 points, baseline=-44.280225 dB, range=[-0.332104, 12.692481]
+2025-06-09 12:10:08,837 - INFO - Processed 120kHz spectrum: baseline=-44.301048 dB, range=[-0.279752, 12.763215], zoom_points=167
+2025-06-09 12:10:08,838 - INFO - Wrote to shared memory: 167 points, baseline=-44.301048 dB, range=[-0.279752, 12.763215]
+2025-06-09 12:10:09,242 - INFO - Processed 120kHz spectrum: baseline=-44.294118 dB, range=[-0.239670, 12.805519], zoom_points=167
+2025-06-09 12:10:09,242 - INFO - Wrote to shared memory: 167 points, baseline=-44.294118 dB, range=[-0.239670, 12.805519]
+2025-06-09 12:10:09,646 - INFO - Processed 120kHz spectrum: baseline=-44.290573 dB, range=[-0.332502, 12.834649], zoom_points=167
+2025-06-09 12:10:09,646 - INFO - Wrote to shared memory: 167 points, baseline=-44.290573 dB, range=[-0.332502, 12.834649]
+2025-06-09 12:10:10,050 - INFO - Processed 120kHz spectrum: baseline=-44.283802 dB, range=[-0.355737, 12.661880], zoom_points=167
+2025-06-09 12:10:10,050 - INFO - Wrote to shared memory: 167 points, baseline=-44.283802 dB, range=[-0.355737, 12.661880]
+2025-06-09 12:10:10,455 - INFO - Processed 120kHz spectrum: baseline=-44.303757 dB, range=[-0.344878, 12.715429], zoom_points=167
+2025-06-09 12:10:10,455 - INFO - Wrote to shared memory: 167 points, baseline=-44.303757 dB, range=[-0.344878, 12.715429]
+2025-06-09 12:10:10,862 - INFO - Processed 120kHz spectrum: baseline=-44.288679 dB, range=[-0.277129, 12.659077], zoom_points=167
+2025-06-09 12:10:10,863 - INFO - Wrote to shared memory: 167 points, baseline=-44.288679 dB, range=[-0.277129, 12.659077]
+2025-06-09 12:10:11,270 - INFO - Processed 120kHz spectrum: baseline=-44.301470 dB, range=[-0.251864, 12.843908], zoom_points=167
+2025-06-09 12:10:11,270 - INFO - Wrote to shared memory: 167 points, baseline=-44.301470 dB, range=[-0.251864, 12.843908]
+2025-06-09 12:10:11,680 - INFO - Processed 120kHz spectrum: baseline=-44.297762 dB, range=[-0.257931, 12.878317], zoom_points=167
+2025-06-09 12:10:11,680 - INFO - Wrote to shared memory: 167 points, baseline=-44.297762 dB, range=[-0.257931, 12.878317]
+2025-06-09 12:10:12,089 - INFO - Processed 120kHz spectrum: baseline=-44.289412 dB, range=[-0.265827, 12.947022], zoom_points=167
+2025-06-09 12:10:12,090 - INFO - Wrote to shared memory: 167 points, baseline=-44.289412 dB, range=[-0.265827, 12.947022]
+2025-06-09 12:10:12,498 - INFO - Processed 120kHz spectrum: baseline=-44.297422 dB, range=[-0.238967, 12.860471], zoom_points=167
+2025-06-09 12:10:12,498 - INFO - Wrote to shared memory: 167 points, baseline=-44.297422 dB, range=[-0.238967, 12.860471]
+2025-06-09 12:10:12,902 - INFO - Processed 120kHz spectrum: baseline=-44.287430 dB, range=[-0.378891, 12.752452], zoom_points=167
+2025-06-09 12:10:12,903 - INFO - Wrote to shared memory: 167 points, baseline=-44.287430 dB, range=[-0.378891, 12.752452]
+2025-06-09 12:10:13,311 - INFO - Processed 120kHz spectrum: baseline=-44.282176 dB, range=[-0.256031, 12.765044], zoom_points=167
+2025-06-09 12:10:13,311 - INFO - Wrote to shared memory: 167 points, baseline=-44.282176 dB, range=[-0.256031, 12.765044]
+2025-06-09 12:10:13,719 - INFO - Processed 120kHz spectrum: baseline=-44.284772 dB, range=[-0.251897, 12.851508], zoom_points=167
+2025-06-09 12:10:13,719 - INFO - Wrote to shared memory: 167 points, baseline=-44.284772 dB, range=[-0.251897, 12.851508]
+2025-06-09 12:10:14,123 - INFO - Processed 120kHz spectrum: baseline=-44.291062 dB, range=[-0.274790, 12.868845], zoom_points=167
+2025-06-09 12:10:14,124 - INFO - Wrote to shared memory: 167 points, baseline=-44.291062 dB, range=[-0.274790, 12.868845]
+2025-06-09 12:10:14,527 - INFO - Processed 120kHz spectrum: baseline=-44.304493 dB, range=[-0.246080, 12.641484], zoom_points=167
+2025-06-09 12:10:14,528 - INFO - Wrote to shared memory: 167 points, baseline=-44.304493 dB, range=[-0.246080, 12.641484]
+2025-06-09 12:10:14,925 - INFO - Processed 120kHz spectrum: baseline=-44.284433 dB, range=[-0.353966, 12.603188], zoom_points=167
+2025-06-09 12:10:14,926 - INFO - Wrote to shared memory: 167 points, baseline=-44.284433 dB, range=[-0.353966, 12.603188]
+2025-06-09 12:10:15,321 - INFO - Processed 120kHz spectrum: baseline=-44.292542 dB, range=[-0.238397, 12.516696], zoom_points=167
+2025-06-09 12:10:15,321 - INFO - Wrote to shared memory: 167 points, baseline=-44.292542 dB, range=[-0.238397, 12.516696]
+2025-06-09 12:10:15,721 - INFO - Processed 120kHz spectrum: baseline=-44.294268 dB, range=[-0.260235, 12.657972], zoom_points=167
+2025-06-09 12:10:15,722 - INFO - Wrote to shared memory: 167 points, baseline=-44.294268 dB, range=[-0.260235, 12.657972]
+2025-06-09 12:10:16,122 - INFO - Processed 120kHz spectrum: baseline=-44.283477 dB, range=[-0.277892, 12.605784], zoom_points=167
+2025-06-09 12:10:16,122 - INFO - Wrote to shared memory: 167 points, baseline=-44.283477 dB, range=[-0.277892, 12.605784]
+2025-06-09 12:10:16,525 - INFO - Processed 120kHz spectrum: baseline=-44.302817 dB, range=[-0.260380, 12.722478], zoom_points=167
+2025-06-09 12:10:16,525 - INFO - Wrote to shared memory: 167 points, baseline=-44.302817 dB, range=[-0.260380, 12.722478]
+2025-06-09 12:10:16,928 - INFO - Processed 120kHz spectrum: baseline=-44.290030 dB, range=[-0.267071, 12.891941], zoom_points=167
+2025-06-09 12:10:16,929 - INFO - Wrote to shared memory: 167 points, baseline=-44.290030 dB, range=[-0.267071, 12.891941]
+2025-06-09 12:10:17,330 - INFO - Processed 120kHz spectrum: baseline=-44.279839 dB, range=[-0.215732, 12.654091], zoom_points=167
+2025-06-09 12:10:17,331 - INFO - Wrote to shared memory: 167 points, baseline=-44.279839 dB, range=[-0.215732, 12.654091]
+2025-06-09 12:10:17,725 - INFO - Processed 120kHz spectrum: baseline=-44.296157 dB, range=[-0.362309, 12.681461], zoom_points=167
+2025-06-09 12:10:17,726 - INFO - Wrote to shared memory: 167 points, baseline=-44.296157 dB, range=[-0.362309, 12.681461]
+2025-06-09 12:10:18,126 - INFO - Processed 120kHz spectrum: baseline=-44.297483 dB, range=[-0.214725, 12.734023], zoom_points=167
+2025-06-09 12:10:18,127 - INFO - Wrote to shared memory: 167 points, baseline=-44.297483 dB, range=[-0.214725, 12.734023]
+2025-06-09 12:10:18,524 - INFO - Processed 120kHz spectrum: baseline=-44.275479 dB, range=[-0.262964, 12.797440], zoom_points=167
+2025-06-09 12:10:18,525 - INFO - Wrote to shared memory: 167 points, baseline=-44.275479 dB, range=[-0.262964, 12.797440]
+2025-06-09 12:10:18,926 - INFO - Processed 120kHz spectrum: baseline=-44.285436 dB, range=[-0.238619, 12.649012], zoom_points=167
+2025-06-09 12:10:18,926 - INFO - Wrote to shared memory: 167 points, baseline=-44.285436 dB, range=[-0.238619, 12.649012]
+2025-06-09 12:10:19,329 - INFO - Processed 120kHz spectrum: baseline=-44.285274 dB, range=[-0.270499, 12.776652], zoom_points=167
+2025-06-09 12:10:19,329 - INFO - Wrote to shared memory: 167 points, baseline=-44.285274 dB, range=[-0.270499, 12.776652]
+2025-06-09 12:10:19,729 - INFO - Processed 120kHz spectrum: baseline=-44.300564 dB, range=[-0.243151, 12.635322], zoom_points=167
+2025-06-09 12:10:19,729 - INFO - Wrote to shared memory: 167 points, baseline=-44.300564 dB, range=[-0.243151, 12.635322]
+2025-06-09 12:10:20,140 - INFO - Processed 120kHz spectrum: baseline=-44.299224 dB, range=[-0.266989, 12.474993], zoom_points=167
+2025-06-09 12:10:20,141 - INFO - Wrote to shared memory: 167 points, baseline=-44.299224 dB, range=[-0.266989, 12.474993]
+2025-06-09 12:10:20,546 - INFO - Processed 120kHz spectrum: baseline=-44.279635 dB, range=[-0.287945, 12.446239], zoom_points=167
+2025-06-09 12:10:20,547 - INFO - Wrote to shared memory: 167 points, baseline=-44.279635 dB, range=[-0.287945, 12.446239]
+2025-06-09 12:10:20,952 - INFO - Processed 120kHz spectrum: baseline=-44.290681 dB, range=[-0.325224, 12.690344], zoom_points=167
+2025-06-09 12:10:20,953 - INFO - Wrote to shared memory: 167 points, baseline=-44.290681 dB, range=[-0.325224, 12.690344]
+2025-06-09 12:10:21,360 - INFO - Processed 120kHz spectrum: baseline=-44.285077 dB, range=[-0.310738, 12.590871], zoom_points=167
+2025-06-09 12:10:21,361 - INFO - Wrote to shared memory: 167 points, baseline=-44.285077 dB, range=[-0.310738, 12.590871]
+2025-06-09 12:10:21,767 - INFO - Processed 120kHz spectrum: baseline=-44.282433 dB, range=[-0.277809, 12.645279], zoom_points=167
+2025-06-09 12:10:21,767 - INFO - Wrote to shared memory: 167 points, baseline=-44.282433 dB, range=[-0.277809, 12.645279]
+2025-06-09 12:10:22,177 - INFO - Processed 120kHz spectrum: baseline=-44.293663 dB, range=[-0.266586, 12.562261], zoom_points=167
+2025-06-09 12:10:22,178 - INFO - Wrote to shared memory: 167 points, baseline=-44.293663 dB, range=[-0.266586, 12.562261]
+2025-06-09 12:10:22,583 - INFO - Processed 120kHz spectrum: baseline=-44.300850 dB, range=[-0.220641, 12.452559], zoom_points=167
+2025-06-09 12:10:22,584 - INFO - Wrote to shared memory: 167 points, baseline=-44.300850 dB, range=[-0.220641, 12.452559]
+2025-06-09 12:10:22,990 - INFO - Processed 120kHz spectrum: baseline=-44.290858 dB, range=[-0.240038, 12.948893], zoom_points=167
+2025-06-09 12:10:22,991 - INFO - Wrote to shared memory: 167 points, baseline=-44.290858 dB, range=[-0.240038, 12.948893]
+2025-06-09 12:10:23,396 - INFO - Processed 120kHz spectrum: baseline=-44.290817 dB, range=[-0.298847, 12.793677], zoom_points=167
+2025-06-09 12:10:23,397 - INFO - Wrote to shared memory: 167 points, baseline=-44.290817 dB, range=[-0.298847, 12.793677]
+2025-06-09 12:10:23,804 - INFO - Processed 120kHz spectrum: baseline=-44.300680 dB, range=[-0.276753, 12.253455], zoom_points=167
+2025-06-09 12:10:23,805 - INFO - Wrote to shared memory: 167 points, baseline=-44.300680 dB, range=[-0.276753, 12.253455]
+2025-06-09 12:10:24,212 - INFO - Processed 120kHz spectrum: baseline=-44.296055 dB, range=[-0.249208, 12.544120], zoom_points=167
+2025-06-09 12:10:24,213 - INFO - Wrote to shared memory: 167 points, baseline=-44.296055 dB, range=[-0.249208, 12.544120]
+2025-06-09 12:10:24,618 - INFO - Processed 120kHz spectrum: baseline=-44.293378 dB, range=[-0.247511, 12.591238], zoom_points=167
+2025-06-09 12:10:24,619 - INFO - Wrote to shared memory: 167 points, baseline=-44.293378 dB, range=[-0.247511, 12.591238]
+2025-06-09 12:10:25,030 - INFO - Processed 120kHz spectrum: baseline=-44.296191 dB, range=[-0.287441, 12.020632], zoom_points=167
+2025-06-09 12:10:25,031 - INFO - Wrote to shared memory: 167 points, baseline=-44.296191 dB, range=[-0.287441, 12.020632]
+2025-06-09 12:10:25,438 - INFO - Processed 120kHz spectrum: baseline=-44.275960 dB, range=[-0.352132, 12.448395], zoom_points=167
+2025-06-09 12:10:25,438 - INFO - Wrote to shared memory: 167 points, baseline=-44.275960 dB, range=[-0.352132, 12.448395]
+2025-06-09 12:10:25,845 - INFO - Processed 120kHz spectrum: baseline=-44.299857 dB, range=[-0.214902, 12.388146], zoom_points=167
+2025-06-09 12:10:25,846 - INFO - Wrote to shared memory: 167 points, baseline=-44.299857 dB, range=[-0.214902, 12.388146]
+2025-06-09 12:10:26,258 - INFO - Processed 120kHz spectrum: baseline=-44.286325 dB, range=[-0.286295, 12.246580], zoom_points=167
+2025-06-09 12:10:26,259 - INFO - Wrote to shared memory: 167 points, baseline=-44.286325 dB, range=[-0.286295, 12.246580]
+2025-06-09 12:10:26,667 - INFO - Processed 120kHz spectrum: baseline=-44.300013 dB, range=[-0.270999, 12.497572], zoom_points=167
+2025-06-09 12:10:26,667 - INFO - Wrote to shared memory: 167 points, baseline=-44.300013 dB, range=[-0.270999, 12.497572]
+2025-06-09 12:10:27,075 - INFO - Processed 120kHz spectrum: baseline=-44.296830 dB, range=[-0.231031, 12.483206], zoom_points=167
+2025-06-09 12:10:27,075 - INFO - Wrote to shared memory: 167 points, baseline=-44.296830 dB, range=[-0.231031, 12.483206]
+2025-06-09 12:10:27,486 - INFO - Processed 120kHz spectrum: baseline=-44.305923 dB, range=[-0.240024, 12.441655], zoom_points=167
+2025-06-09 12:10:27,487 - INFO - Wrote to shared memory: 167 points, baseline=-44.305923 dB, range=[-0.240024, 12.441655]
+2025-06-09 12:10:27,892 - INFO - Processed 120kHz spectrum: baseline=-44.281451 dB, range=[-0.245256, 12.765924], zoom_points=167
+2025-06-09 12:10:27,893 - INFO - Wrote to shared memory: 167 points, baseline=-44.281451 dB, range=[-0.245256, 12.765924]
+2025-06-09 12:10:28,305 - INFO - Processed 120kHz spectrum: baseline=-44.292196 dB, range=[-0.228315, 12.686289], zoom_points=167
+2025-06-09 12:10:28,305 - INFO - Wrote to shared memory: 167 points, baseline=-44.292196 dB, range=[-0.228315, 12.686289]
+2025-06-09 12:10:28,710 - INFO - Processed 120kHz spectrum: baseline=-44.295885 dB, range=[-0.249587, 12.586736], zoom_points=167
+2025-06-09 12:10:28,711 - INFO - Wrote to shared memory: 167 points, baseline=-44.295885 dB, range=[-0.249587, 12.586736]
+2025-06-09 12:10:29,117 - INFO - Processed 120kHz spectrum: baseline=-44.302327 dB, range=[-0.221248, 12.561444], zoom_points=167
+2025-06-09 12:10:29,117 - INFO - Wrote to shared memory: 167 points, baseline=-44.302327 dB, range=[-0.221248, 12.561444]
+2025-06-09 12:10:29,523 - INFO - Processed 120kHz spectrum: baseline=-44.293887 dB, range=[-0.295217, 12.631163], zoom_points=167
+2025-06-09 12:10:29,523 - INFO - Wrote to shared memory: 167 points, baseline=-44.293887 dB, range=[-0.295217, 12.631163]
+2025-06-09 12:10:29,930 - INFO - Processed 120kHz spectrum: baseline=-44.300871 dB, range=[-0.249940, 12.455275], zoom_points=167
+2025-06-09 12:10:29,931 - INFO - Wrote to shared memory: 167 points, baseline=-44.300871 dB, range=[-0.249940, 12.455275]
+2025-06-09 12:10:30,337 - INFO - Processed 120kHz spectrum: baseline=-44.289941 dB, range=[-0.232746, 12.691043], zoom_points=167
+2025-06-09 12:10:30,338 - INFO - Wrote to shared memory: 167 points, baseline=-44.289941 dB, range=[-0.232746, 12.691043]
+2025-06-09 12:10:30,741 - INFO - Processed 120kHz spectrum: baseline=-44.288557 dB, range=[-0.264063, 12.659004], zoom_points=167
+2025-06-09 12:10:30,742 - INFO - Wrote to shared memory: 167 points, baseline=-44.288557 dB, range=[-0.264063, 12.659004]
+2025-06-09 12:10:31,148 - INFO - Processed 120kHz spectrum: baseline=-44.270928 dB, range=[-0.302409, 12.463207], zoom_points=167
+2025-06-09 12:10:31,148 - INFO - Wrote to shared memory: 167 points, baseline=-44.270928 dB, range=[-0.302409, 12.463207]
+2025-06-09 12:10:31,553 - INFO - Processed 120kHz spectrum: baseline=-44.290742 dB, range=[-0.279647, 12.586762], zoom_points=167
+2025-06-09 12:10:31,554 - INFO - Wrote to shared memory: 167 points, baseline=-44.290742 dB, range=[-0.279647, 12.586762]
+2025-06-09 12:10:31,840 - INFO - Received termination signal. Cleaning up...
+2025-06-09 12:12:50,141 - INFO - Using FPGA file at rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
+2025-06-09 12:12:50,142 - INFO - Connecting to FPGA at 172.20.3.12...
+2025-06-09 12:12:50,356 - INFO - Connected to FPGA
+2025-06-09 12:12:50,356 - INFO - Programming FPGA with rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
+2025-06-09 12:12:51,944 - INFO - FPGA programmed successfully
+2025-06-09 12:12:53,947 - INFO - Reading FPGA system information
+2025-06-09 12:12:54,374 - INFO - Setting acc_len to 32768
+2025-06-09 12:12:54,479 - INFO - Setting adc_chan_sel to 0
+2025-06-09 12:12:54,582 - INFO - Resetting counters
+2025-06-09 12:12:59,590 - INFO - Connected to existing shared memory for UDP server communication
+2025-06-09 12:12:59,591 - INFO - Starting 120 kHz resolution spectrometer acquisition
+2025-06-09 12:12:59,591 - INFO - FFT size: 16384, Frequency resolution: 0.120000 MHz
+2025-06-09 12:12:59,591 - INFO - Water maser processing: center_bin=10574, zoom_bins=83
+2025-06-09 12:12:59,591 - INFO - Zoom window: bins 10491-10657 (167 points)
+2025-06-09 12:12:59,592 - INFO - Frequency range: 22.225000-22.245000 GHz
+2025-06-09 12:12:59,592 - INFO - Data acquisition in progress...
+2025-06-09 12:12:59,961 - INFO - Processed 120kHz spectrum: baseline=-44.649350 dB, range=[-0.224403, 12.596617], zoom_points=167
+2025-06-09 12:12:59,961 - INFO - Wrote to shared memory: 167 points, baseline=-44.649350 dB, range=[-0.224403, 12.596617]
+2025-06-09 12:13:00,359 - INFO - Processed 120kHz spectrum: baseline=-44.640893 dB, range=[-0.245107, 12.678439], zoom_points=167
+2025-06-09 12:13:00,360 - INFO - Wrote to shared memory: 167 points, baseline=-44.640893 dB, range=[-0.245107, 12.678439]
+2025-06-09 12:13:00,757 - INFO - Processed 120kHz spectrum: baseline=-44.630315 dB, range=[-0.234424, 12.665540], zoom_points=167
+2025-06-09 12:13:00,758 - INFO - Wrote to shared memory: 167 points, baseline=-44.630315 dB, range=[-0.234424, 12.665540]
+2025-06-09 12:13:01,155 - INFO - Processed 120kHz spectrum: baseline=-44.626155 dB, range=[-0.287303, 12.599629], zoom_points=167
+2025-06-09 12:13:01,155 - INFO - Wrote to shared memory: 167 points, baseline=-44.626155 dB, range=[-0.287303, 12.599629]
+2025-06-09 12:13:01,556 - INFO - Processed 120kHz spectrum: baseline=-44.645451 dB, range=[-0.202614, 12.536611], zoom_points=167
+2025-06-09 12:13:01,557 - INFO - Wrote to shared memory: 167 points, baseline=-44.645451 dB, range=[-0.202614, 12.536611]
+2025-06-09 12:13:01,954 - INFO - Processed 120kHz spectrum: baseline=-44.641865 dB, range=[-0.318146, 12.603241], zoom_points=167
+2025-06-09 12:13:01,954 - INFO - Wrote to shared memory: 167 points, baseline=-44.641865 dB, range=[-0.318146, 12.603241]
+2025-06-09 12:13:02,354 - INFO - Processed 120kHz spectrum: baseline=-44.631865 dB, range=[-0.262280, 12.641154], zoom_points=167
+2025-06-09 12:13:02,354 - INFO - Wrote to shared memory: 167 points, baseline=-44.631865 dB, range=[-0.262280, 12.641154]
+2025-06-09 12:13:02,751 - INFO - Processed 120kHz spectrum: baseline=-44.649129 dB, range=[-0.173322, 12.507849], zoom_points=167
+2025-06-09 12:13:02,752 - INFO - Wrote to shared memory: 167 points, baseline=-44.649129 dB, range=[-0.173322, 12.507849]
+2025-06-09 12:13:03,149 - INFO - Processed 120kHz spectrum: baseline=-44.640827 dB, range=[-0.212428, 12.875976], zoom_points=167
+2025-06-09 12:13:03,150 - INFO - Wrote to shared memory: 167 points, baseline=-44.640827 dB, range=[-0.212428, 12.875976]
+2025-06-09 12:13:03,547 - INFO - Processed 120kHz spectrum: baseline=-44.645060 dB, range=[-0.227512, 12.874221], zoom_points=167
+2025-06-09 12:13:03,547 - INFO - Wrote to shared memory: 167 points, baseline=-44.645060 dB, range=[-0.227512, 12.874221]
+2025-06-09 12:13:03,945 - INFO - Processed 120kHz spectrum: baseline=-44.636252 dB, range=[-0.205904, 13.022163], zoom_points=167
+2025-06-09 12:13:03,945 - INFO - Wrote to shared memory: 167 points, baseline=-44.636252 dB, range=[-0.205904, 13.022163]
+2025-06-09 12:13:04,343 - INFO - Processed 120kHz spectrum: baseline=-44.639090 dB, range=[-0.212349, 13.022679], zoom_points=167
+2025-06-09 12:13:04,344 - INFO - Wrote to shared memory: 167 points, baseline=-44.639090 dB, range=[-0.212349, 13.022679]
+2025-06-09 12:13:04,741 - INFO - Processed 120kHz spectrum: baseline=-44.644029 dB, range=[-0.228140, 12.972695], zoom_points=167
+2025-06-09 12:13:04,741 - INFO - Wrote to shared memory: 167 points, baseline=-44.644029 dB, range=[-0.228140, 12.972695]
+2025-06-09 12:13:05,139 - INFO - Processed 120kHz spectrum: baseline=-44.628568 dB, range=[-0.255181, 12.950022], zoom_points=167
+2025-06-09 12:13:05,139 - INFO - Wrote to shared memory: 167 points, baseline=-44.628568 dB, range=[-0.255181, 12.950022]
+2025-06-09 12:13:05,535 - INFO - Processed 120kHz spectrum: baseline=-44.649925 dB, range=[-0.227401, 12.995707], zoom_points=167
+2025-06-09 12:13:05,536 - INFO - Wrote to shared memory: 167 points, baseline=-44.649925 dB, range=[-0.227401, 12.995707]
+2025-06-09 12:13:05,939 - INFO - Processed 120kHz spectrum: baseline=-44.642976 dB, range=[-0.218231, 12.936433], zoom_points=167
+2025-06-09 12:13:05,940 - INFO - Wrote to shared memory: 167 points, baseline=-44.642976 dB, range=[-0.218231, 12.936433]
+2025-06-09 12:13:06,347 - INFO - Processed 120kHz spectrum: baseline=-44.643514 dB, range=[-0.247574, 12.895972], zoom_points=167
+2025-06-09 12:13:06,348 - INFO - Wrote to shared memory: 167 points, baseline=-44.643514 dB, range=[-0.247574, 12.895972]
+2025-06-09 12:13:06,753 - INFO - Processed 120kHz spectrum: baseline=-44.620262 dB, range=[-0.375699, 12.921694], zoom_points=167
+2025-06-09 12:13:06,753 - INFO - Wrote to shared memory: 167 points, baseline=-44.620262 dB, range=[-0.375699, 12.921694]
+2025-06-09 12:13:07,164 - INFO - Processed 120kHz spectrum: baseline=-44.636215 dB, range=[-0.211958, 12.919587], zoom_points=167
+2025-06-09 12:13:07,164 - INFO - Wrote to shared memory: 167 points, baseline=-44.636215 dB, range=[-0.211958, 12.919587]
+2025-06-09 12:13:07,573 - INFO - Processed 120kHz spectrum: baseline=-44.643065 dB, range=[-0.265631, 12.801166], zoom_points=167
+2025-06-09 12:13:07,573 - INFO - Wrote to shared memory: 167 points, baseline=-44.643065 dB, range=[-0.265631, 12.801166]
+2025-06-09 12:13:07,981 - INFO - Processed 120kHz spectrum: baseline=-44.628789 dB, range=[-0.282945, 12.851944], zoom_points=167
+2025-06-09 12:13:07,982 - INFO - Wrote to shared memory: 167 points, baseline=-44.628789 dB, range=[-0.282945, 12.851944]
+2025-06-09 12:13:08,388 - INFO - Processed 120kHz spectrum: baseline=-44.627416 dB, range=[-0.240648, 12.819017], zoom_points=167
+2025-06-09 12:13:08,389 - INFO - Wrote to shared memory: 167 points, baseline=-44.627416 dB, range=[-0.240648, 12.819017]
+2025-06-09 12:13:08,798 - INFO - Processed 120kHz spectrum: baseline=-44.645606 dB, range=[-0.190472, 12.635408], zoom_points=167
+2025-06-09 12:13:08,799 - INFO - Wrote to shared memory: 167 points, baseline=-44.645606 dB, range=[-0.190472, 12.635408]
+2025-06-09 12:13:09,207 - INFO - Processed 120kHz spectrum: baseline=-44.641268 dB, range=[-0.206611, 12.784322], zoom_points=167
+2025-06-09 12:13:09,207 - INFO - Wrote to shared memory: 167 points, baseline=-44.641268 dB, range=[-0.206611, 12.784322]
+2025-06-09 12:13:09,614 - INFO - Processed 120kHz spectrum: baseline=-44.640797 dB, range=[-0.204304, 12.770587], zoom_points=167
+2025-06-09 12:13:09,614 - INFO - Wrote to shared memory: 167 points, baseline=-44.640797 dB, range=[-0.204304, 12.770587]
+2025-06-09 12:13:10,022 - INFO - Processed 120kHz spectrum: baseline=-44.636766 dB, range=[-0.211206, 12.935589], zoom_points=167
+2025-06-09 12:13:10,022 - INFO - Wrote to shared memory: 167 points, baseline=-44.636766 dB, range=[-0.211206, 12.935589]
+2025-06-09 12:13:10,432 - INFO - Processed 120kHz spectrum: baseline=-44.635487 dB, range=[-0.250661, 12.932258], zoom_points=167
+2025-06-09 12:13:10,432 - INFO - Wrote to shared memory: 167 points, baseline=-44.635487 dB, range=[-0.250661, 12.932258]
+2025-06-09 12:13:10,841 - INFO - Processed 120kHz spectrum: baseline=-44.640135 dB, range=[-0.289825, 12.764698], zoom_points=167
+2025-06-09 12:13:10,842 - INFO - Wrote to shared memory: 167 points, baseline=-44.640135 dB, range=[-0.289825, 12.764698]
+2025-06-09 12:13:11,248 - INFO - Processed 120kHz spectrum: baseline=-44.642682 dB, range=[-0.262837, 12.828033], zoom_points=167
+2025-06-09 12:13:11,248 - INFO - Wrote to shared memory: 167 points, baseline=-44.642682 dB, range=[-0.262837, 12.828033]
+2025-06-09 12:13:11,656 - INFO - Processed 120kHz spectrum: baseline=-44.639620 dB, range=[-0.234544, 12.798383], zoom_points=167
+2025-06-09 12:13:11,656 - INFO - Wrote to shared memory: 167 points, baseline=-44.639620 dB, range=[-0.234544, 12.798383]
+2025-06-09 12:13:12,070 - INFO - Processed 120kHz spectrum: baseline=-44.652655 dB, range=[-0.236391, 12.803674], zoom_points=167
+2025-06-09 12:13:12,071 - INFO - Wrote to shared memory: 167 points, baseline=-44.652655 dB, range=[-0.236391, 12.803674]
+2025-06-09 12:13:12,479 - INFO - Processed 120kHz spectrum: baseline=-44.633246 dB, range=[-0.265778, 12.944507], zoom_points=167
+2025-06-09 12:13:12,479 - INFO - Wrote to shared memory: 167 points, baseline=-44.633246 dB, range=[-0.265778, 12.944507]
+2025-06-09 12:13:12,884 - INFO - Processed 120kHz spectrum: baseline=-44.632357 dB, range=[-0.299374, 13.012973], zoom_points=167
+2025-06-09 12:13:12,885 - INFO - Wrote to shared memory: 167 points, baseline=-44.632357 dB, range=[-0.299374, 13.012973]
+2025-06-09 12:13:13,288 - INFO - Processed 120kHz spectrum: baseline=-44.641570 dB, range=[-0.249525, 12.940610], zoom_points=167
+2025-06-09 12:13:13,289 - INFO - Wrote to shared memory: 167 points, baseline=-44.641570 dB, range=[-0.249525, 12.940610]
+2025-06-09 12:13:13,692 - INFO - Processed 120kHz spectrum: baseline=-44.633003 dB, range=[-0.289970, 12.958092], zoom_points=167
+2025-06-09 12:13:13,693 - INFO - Wrote to shared memory: 167 points, baseline=-44.633003 dB, range=[-0.289970, 12.958092]
+2025-06-09 12:13:14,099 - INFO - Processed 120kHz spectrum: baseline=-44.643411 dB, range=[-0.199184, 12.915602], zoom_points=167
+2025-06-09 12:13:14,100 - INFO - Wrote to shared memory: 167 points, baseline=-44.643411 dB, range=[-0.199184, 12.915602]
+2025-06-09 12:13:14,506 - INFO - Processed 120kHz spectrum: baseline=-44.642880 dB, range=[-0.208759, 13.029300], zoom_points=167
+2025-06-09 12:13:14,506 - INFO - Wrote to shared memory: 167 points, baseline=-44.642880 dB, range=[-0.208759, 13.029300]
+2025-06-09 12:13:14,913 - INFO - Processed 120kHz spectrum: baseline=-44.633172 dB, range=[-0.314531, 12.923333], zoom_points=167
+2025-06-09 12:13:14,913 - INFO - Wrote to shared memory: 167 points, baseline=-44.633172 dB, range=[-0.314531, 12.923333]
+2025-06-09 12:13:15,321 - INFO - Processed 120kHz spectrum: baseline=-44.640135 dB, range=[-0.287380, 13.080869], zoom_points=167
+2025-06-09 12:13:15,322 - INFO - Wrote to shared memory: 167 points, baseline=-44.640135 dB, range=[-0.287380, 13.080869]
+2025-06-09 12:13:15,730 - INFO - Processed 120kHz spectrum: baseline=-44.651327 dB, range=[-0.246166, 13.154905], zoom_points=167
+2025-06-09 12:13:15,731 - INFO - Wrote to shared memory: 167 points, baseline=-44.651327 dB, range=[-0.246166, 13.154905]
+2025-06-09 12:13:16,150 - INFO - Processed 120kHz spectrum: baseline=-44.619529 dB, range=[-0.195124, 13.104130], zoom_points=167
+2025-06-09 12:13:16,151 - INFO - Wrote to shared memory: 167 points, baseline=-44.619529 dB, range=[-0.195124, 13.104130]
+2025-06-09 12:13:16,557 - INFO - Processed 120kHz spectrum: baseline=-44.633738 dB, range=[-0.334938, 13.195493], zoom_points=167
+2025-06-09 12:13:16,558 - INFO - Wrote to shared memory: 167 points, baseline=-44.633738 dB, range=[-0.334938, 13.195493]
+2025-06-09 12:13:16,961 - INFO - Processed 120kHz spectrum: baseline=-44.646527 dB, range=[-0.245223, 13.208603], zoom_points=167
+2025-06-09 12:13:16,961 - INFO - Wrote to shared memory: 167 points, baseline=-44.646527 dB, range=[-0.245223, 13.208603]
+2025-06-09 12:13:17,366 - INFO - Processed 120kHz spectrum: baseline=-44.633407 dB, range=[-0.293447, 13.141101], zoom_points=167
+2025-06-09 12:13:17,367 - INFO - Wrote to shared memory: 167 points, baseline=-44.633407 dB, range=[-0.293447, 13.141101]
+2025-06-09 12:13:17,772 - INFO - Processed 120kHz spectrum: baseline=-44.637663 dB, range=[-0.222599, 13.131491], zoom_points=167
+2025-06-09 12:13:17,773 - INFO - Wrote to shared memory: 167 points, baseline=-44.637663 dB, range=[-0.222599, 13.131491]
+2025-06-09 12:13:18,179 - INFO - Processed 120kHz spectrum: baseline=-44.618321 dB, range=[-0.274303, 13.133342], zoom_points=167
+2025-06-09 12:13:18,179 - INFO - Wrote to shared memory: 167 points, baseline=-44.618321 dB, range=[-0.274303, 13.133342]
+2025-06-09 12:13:18,586 - INFO - Processed 120kHz spectrum: baseline=-44.634701 dB, range=[-0.232883, 13.206499], zoom_points=167
+2025-06-09 12:13:18,587 - INFO - Wrote to shared memory: 167 points, baseline=-44.634701 dB, range=[-0.232883, 13.206499]
+2025-06-09 12:13:18,994 - INFO - Processed 120kHz spectrum: baseline=-44.633459 dB, range=[-0.217648, 12.967322], zoom_points=167
+2025-06-09 12:13:18,994 - INFO - Wrote to shared memory: 167 points, baseline=-44.633459 dB, range=[-0.217648, 12.967322]
+2025-06-09 12:13:19,400 - INFO - Processed 120kHz spectrum: baseline=-44.634730 dB, range=[-0.249829, 12.790599], zoom_points=167
+2025-06-09 12:13:19,401 - INFO - Wrote to shared memory: 167 points, baseline=-44.634730 dB, range=[-0.249829, 12.790599]
+2025-06-09 12:13:19,806 - INFO - Processed 120kHz spectrum: baseline=-44.641165 dB, range=[-0.235881, 13.203833], zoom_points=167
+2025-06-09 12:13:19,807 - INFO - Wrote to shared memory: 167 points, baseline=-44.641165 dB, range=[-0.235881, 13.203833]
+2025-06-09 12:13:20,212 - INFO - Processed 120kHz spectrum: baseline=-44.632313 dB, range=[-0.240221, 12.566497], zoom_points=167
+2025-06-09 12:13:20,213 - INFO - Wrote to shared memory: 167 points, baseline=-44.632313 dB, range=[-0.240221, 12.566497]
+2025-06-09 12:13:20,620 - INFO - Processed 120kHz spectrum: baseline=-44.638237 dB, range=[-0.234242, 12.397749], zoom_points=167
+2025-06-09 12:13:20,620 - INFO - Wrote to shared memory: 167 points, baseline=-44.638237 dB, range=[-0.234242, 12.397749]
+2025-06-09 12:13:21,030 - INFO - Processed 120kHz spectrum: baseline=-44.626015 dB, range=[-0.245331, 12.701043], zoom_points=167
+2025-06-09 12:13:21,031 - INFO - Wrote to shared memory: 167 points, baseline=-44.626015 dB, range=[-0.245331, 12.701043]
+2025-06-09 12:13:21,439 - INFO - Processed 120kHz spectrum: baseline=-44.657794 dB, range=[-0.205101, 12.575144], zoom_points=167
+2025-06-09 12:13:21,439 - INFO - Wrote to shared memory: 167 points, baseline=-44.657794 dB, range=[-0.205101, 12.575144]
+2025-06-09 12:13:21,847 - INFO - Processed 120kHz spectrum: baseline=-44.633944 dB, range=[-0.244976, 12.984914], zoom_points=167
+2025-06-09 12:13:21,848 - INFO - Wrote to shared memory: 167 points, baseline=-44.633944 dB, range=[-0.244976, 12.984914]
+2025-06-09 12:13:22,256 - INFO - Processed 120kHz spectrum: baseline=-44.650338 dB, range=[-0.243596, 13.003288], zoom_points=167
+2025-06-09 12:13:22,256 - INFO - Wrote to shared memory: 167 points, baseline=-44.650338 dB, range=[-0.243596, 13.003288]
+2025-06-09 12:13:22,664 - INFO - Processed 120kHz spectrum: baseline=-44.637185 dB, range=[-0.267223, 12.794310], zoom_points=167
+2025-06-09 12:13:22,665 - INFO - Wrote to shared memory: 167 points, baseline=-44.637185 dB, range=[-0.267223, 12.794310]
+2025-06-09 12:13:23,075 - INFO - Processed 120kHz spectrum: baseline=-44.631174 dB, range=[-0.258829, 12.747886], zoom_points=167
+2025-06-09 12:13:23,076 - INFO - Wrote to shared memory: 167 points, baseline=-44.631174 dB, range=[-0.258829, 12.747886]
+2025-06-09 12:13:23,484 - INFO - Processed 120kHz spectrum: baseline=-44.637707 dB, range=[-0.242814, 12.895231], zoom_points=167
+2025-06-09 12:13:23,484 - INFO - Wrote to shared memory: 167 points, baseline=-44.637707 dB, range=[-0.242814, 12.895231]
+2025-06-09 12:13:23,892 - INFO - Processed 120kHz spectrum: baseline=-44.637281 dB, range=[-0.273897, 12.653729], zoom_points=167
+2025-06-09 12:13:23,893 - INFO - Wrote to shared memory: 167 points, baseline=-44.637281 dB, range=[-0.273897, 12.653729]
+2025-06-09 12:13:24,301 - INFO - Processed 120kHz spectrum: baseline=-44.632254 dB, range=[-0.259644, 12.841606], zoom_points=167
+2025-06-09 12:13:24,302 - INFO - Wrote to shared memory: 167 points, baseline=-44.632254 dB, range=[-0.259644, 12.841606]
+2025-06-09 12:13:24,711 - INFO - Processed 120kHz spectrum: baseline=-44.631439 dB, range=[-0.254351, 12.678848], zoom_points=167
+2025-06-09 12:13:24,711 - INFO - Wrote to shared memory: 167 points, baseline=-44.631439 dB, range=[-0.254351, 12.678848]
+2025-06-09 12:13:25,120 - INFO - Processed 120kHz spectrum: baseline=-44.633731 dB, range=[-0.228073, 12.643743], zoom_points=167
+2025-06-09 12:13:25,120 - INFO - Wrote to shared memory: 167 points, baseline=-44.633731 dB, range=[-0.228073, 12.643743]
+2025-06-09 12:13:25,529 - INFO - Processed 120kHz spectrum: baseline=-44.647993 dB, range=[-0.260530, 12.790448], zoom_points=167
+2025-06-09 12:13:25,529 - INFO - Wrote to shared memory: 167 points, baseline=-44.647993 dB, range=[-0.260530, 12.790448]
+2025-06-09 12:13:25,938 - INFO - Processed 120kHz spectrum: baseline=-44.636619 dB, range=[-0.241849, 12.799580], zoom_points=167
+2025-06-09 12:13:25,939 - INFO - Wrote to shared memory: 167 points, baseline=-44.636619 dB, range=[-0.241849, 12.799580]
+2025-06-09 12:13:26,347 - INFO - Processed 120kHz spectrum: baseline=-44.613535 dB, range=[-0.241706, 12.936112], zoom_points=167
+2025-06-09 12:13:26,348 - INFO - Wrote to shared memory: 167 points, baseline=-44.613535 dB, range=[-0.241706, 12.936112]
+2025-06-09 12:13:26,757 - INFO - Processed 120kHz spectrum: baseline=-44.640209 dB, range=[-0.244413, 13.028292], zoom_points=167
+2025-06-09 12:13:26,758 - INFO - Wrote to shared memory: 167 points, baseline=-44.640209 dB, range=[-0.244413, 13.028292]
+2025-06-09 12:13:27,166 - INFO - Processed 120kHz spectrum: baseline=-44.648332 dB, range=[-0.226445, 13.115858], zoom_points=167
+2025-06-09 12:13:27,166 - INFO - Wrote to shared memory: 167 points, baseline=-44.648332 dB, range=[-0.226445, 13.115858]
+2025-06-09 12:13:27,573 - INFO - Processed 120kHz spectrum: baseline=-44.653629 dB, range=[-0.226931, 13.084196], zoom_points=167
+2025-06-09 12:13:27,574 - INFO - Wrote to shared memory: 167 points, baseline=-44.653629 dB, range=[-0.226931, 13.084196]
+2025-06-09 12:13:27,980 - INFO - Processed 120kHz spectrum: baseline=-44.625077 dB, range=[-0.229802, 13.091740], zoom_points=167
+2025-06-09 12:13:27,981 - INFO - Wrote to shared memory: 167 points, baseline=-44.625077 dB, range=[-0.229802, 13.091740]
+2025-06-09 12:13:28,388 - INFO - Processed 120kHz spectrum: baseline=-44.652788 dB, range=[-0.221050, 13.154162], zoom_points=167
+2025-06-09 12:13:28,389 - INFO - Wrote to shared memory: 167 points, baseline=-44.652788 dB, range=[-0.221050, 13.154162]
+2025-06-09 12:13:28,798 - INFO - Processed 120kHz spectrum: baseline=-44.630917 dB, range=[-0.258447, 13.037110], zoom_points=167
+2025-06-09 12:13:28,798 - INFO - Wrote to shared memory: 167 points, baseline=-44.630917 dB, range=[-0.258447, 13.037110]
+2025-06-09 12:13:29,206 - INFO - Processed 120kHz spectrum: baseline=-44.618482 dB, range=[-0.279464, 12.919284], zoom_points=167
+2025-06-09 12:13:29,207 - INFO - Wrote to shared memory: 167 points, baseline=-44.618482 dB, range=[-0.279464, 12.919284]
+2025-06-09 12:13:29,615 - INFO - Processed 120kHz spectrum: baseline=-44.645002 dB, range=[-0.214827, 13.015361], zoom_points=167
+2025-06-09 12:13:29,615 - INFO - Wrote to shared memory: 167 points, baseline=-44.645002 dB, range=[-0.214827, 13.015361]
+2025-06-09 12:13:30,024 - INFO - Processed 120kHz spectrum: baseline=-44.640584 dB, range=[-0.254513, 12.983726], zoom_points=167
+2025-06-09 12:13:30,024 - INFO - Wrote to shared memory: 167 points, baseline=-44.640584 dB, range=[-0.254513, 12.983726]
+2025-06-09 12:13:30,431 - INFO - Processed 120kHz spectrum: baseline=-44.656848 dB, range=[-0.253460, 13.124450], zoom_points=167
+2025-06-09 12:13:30,432 - INFO - Wrote to shared memory: 167 points, baseline=-44.656848 dB, range=[-0.253460, 13.124450]
+2025-06-09 12:13:30,842 - INFO - Processed 120kHz spectrum: baseline=-44.645694 dB, range=[-0.254852, 13.217996], zoom_points=167
+2025-06-09 12:13:30,843 - INFO - Wrote to shared memory: 167 points, baseline=-44.645694 dB, range=[-0.254852, 13.217996]
+2025-06-09 12:13:31,251 - INFO - Processed 120kHz spectrum: baseline=-44.647256 dB, range=[-0.224718, 13.156818], zoom_points=167
+2025-06-09 12:13:31,252 - INFO - Wrote to shared memory: 167 points, baseline=-44.647256 dB, range=[-0.224718, 13.156818]
+2025-06-09 12:13:31,659 - INFO - Processed 120kHz spectrum: baseline=-44.630448 dB, range=[-0.283590, 12.947367], zoom_points=167
+2025-06-09 12:13:31,660 - INFO - Wrote to shared memory: 167 points, baseline=-44.630448 dB, range=[-0.283590, 12.947367]
+2025-06-09 12:13:32,069 - INFO - Processed 120kHz spectrum: baseline=-44.641070 dB, range=[-0.258539, 12.930274], zoom_points=167
+2025-06-09 12:13:32,069 - INFO - Wrote to shared memory: 167 points, baseline=-44.641070 dB, range=[-0.258539, 12.930274]
+2025-06-09 12:13:32,476 - INFO - Processed 120kHz spectrum: baseline=-44.628084 dB, range=[-0.247618, 13.177671], zoom_points=167
+2025-06-09 12:13:32,477 - INFO - Wrote to shared memory: 167 points, baseline=-44.628084 dB, range=[-0.247618, 13.177671]
+2025-06-09 12:13:32,889 - INFO - Processed 120kHz spectrum: baseline=-44.643374 dB, range=[-0.283496, 12.796867], zoom_points=167
+2025-06-09 12:13:32,889 - INFO - Wrote to shared memory: 167 points, baseline=-44.643374 dB, range=[-0.283496, 12.796867]
+2025-06-09 12:13:33,299 - INFO - Processed 120kHz spectrum: baseline=-44.643418 dB, range=[-0.282399, 13.003766], zoom_points=167
+2025-06-09 12:13:33,300 - INFO - Wrote to shared memory: 167 points, baseline=-44.643418 dB, range=[-0.282399, 13.003766]
+2025-06-09 12:13:33,709 - INFO - Processed 120kHz spectrum: baseline=-44.635134 dB, range=[-0.196143, 13.122302], zoom_points=167
+2025-06-09 12:13:33,709 - INFO - Wrote to shared memory: 167 points, baseline=-44.635134 dB, range=[-0.196143, 13.122302]
+2025-06-09 12:13:34,119 - INFO - Processed 120kHz spectrum: baseline=-44.636229 dB, range=[-0.242441, 13.013732], zoom_points=167
+2025-06-09 12:13:34,119 - INFO - Wrote to shared memory: 167 points, baseline=-44.636229 dB, range=[-0.242441, 13.013732]
+2025-06-09 12:13:34,528 - INFO - Processed 120kHz spectrum: baseline=-44.643779 dB, range=[-0.275614, 12.944931], zoom_points=167
+2025-06-09 12:13:34,528 - INFO - Wrote to shared memory: 167 points, baseline=-44.643779 dB, range=[-0.275614, 12.944931]
+2025-06-09 12:13:34,937 - INFO - Processed 120kHz spectrum: baseline=-44.631578 dB, range=[-0.287642, 12.895914], zoom_points=167
+2025-06-09 12:13:34,938 - INFO - Wrote to shared memory: 167 points, baseline=-44.631578 dB, range=[-0.287642, 12.895914]
+2025-06-09 12:13:35,354 - INFO - Processed 120kHz spectrum: baseline=-44.646475 dB, range=[-0.230517, 13.000878], zoom_points=167
+2025-06-09 12:13:35,354 - INFO - Wrote to shared memory: 167 points, baseline=-44.646475 dB, range=[-0.230517, 13.000878]
+2025-06-09 12:13:35,763 - INFO - Processed 120kHz spectrum: baseline=-44.639627 dB, range=[-0.167763, 13.039967], zoom_points=167
+2025-06-09 12:13:35,764 - INFO - Wrote to shared memory: 167 points, baseline=-44.639627 dB, range=[-0.167763, 13.039967]
+2025-06-09 12:13:36,175 - INFO - Processed 120kHz spectrum: baseline=-44.624409 dB, range=[-0.255443, 13.135873], zoom_points=167
+2025-06-09 12:13:36,175 - INFO - Wrote to shared memory: 167 points, baseline=-44.624409 dB, range=[-0.255443, 13.135873]
+2025-06-09 12:13:36,591 - INFO - Processed 120kHz spectrum: baseline=-44.641519 dB, range=[-0.261396, 13.059365], zoom_points=167
+2025-06-09 12:13:36,592 - INFO - Wrote to shared memory: 167 points, baseline=-44.641519 dB, range=[-0.261396, 13.059365]
+2025-06-09 12:13:37,000 - INFO - Processed 120kHz spectrum: baseline=-44.646018 dB, range=[-0.230181, 12.983671], zoom_points=167
+2025-06-09 12:13:37,001 - INFO - Wrote to shared memory: 167 points, baseline=-44.646018 dB, range=[-0.230181, 12.983671]
+2025-06-09 12:13:37,409 - INFO - Processed 120kHz spectrum: baseline=-44.635112 dB, range=[-0.218243, 12.993805], zoom_points=167
+2025-06-09 12:13:37,410 - INFO - Wrote to shared memory: 167 points, baseline=-44.635112 dB, range=[-0.218243, 12.993805]
+2025-06-09 12:13:37,819 - INFO - Processed 120kHz spectrum: baseline=-44.639561 dB, range=[-0.219239, 13.062192], zoom_points=167
+2025-06-09 12:13:37,820 - INFO - Wrote to shared memory: 167 points, baseline=-44.639561 dB, range=[-0.219239, 13.062192]
+2025-06-09 12:13:38,228 - INFO - Processed 120kHz spectrum: baseline=-44.636016 dB, range=[-0.218986, 13.045341], zoom_points=167
+2025-06-09 12:13:38,229 - INFO - Wrote to shared memory: 167 points, baseline=-44.636016 dB, range=[-0.218986, 13.045341]
+2025-06-09 12:13:38,637 - INFO - Processed 120kHz spectrum: baseline=-44.630235 dB, range=[-0.274596, 13.001410], zoom_points=167
+2025-06-09 12:13:38,638 - INFO - Wrote to shared memory: 167 points, baseline=-44.630235 dB, range=[-0.274596, 13.001410]
+2025-06-09 12:13:39,045 - INFO - Processed 120kHz spectrum: baseline=-44.646409 dB, range=[-0.307942, 13.271355], zoom_points=167
+2025-06-09 12:13:39,046 - INFO - Wrote to shared memory: 167 points, baseline=-44.646409 dB, range=[-0.307942, 13.271355]
+2025-06-09 12:13:39,456 - INFO - Processed 120kHz spectrum: baseline=-44.649409 dB, range=[-0.222379, 13.158744], zoom_points=167
+2025-06-09 12:13:39,457 - INFO - Wrote to shared memory: 167 points, baseline=-44.649409 dB, range=[-0.222379, 13.158744]
+2025-06-09 12:13:39,865 - INFO - Processed 120kHz spectrum: baseline=-44.665374 dB, range=[-0.244441, 12.888683], zoom_points=167
+2025-06-09 12:13:39,865 - INFO - Wrote to shared memory: 167 points, baseline=-44.665374 dB, range=[-0.244441, 12.888683]
+2025-06-09 12:13:40,278 - INFO - Processed 120kHz spectrum: baseline=-44.636921 dB, range=[-0.236118, 12.848248], zoom_points=167
+2025-06-09 12:13:40,278 - INFO - Wrote to shared memory: 167 points, baseline=-44.636921 dB, range=[-0.236118, 12.848248]
+2025-06-09 12:13:40,690 - INFO - Processed 120kHz spectrum: baseline=-44.652574 dB, range=[-0.246028, 12.850647], zoom_points=167
+2025-06-09 12:13:40,691 - INFO - Wrote to shared memory: 167 points, baseline=-44.652574 dB, range=[-0.246028, 12.850647]
+2025-06-09 12:13:41,103 - INFO - Processed 120kHz spectrum: baseline=-44.643978 dB, range=[-0.215108, 12.759200], zoom_points=167
+2025-06-09 12:13:41,104 - INFO - Wrote to shared memory: 167 points, baseline=-44.643978 dB, range=[-0.215108, 12.759200]
+2025-06-09 12:13:41,517 - INFO - Processed 120kHz spectrum: baseline=-44.641342 dB, range=[-0.211720, 12.865053], zoom_points=167
+2025-06-09 12:13:41,517 - INFO - Wrote to shared memory: 167 points, baseline=-44.641342 dB, range=[-0.211720, 12.865053]
+2025-06-09 12:13:41,930 - INFO - Processed 120kHz spectrum: baseline=-44.639723 dB, range=[-0.342825, 12.773947], zoom_points=167
+2025-06-09 12:13:41,930 - INFO - Wrote to shared memory: 167 points, baseline=-44.639723 dB, range=[-0.342825, 12.773947]
+2025-06-09 12:13:42,342 - INFO - Processed 120kHz spectrum: baseline=-44.629750 dB, range=[-0.267477, 12.836326], zoom_points=167
+2025-06-09 12:13:42,343 - INFO - Wrote to shared memory: 167 points, baseline=-44.629750 dB, range=[-0.267477, 12.836326]
+2025-06-09 12:13:42,756 - INFO - Processed 120kHz spectrum: baseline=-44.639443 dB, range=[-0.256832, 12.927456], zoom_points=167
+2025-06-09 12:13:42,757 - INFO - Wrote to shared memory: 167 points, baseline=-44.639443 dB, range=[-0.256832, 12.927456]
+2025-06-09 12:13:43,171 - INFO - Processed 120kHz spectrum: baseline=-44.656775 dB, range=[-0.217887, 12.883316], zoom_points=167
+2025-06-09 12:13:43,171 - INFO - Wrote to shared memory: 167 points, baseline=-44.656775 dB, range=[-0.217887, 12.883316]
+2025-06-09 12:13:43,583 - INFO - Processed 120kHz spectrum: baseline=-44.635472 dB, range=[-0.231073, 12.869827], zoom_points=167
+2025-06-09 12:13:43,583 - INFO - Wrote to shared memory: 167 points, baseline=-44.635472 dB, range=[-0.231073, 12.869827]
+2025-06-09 12:13:44,004 - INFO - Processed 120kHz spectrum: baseline=-44.640164 dB, range=[-0.287358, 12.909078], zoom_points=167
+2025-06-09 12:13:44,005 - INFO - Wrote to shared memory: 167 points, baseline=-44.640164 dB, range=[-0.287358, 12.909078]
+2025-06-09 12:13:44,422 - INFO - Processed 120kHz spectrum: baseline=-44.631872 dB, range=[-0.270003, 12.729343], zoom_points=167
+2025-06-09 12:13:44,423 - INFO - Wrote to shared memory: 167 points, baseline=-44.631872 dB, range=[-0.270003, 12.729343]
+2025-06-09 12:13:44,834 - INFO - Processed 120kHz spectrum: baseline=-44.645547 dB, range=[-0.240850, 12.819278], zoom_points=167
+2025-06-09 12:13:44,834 - INFO - Wrote to shared memory: 167 points, baseline=-44.645547 dB, range=[-0.240850, 12.819278]
+2025-06-09 12:13:45,243 - INFO - Processed 120kHz spectrum: baseline=-44.643374 dB, range=[-0.251176, 12.778374], zoom_points=167
+2025-06-09 12:13:45,244 - INFO - Wrote to shared memory: 167 points, baseline=-44.643374 dB, range=[-0.251176, 12.778374]
+2025-06-09 12:13:45,654 - INFO - Processed 120kHz spectrum: baseline=-44.653732 dB, range=[-0.203969, 12.908149], zoom_points=167
+2025-06-09 12:13:45,655 - INFO - Wrote to shared memory: 167 points, baseline=-44.653732 dB, range=[-0.203969, 12.908149]
+2025-06-09 12:13:46,068 - INFO - Processed 120kHz spectrum: baseline=-44.633481 dB, range=[-0.261897, 12.918458], zoom_points=167
+2025-06-09 12:13:46,069 - INFO - Wrote to shared memory: 167 points, baseline=-44.633481 dB, range=[-0.261897, 12.918458]
+2025-06-09 12:13:46,479 - INFO - Processed 120kHz spectrum: baseline=-44.637472 dB, range=[-0.253272, 12.780060], zoom_points=167
+2025-06-09 12:13:46,480 - INFO - Wrote to shared memory: 167 points, baseline=-44.637472 dB, range=[-0.253272, 12.780060]
+2025-06-09 12:13:46,889 - INFO - Processed 120kHz spectrum: baseline=-44.639429 dB, range=[-0.225551, 12.903953], zoom_points=167
+2025-06-09 12:13:46,889 - INFO - Wrote to shared memory: 167 points, baseline=-44.639429 dB, range=[-0.225551, 12.903953]
+2025-06-09 12:13:47,300 - INFO - Processed 120kHz spectrum: baseline=-44.632886 dB, range=[-0.274518, 13.105062], zoom_points=167
+2025-06-09 12:13:47,301 - INFO - Wrote to shared memory: 167 points, baseline=-44.632886 dB, range=[-0.274518, 13.105062]
+2025-06-09 12:13:47,709 - INFO - Processed 120kHz spectrum: baseline=-44.636524 dB, range=[-0.222276, 13.002724], zoom_points=167
+2025-06-09 12:13:47,710 - INFO - Wrote to shared memory: 167 points, baseline=-44.636524 dB, range=[-0.222276, 13.002724]
+2025-06-09 12:13:48,119 - INFO - Processed 120kHz spectrum: baseline=-44.637796 dB, range=[-0.239282, 13.127241], zoom_points=167
+2025-06-09 12:13:48,120 - INFO - Wrote to shared memory: 167 points, baseline=-44.637796 dB, range=[-0.239282, 13.127241]
+2025-06-09 12:13:48,530 - INFO - Processed 120kHz spectrum: baseline=-44.659058 dB, range=[-0.232778, 12.873810], zoom_points=167
+2025-06-09 12:13:48,531 - INFO - Wrote to shared memory: 167 points, baseline=-44.659058 dB, range=[-0.232778, 12.873810]
+2025-06-09 12:13:48,939 - INFO - Processed 120kHz spectrum: baseline=-44.636119 dB, range=[-0.240336, 13.113081], zoom_points=167
+2025-06-09 12:13:48,940 - INFO - Wrote to shared memory: 167 points, baseline=-44.636119 dB, range=[-0.240336, 13.113081]
+2025-06-09 12:13:49,351 - INFO - Processed 120kHz spectrum: baseline=-44.645068 dB, range=[-0.194337, 13.123473], zoom_points=167
+2025-06-09 12:13:49,352 - INFO - Wrote to shared memory: 167 points, baseline=-44.645068 dB, range=[-0.194337, 13.123473]
+2025-06-09 12:13:49,767 - INFO - Processed 120kHz spectrum: baseline=-44.635105 dB, range=[-0.230177, 12.895289], zoom_points=167
+2025-06-09 12:13:49,768 - INFO - Wrote to shared memory: 167 points, baseline=-44.635105 dB, range=[-0.230177, 12.895289]
+2025-06-09 12:13:50,180 - INFO - Processed 120kHz spectrum: baseline=-44.650087 dB, range=[-0.243784, 12.921540], zoom_points=167
+2025-06-09 12:13:50,180 - INFO - Wrote to shared memory: 167 points, baseline=-44.650087 dB, range=[-0.243784, 12.921540]
+2025-06-09 12:13:50,589 - INFO - Processed 120kHz spectrum: baseline=-44.642115 dB, range=[-0.290230, 13.133726], zoom_points=167
+2025-06-09 12:13:50,590 - INFO - Wrote to shared memory: 167 points, baseline=-44.642115 dB, range=[-0.290230, 13.133726]
+2025-06-09 12:13:51,002 - INFO - Processed 120kHz spectrum: baseline=-44.645245 dB, range=[-0.237307, 12.933652], zoom_points=167
+2025-06-09 12:13:51,003 - INFO - Wrote to shared memory: 167 points, baseline=-44.645245 dB, range=[-0.237307, 12.933652]
+2025-06-09 12:13:51,417 - INFO - Processed 120kHz spectrum: baseline=-44.645679 dB, range=[-0.259996, 12.961927], zoom_points=167
+2025-06-09 12:13:51,417 - INFO - Wrote to shared memory: 167 points, baseline=-44.645679 dB, range=[-0.259996, 12.961927]
+2025-06-09 12:13:51,828 - INFO - Processed 120kHz spectrum: baseline=-44.641438 dB, range=[-0.202052, 13.078197], zoom_points=167
+2025-06-09 12:13:51,828 - INFO - Wrote to shared memory: 167 points, baseline=-44.641438 dB, range=[-0.202052, 13.078197]
+2025-06-09 12:13:52,241 - INFO - Processed 120kHz spectrum: baseline=-44.628884 dB, range=[-0.212285, 12.724596], zoom_points=167
+2025-06-09 12:13:52,242 - INFO - Wrote to shared memory: 167 points, baseline=-44.628884 dB, range=[-0.212285, 12.724596]
+2025-06-09 12:13:52,654 - INFO - Processed 120kHz spectrum: baseline=-44.647603 dB, range=[-0.215184, 12.828038], zoom_points=167
+2025-06-09 12:13:52,655 - INFO - Wrote to shared memory: 167 points, baseline=-44.647603 dB, range=[-0.215184, 12.828038]
+2025-06-09 12:13:53,068 - INFO - Processed 120kHz spectrum: baseline=-44.640812 dB, range=[-0.283834, 12.980259], zoom_points=167
+2025-06-09 12:13:53,069 - INFO - Wrote to shared memory: 167 points, baseline=-44.640812 dB, range=[-0.283834, 12.980259]
+2025-06-09 12:13:53,479 - INFO - Processed 120kHz spectrum: baseline=-44.640886 dB, range=[-0.243977, 12.947282], zoom_points=167
+2025-06-09 12:13:53,480 - INFO - Wrote to shared memory: 167 points, baseline=-44.640886 dB, range=[-0.243977, 12.947282]
+2025-06-09 12:13:53,891 - INFO - Processed 120kHz spectrum: baseline=-44.638200 dB, range=[-0.308816, 12.832635], zoom_points=167
+2025-06-09 12:13:53,892 - INFO - Wrote to shared memory: 167 points, baseline=-44.638200 dB, range=[-0.308816, 12.832635]
+2025-06-09 12:13:54,307 - INFO - Processed 120kHz spectrum: baseline=-44.639458 dB, range=[-0.215412, 12.655347], zoom_points=167
+2025-06-09 12:13:54,308 - INFO - Wrote to shared memory: 167 points, baseline=-44.639458 dB, range=[-0.215412, 12.655347]
+2025-06-09 12:13:54,720 - INFO - Processed 120kHz spectrum: baseline=-44.636494 dB, range=[-0.210922, 12.827779], zoom_points=167
+2025-06-09 12:13:54,720 - INFO - Wrote to shared memory: 167 points, baseline=-44.636494 dB, range=[-0.210922, 12.827779]
+2025-06-09 12:13:55,132 - INFO - Processed 120kHz spectrum: baseline=-44.646888 dB, range=[-0.266554, 12.531304], zoom_points=167
+2025-06-09 12:13:55,132 - INFO - Wrote to shared memory: 167 points, baseline=-44.646888 dB, range=[-0.266554, 12.531304]
+2025-06-09 12:13:55,544 - INFO - Processed 120kHz spectrum: baseline=-44.637376 dB, range=[-0.202413, 12.590412], zoom_points=167
+2025-06-09 12:13:55,545 - INFO - Wrote to shared memory: 167 points, baseline=-44.637376 dB, range=[-0.202413, 12.590412]
+2025-06-09 12:13:55,956 - INFO - Processed 120kHz spectrum: baseline=-44.629185 dB, range=[-0.234446, 12.607764], zoom_points=167
+2025-06-09 12:13:55,956 - INFO - Wrote to shared memory: 167 points, baseline=-44.629185 dB, range=[-0.234446, 12.607764]
+2025-06-09 12:13:56,367 - INFO - Processed 120kHz spectrum: baseline=-44.623192 dB, range=[-0.267373, 12.982690], zoom_points=167
+2025-06-09 12:13:56,368 - INFO - Wrote to shared memory: 167 points, baseline=-44.623192 dB, range=[-0.267373, 12.982690]
+2025-06-09 12:13:56,779 - INFO - Processed 120kHz spectrum: baseline=-44.650456 dB, range=[-0.214004, 12.619819], zoom_points=167
+2025-06-09 12:13:56,780 - INFO - Wrote to shared memory: 167 points, baseline=-44.650456 dB, range=[-0.214004, 12.619819]
+2025-06-09 12:13:57,193 - INFO - Processed 120kHz spectrum: baseline=-44.632533 dB, range=[-0.256777, 12.690770], zoom_points=167
+2025-06-09 12:13:57,194 - INFO - Wrote to shared memory: 167 points, baseline=-44.632533 dB, range=[-0.256777, 12.690770]
+2025-06-09 12:13:57,604 - INFO - Processed 120kHz spectrum: baseline=-44.643816 dB, range=[-0.257457, 12.948496], zoom_points=167
+2025-06-09 12:13:57,605 - INFO - Wrote to shared memory: 167 points, baseline=-44.643816 dB, range=[-0.257457, 12.948496]
+2025-06-09 12:13:58,013 - INFO - Processed 120kHz spectrum: baseline=-44.624725 dB, range=[-0.303474, 12.799359], zoom_points=167
+2025-06-09 12:13:58,014 - INFO - Wrote to shared memory: 167 points, baseline=-44.624725 dB, range=[-0.303474, 12.799359]
+2025-06-09 12:13:58,424 - INFO - Processed 120kHz spectrum: baseline=-44.640326 dB, range=[-0.230880, 12.942391], zoom_points=167
+2025-06-09 12:13:58,424 - INFO - Wrote to shared memory: 167 points, baseline=-44.640326 dB, range=[-0.230880, 12.942391]
+2025-06-09 12:13:58,837 - INFO - Processed 120kHz spectrum: baseline=-44.642755 dB, range=[-0.295228, 13.097173], zoom_points=167
+2025-06-09 12:13:58,837 - INFO - Wrote to shared memory: 167 points, baseline=-44.642755 dB, range=[-0.295228, 13.097173]
+2025-06-09 12:13:59,250 - INFO - Processed 120kHz spectrum: baseline=-44.624571 dB, range=[-0.237612, 13.015602], zoom_points=167
+2025-06-09 12:13:59,250 - INFO - Wrote to shared memory: 167 points, baseline=-44.624571 dB, range=[-0.237612, 13.015602]
+2025-06-09 12:13:59,477 - INFO - Received termination signal. Cleaning up...
+2025-06-09 12:24:18,596 - INFO - Using FPGA file at rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
+2025-06-09 12:24:18,597 - INFO - Connecting to FPGA at 172.20.3.12...
+2025-06-09 12:24:18,812 - INFO - Connected to FPGA
+2025-06-09 12:24:18,812 - INFO - Programming FPGA with rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
+2025-06-09 12:24:20,400 - INFO - FPGA programmed successfully
+2025-06-09 12:24:22,403 - INFO - Reading FPGA system information
+2025-06-09 12:24:22,828 - INFO - Setting acc_len to 32768
+2025-06-09 12:24:22,932 - INFO - Setting adc_chan_sel to 0
+2025-06-09 12:24:23,035 - INFO - Resetting counters
+2025-06-09 12:24:28,043 - INFO - Connected to existing shared memory for UDP server communication
+2025-06-09 12:24:28,043 - INFO - Starting 120 kHz resolution spectrometer acquisition
+2025-06-09 12:24:28,044 - INFO - FFT size: 16384, Frequency resolution: 0.120000 MHz
+2025-06-09 12:24:28,044 - INFO - Water maser processing: center_bin=10574, zoom_bins=83
+2025-06-09 12:24:28,044 - INFO - Zoom window: bins 10491-10657 (167 points)
+2025-06-09 12:24:28,045 - INFO - Frequency range: 22.225000-22.245000 GHz
+2025-06-09 12:24:28,045 - INFO - Data acquisition in progress...

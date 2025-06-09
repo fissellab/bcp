@@ -70,7 +70,8 @@ typedef struct {
     volatile spec_type_t active_type;  // Which spectrometer is running
     volatile double timestamp;
     volatile int data_size;            // Actual data size in bytes
-    volatile double data[16384];       // Max size buffer (for raw data transfer)
+    volatile double baseline;          // Baseline value for 120kHz data
+    volatile double data[16384];       // Max size buffer (processed data is ~167 points)
 } shared_spectrum_t;
 
 // Public API functions
