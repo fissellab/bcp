@@ -45,7 +45,7 @@ static void format_120khz_response(char *buffer, size_t buffer_size);
 static void log_spec_message(const char *message);
 static bool is_authorized_client(const char *client_ip);
 static bool check_rate_limit(const char *client_ip);
-static void process_120khz_spectrum(const double *raw_data, int raw_size);
+static void process_120khz_spectrum(const double *processed_data, int data_size, double baseline);
 static int calculate_zoom_bins(void);
 
 // Initialize shared memory
@@ -109,190 +109,48 @@ static int calculate_zoom_bins(void) {
     return zoom_end - zoom_start + 1;
 }
 
-// Process 120kHz spectrum data (apply filtering like read_latest_data_120khz.py)
-static void process_120khz_spectrum(const double *raw_data, int raw_size) {
-    if (raw_size != 16384) {
-        char error_msg[256];
-        snprintf(error_msg, sizeof(error_msg), "Invalid 120kHz spectrum size: %d, expected 16384", raw_size);
-        log_spec_message(error_msg);
-        return;
-    }
+// Process 120kHz spectrum data (now receives pre-processed data from Python)
+static void process_120khz_spectrum(const double *processed_data, int data_size, double baseline) {
+    int expected_points = data_size / sizeof(double);
     
     char debug_msg[512];
-    snprintf(debug_msg, sizeof(debug_msg), "Processing 120kHz spectrum: received %d points", raw_size);
-    log_spec_message(debug_msg);
-    
-    // HARDCODED bin parameters to match Python exactly (from read_latest_data_120khz.py)
-    // FREQ_RANGE = 22.93216 - 20.96608 = 1.96608 GHz
-    // BIN_WIDTH = 1.96608 / 16384 = 0.00012 GHz
-    // WATER_MASER_CENTER_BIN = int((22.235 - 20.96608) / 0.00012) = 10574
-    // ZOOM_BINS = int(0.010 / 0.00012) = 83
-    // ZOOM_START_BIN = 10574 - 83 = 10491
-    // ZOOM_END_BIN = 10574 + 83 = 10657
-    // ZOOM_WIDTH = 10657 - 10491 + 1 = 167
-    
-    const int WATER_MASER_CENTER_BIN = 10574;
-    const int ZOOM_BINS = 83;
-    const int ZOOM_START_BIN = 10491;
-    const int ZOOM_END_BIN = 10657;
-    const int ZOOM_WIDTH = 167;
-    
     snprintf(debug_msg, sizeof(debug_msg), 
-        "Hardcoded bins: center=%d, zoom_bins=%d, start=%d, end=%d, width=%d", 
-        WATER_MASER_CENTER_BIN, ZOOM_BINS, ZOOM_START_BIN, ZOOM_END_BIN, ZOOM_WIDTH);
+        "Received processed 120kHz spectrum: %d points, baseline=%.6f dB", 
+        expected_points, baseline);
     log_spec_message(debug_msg);
     
-    if (ZOOM_WIDTH > MAX_ZOOM_BINS) {
+    if (expected_points <= 0 || expected_points > MAX_ZOOM_BINS) {
         snprintf(debug_msg, sizeof(debug_msg), 
-            "ERROR: Calculated zoom width %d exceeds MAX_ZOOM_BINS %d", ZOOM_WIDTH, MAX_ZOOM_BINS);
+            "Invalid processed spectrum size: %d points (max: %d)", expected_points, MAX_ZOOM_BINS);
         log_spec_message(debug_msg);
         return;
     }
     
     pthread_mutex_lock(&current_spectrum_data.mutex);
     
-    // Convert to dB and apply transformations (same as read_latest_data_120khz.py)
-    double *spectrum_db = malloc(16384 * sizeof(double));
-    if (!spectrum_db) {
-        pthread_mutex_unlock(&current_spectrum_data.mutex);
-        return;
-    }
-    
-    // Convert already-processed data to dB (data is already scaled in Python)
-    for (int i = 0; i < 16384; i++) {
-        spectrum_db[i] = 10.0 * log10(raw_data[i] + 1e-10);
-    }
-    
-    // Log sample values after dB conversion
-    snprintf(debug_msg, sizeof(debug_msg), 
-        "After dB conversion: [0]=%.3f, [8192]=%.3f, [16383]=%.3f dB", 
-        spectrum_db[0], spectrum_db[8192], spectrum_db[16383]);
-    log_spec_message(debug_msg);
-    
-    // Apply flip and fftshift (mimic numpy operations)
-    double *flipped = malloc(16384 * sizeof(double));
-    if (!flipped) {
-        free(spectrum_db);
-        pthread_mutex_unlock(&current_spectrum_data.mutex);
-        log_spec_message("ERROR: Failed to allocate memory for flipped spectrum");
-        return;
-    }
-    
-    // Flip the spectrum
-    for (int i = 0; i < 16384; i++) {
-        flipped[i] = spectrum_db[16383 - i];
-    }
-    
-    // Log sample values after flip
-    snprintf(debug_msg, sizeof(debug_msg), 
-        "After flip: [0]=%.3f, [8192]=%.3f, [16383]=%.3f dB", 
-        flipped[0], flipped[8192], flipped[16383]);
-    log_spec_message(debug_msg);
-    
-    // FFT shift
-    double *shifted = malloc(16384 * sizeof(double));
-    if (!shifted) {
-        free(spectrum_db);
-        free(flipped);
-        pthread_mutex_unlock(&current_spectrum_data.mutex);
-        log_spec_message("ERROR: Failed to allocate memory for shifted spectrum");
-        return;
-    }
-    
-    int half = 16384 / 2;
-    for (int i = 0; i < half; i++) {
-        shifted[i] = flipped[i + half];
-        shifted[i + half] = flipped[i];
-    }
-    
-    // Log sample values after FFT shift
-    snprintf(debug_msg, sizeof(debug_msg), 
-        "After FFT shift: [0]=%.3f, [8192]=%.3f, [16383]=%.3f dB", 
-        shifted[0], shifted[8192], shifted[16383]);
-    log_spec_message(debug_msg);
-    
-    // Extract zoom window using hardcoded bins
-    double *zoomed = malloc(ZOOM_WIDTH * sizeof(double));
-    if (!zoomed) {
-        free(spectrum_db);
-        free(flipped);
-        free(shifted);
-        pthread_mutex_unlock(&current_spectrum_data.mutex);
-        log_spec_message("ERROR: Failed to allocate memory for zoomed spectrum");
-        return;
-    }
-    
-    log_spec_message("Extracting zoom window from FFT-shifted spectrum");
-    for (int i = 0; i < ZOOM_WIDTH; i++) {
-        zoomed[i] = shifted[ZOOM_START_BIN + i];
-    }
-    
-    // Log sample values from zoomed spectrum for debugging
-    snprintf(debug_msg, sizeof(debug_msg), 
-        "Zoomed spectrum samples: [0]=%.3f, [%d]=%.3f, [%d]=%.3f", 
-        zoomed[0], ZOOM_WIDTH/2, zoomed[ZOOM_WIDTH/2], ZOOM_WIDTH-1, zoomed[ZOOM_WIDTH-1]);
-    log_spec_message(debug_msg);
-    
-    // Calculate baseline (median)
-    double *sorted = malloc(ZOOM_WIDTH * sizeof(double));
-    if (!sorted) {
-        free(spectrum_db);
-        free(flipped);
-        free(shifted);
-        free(zoomed);
-        pthread_mutex_unlock(&current_spectrum_data.mutex);
-        log_spec_message("ERROR: Failed to allocate memory for sorted spectrum");
-        return;
-    }
-    
-    memcpy(sorted, zoomed, ZOOM_WIDTH * sizeof(double));
-    
-    // Simple bubble sort for median calculation
-    for (int i = 0; i < ZOOM_WIDTH - 1; i++) {
-        for (int j = 0; j < ZOOM_WIDTH - i - 1; j++) {
-            if (sorted[j] > sorted[j + 1]) {
-                double temp = sorted[j];
-                sorted[j] = sorted[j + 1];
-                sorted[j + 1] = temp;
-            }
-        }
-    }
-    
-    double baseline = sorted[ZOOM_WIDTH / 2];  // Median
-    
-    snprintf(debug_msg, sizeof(debug_msg), "Calculated baseline (median): %.6f dB", baseline);
-    log_spec_message(debug_msg);
-    
-    // Update spectrum data
+    // Update spectrum data - data is already processed by Python
     current_spectrum_data.active_type = SPEC_TYPE_120KHZ;
     current_spectrum_data.high_res.timestamp = shared_memory->timestamp;
-    current_spectrum_data.high_res.num_points = ZOOM_WIDTH;
+    current_spectrum_data.high_res.num_points = expected_points;
     current_spectrum_data.high_res.freq_start = current_config.water_maser_freq - current_config.zoom_window_width;
     current_spectrum_data.high_res.freq_end = current_config.water_maser_freq + current_config.zoom_window_width;
     current_spectrum_data.high_res.baseline = baseline;
     
-    // Apply baseline subtraction and store
+    // Copy the already processed data (baseline-subtracted by Python)
     double min_val = 1e10, max_val = -1e10;
-    for (int i = 0; i < ZOOM_WIDTH; i++) {
-        current_spectrum_data.high_res.data[i] = zoomed[i] - baseline;
-        if (current_spectrum_data.high_res.data[i] < min_val) min_val = current_spectrum_data.high_res.data[i];
-        if (current_spectrum_data.high_res.data[i] > max_val) max_val = current_spectrum_data.high_res.data[i];
+    for (int i = 0; i < expected_points; i++) {
+        current_spectrum_data.high_res.data[i] = processed_data[i];
+        if (processed_data[i] < min_val) min_val = processed_data[i];
+        if (processed_data[i] > max_val) max_val = processed_data[i];
     }
     
     snprintf(debug_msg, sizeof(debug_msg), 
-        "Baseline-subtracted spectrum: min=%.6f, max=%.6f, points=%d", 
-        min_val, max_val, ZOOM_WIDTH);
+        "Processed spectrum stored: min=%.6f, max=%.6f, points=%d, baseline=%.6f", 
+        min_val, max_val, expected_points, baseline);
     log_spec_message(debug_msg);
     
     current_spectrum_data.ready = 1;
     current_spectrum_data.last_update = time(NULL);
-    
-    // Cleanup
-    free(spectrum_db);
-    free(flipped);
-    free(shifted);
-    free(zoomed);
-    free(sorted);
     
     pthread_mutex_unlock(&current_spectrum_data.mutex);
 }
@@ -514,22 +372,27 @@ static void *udp_server_thread_func(void *arg) {
                 current_spectrum_data.last_update = time(NULL);
                 pthread_mutex_unlock(&current_spectrum_data.mutex);
             } else if (shared_memory->active_type == SPEC_TYPE_120KHZ) {
-                // Process 120kHz spectrum with filtering
+                // Process 120kHz spectrum (pre-processed data from Python)
                 char debug_msg[256];
                 snprintf(debug_msg, sizeof(debug_msg), 
-                    "Received 120KHZ spectrum: timestamp=%.6f, data_size=%d bytes, points=%d", 
+                    "Received 120KHZ spectrum: timestamp=%.6f, data_size=%d bytes, points=%d, baseline=%.6f", 
                     shared_memory->timestamp, shared_memory->data_size, 
-                    shared_memory->data_size / (int)sizeof(double));
+                    shared_memory->data_size / (int)sizeof(double), shared_memory->baseline);
                 log_spec_message(debug_msg);
                 
-                // Log sample values from raw data
-                double *raw_data = (double*)shared_memory->data;
-                snprintf(debug_msg, sizeof(debug_msg), 
-                    "Raw spectrum samples: [0]=%.3e, [8192]=%.3e, [16383]=%.3e", 
-                    raw_data[0], raw_data[8192], raw_data[16383]);
-                log_spec_message(debug_msg);
+                // Log sample values from processed data
+                double *processed_data = (double*)shared_memory->data;
+                int num_points = shared_memory->data_size / sizeof(double);
+                if (num_points > 0) {
+                    snprintf(debug_msg, sizeof(debug_msg), 
+                        "Processed spectrum samples: [0]=%.6f, [%d]=%.6f, [%d]=%.6f", 
+                        processed_data[0], 
+                        num_points/2, processed_data[num_points/2],
+                        num_points-1, processed_data[num_points-1]);
+                    log_spec_message(debug_msg);
+                }
                 
-                process_120khz_spectrum((double*)shared_memory->data, shared_memory->data_size / sizeof(double));
+                process_120khz_spectrum((double*)shared_memory->data, shared_memory->data_size, shared_memory->baseline);
             } else {
                 char debug_msg[128];
                 snprintf(debug_msg, sizeof(debug_msg), 
