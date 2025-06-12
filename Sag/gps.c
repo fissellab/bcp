@@ -802,9 +802,10 @@ static void *udp_server_thread_func(void *arg) {
         inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
         
         if (is_authorized_client(client_ip)) {
-            char log_msg[512];  // Increased buffer size
-            snprintf(log_msg, sizeof(log_msg), "GPS client connected from %s", client_ip);
-            log_udp_message(log_msg);
+            // Removed verbose logging - GPS client connected messages
+            // char log_msg[512];  // Increased buffer size
+            // snprintf(log_msg, sizeof(log_msg), "GPS client connected from %s", client_ip);
+            // log_udp_message(log_msg);
             
             // Process request
             if (strncmp(buffer, "GET_GPS", 7) == 0) {
@@ -814,8 +815,9 @@ static void *udp_server_thread_func(void *arg) {
                 sendto(udp_server_socket, response, strlen(response), 0,
                       (const struct sockaddr *)&client_addr, client_len);
                 
-                snprintf(log_msg, sizeof(log_msg), "Sent GPS data to client: %.100s", response);
-                log_udp_message(log_msg);
+                // Removed verbose logging - Sent GPS data messages
+                // snprintf(log_msg, sizeof(log_msg), "Sent GPS data to client: %.100s", response);
+                // log_udp_message(log_msg);
             } else if (strncmp(buffer, "gps_lat", 7) == 0 || 
                       strncmp(buffer, "gps_lon", 7) == 0 || 
                       strncmp(buffer, "gps_alt", 7) == 0 || 
@@ -827,10 +829,12 @@ static void *udp_server_thread_func(void *arg) {
                 sendto(udp_server_socket, response, strlen(response), 0,
                       (const struct sockaddr *)&client_addr, client_len);
                 
-                snprintf(log_msg, sizeof(log_msg), "Sent GPS data for parameter request '%.20s': %.100s", buffer, response);
-                log_udp_message(log_msg);
+                // Removed verbose logging - Parameter request messages
+                // snprintf(log_msg, sizeof(log_msg), "Sent GPS data for parameter request '%.20s': %.100s", buffer, response);
+                // log_udp_message(log_msg);
             } else {
-                // Unknown request
+                // Unknown request - Keep this logging as it indicates potential issues
+                char log_msg[512];
                 const char *error_msg = "gps_lat:INVALID_REQUEST,gps_lon:INVALID_REQUEST,gps_alt:INVALID_REQUEST,gps_head:INVALID_REQUEST";
                 sendto(udp_server_socket, error_msg, strlen(error_msg), 0,
                       (const struct sockaddr *)&client_addr, client_len);
@@ -839,6 +843,7 @@ static void *udp_server_thread_func(void *arg) {
                 log_udp_message(log_msg);
             }
         } else {
+            // Keep logging for unauthorized access attempts - this is important for security
             char log_msg[512];  // Increased buffer size
             snprintf(log_msg, sizeof(log_msg), "Rejected request from unauthorized client: %s", client_ip);
             log_udp_message(log_msg);

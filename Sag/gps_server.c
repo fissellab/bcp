@@ -21,10 +21,10 @@ int server_running = 0;
 
 void* do_GPS_server(){
 
-	int GPS_fd;
+	int sockfd;  // Consistent socket file descriptor naming
 	char buffer[MAXLINE];
 
-	char *request = "GET_GPS"
+	char *request = "GET_GPS";  // Fixed missing semicolon
 
 	struct sockaddr_in servaddr;
 	int n, len;
@@ -50,26 +50,30 @@ void* do_GPS_server(){
 
 		write_to_log(gps_server_log,"gps_server.c","do_GPS_server","GPS client started successfully, requesting data...");
 
-		while(!stop_server){
+				while(!stop_server){
 			//sends request
 			sendto(sockfd, (const char *)request, strlen(request),MSG_CONFIRM, (const struct sockaddr *) &servaddr, sizeof(servaddr));
 
 			n = rcvfrom(sockfd, (char *)buffer, MAXLINE, MSG_WAITALL, (struct sockaddr *) &servaddr, &len);
 
 			buffer[n] = '\0';
-			if(sscanf(buffer,"gps_lat:%lf,gps_lon:%lf,gps_alt:%lf,gps_head:%lf", &curr_gps.gps_lat, &curr_gps.gps_lon, &curr_gps.gps_alt, &curr_gps.gps_head) != 1){
-				write_to_log(gps_server_log,"gps_server.c","do_GPS_server","Recieved corrupted message");
+			if(sscanf(buffer,"gps_lat:%lf,gps_lon:%lf,gps_alt:%lf,gps_head:%lf", &curr_gps.gps_lat, &curr_gps.gps_lon, &curr_gps.gps_alt, &curr_gps.gps_head) != 4){
+				write_to_log(gps_server_log,"gps_server.c","do_GPS_server","Received corrupted message");
 			}
+			
+			// Add delay to prevent overwhelming the server
+			usleep(50000); // 50ms delay between request cycles
 		}
-		// Add delay to prevent overwhelming the server
-		usleep(50000); // 100ms delay between request cycles
 	}
 	if(server_running < 0){
 		write_to_log(gps_server_log,"gps_server.c","do_GPS_server","Could not start server");
 		fclose(gps_server_log);
 	}else{
 		write_to_log(gps_server_log,"gps_server.c","do_GPS_server","Shutting down GPS server");
+		close(sockfd);  // Close the socket
 		server_running = 0;
 		fclose(gps_server_log);
 	}
+	
+	return NULL;  // Add return value for void* function
 }
