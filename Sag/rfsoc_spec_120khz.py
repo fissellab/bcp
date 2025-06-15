@@ -244,13 +244,18 @@ def get_vacc_data(fpga, last_cnt=None):
         # Use the stable read_spectrum function (scaled)
         raw_spectrum = read_spectrum(fpga)
         
-        # Write timestamp and data to file BEFORE any transformations
+        # Write timestamp and data to file AFTER applying transformations
         timestamp = time.time()
         
-        # Write to file (existing functionality) - save raw data
+        # Apply transformations to match processing pipeline
+        full_spectrum_db = 10 * np.log10(raw_spectrum + 1e-10)
+        flipped_spectrum = np.flip(full_spectrum_db)
+        processed_full_spectrum = np.fft.fftshift(flipped_spectrum)
+        
+        # Write to file (existing functionality) - save processed data
         if spectrum_file:
-            # Store RAW data with no transformations
-            spectrum_file.write(f"{timestamp} " + " ".join(map(str, raw_spectrum)) + "\n")
+            # Store processed data with transformations applied
+            spectrum_file.write(f"{timestamp} " + " ".join(map(str, processed_full_spectrum)) + "\n")
             spectrum_file.flush()
             os.fsync(spectrum_file.fileno())
         
