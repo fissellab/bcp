@@ -1,10 +1,24 @@
-Thu Jun 12 11:45:54 2025 : main_Sag.c : main : Started logfile
-Thu Jun 12 11:45:54 2025 : main_Sag.c : main : Starting command log
-Thu Jun 12 11:45:54 2025 : main_Sag.c : main : GPS initialized
-Thu Jun 12 11:45:54 2025 : main_Sag.c : main : GPS logging started automatically
-Thu Jun 12 11:45:54 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for 3 authorized clients
-Thu Jun 12 11:45:54 2025 : main_Sag.c : main : Spectrometer server initialized
-Thu Jun 12 11:45:54 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081 for 3 authorized clients
-Thu Jun 12 11:49:47 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
-Thu Jun 12 11:49:48 2025 : main_Sag.c : main : GPS UDP server stopped during cleanup
-Thu Jun 12 11:49:48 2025 : main_Sag.c : main : GPS logging stopped during cleanup
+Sun Jun 15 13:50:45 2025 : main_Sag.c : main : Started logfile
+Sun Jun 15 13:50:45 2025 : main_Sag.c : main : Starting command log
+Sun Jun 15 13:50:45 2025 : main_Sag.c : main : GPS initialized
+Sun Jun 15 13:50:45 2025 : main_Sag.c : main : GPS logging started automatically
+Sun Jun 15 13:50:45 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for 3 authorized clients
+Sun Jun 15 13:50:45 2025 : main_Sag.c : main : Spectrometer server initialized
+Sun Jun 15 13:50:45 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081 for 3 authorized clients
+Sun Jun 15 13:53:05 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
+Sun Jun 15 13:53:05 2025 : main_Sag.c : main : GPS UDP server stopped during cleanup
+Sun Jun 15 13:53:05 2025 : main_Sag.c : main : GPS logging stopped during cleanup
+5 13:50:57,440 - INFO - Programming FPGA with rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
+2025-06-15 13:51:00,425 - INFO - FPGA programmed successfully
+2025-06-15 13:51:02,428 - INFO - Reading FPGA system information
+2025-06-15 13:51:02,912 - INFO - Setting acc_len to 32768
+2025-06-15 13:51:03,018 - INFO - Setting adc_chan_sel to 0
+2025-06-15 13:51:03,123 - INFO - Resetting counters
+2025-06-15 13:51:08,137 - INFO - Connected to existing shared memory for UDP server communication
+2025-06-15 13:51:08,137 - INFO - Starting 120 kHz resolution spectrometer acquisition
+2025-06-15 13:51:08,138 - INFO - FFT size: 16384, Frequency resolution: 0.120000 MHz
+2025-06-15 13:51:08,138 - INFO - Water maser processing: center_bin=10574, zoom_bins=83
+2025-06-15 13:51:08,139 - INFO - Zoom window: bins 10491-10657 (167 points)
+2025-06-15 13:51:08,139 - INFO - Frequency range: 22.225000-22.245000 GHz
+2025-06-15 13:51:08,140 - INFO - Data acquisition in progress...
+2025-06-15 13:53:01,633 - INFO - Received termination signal. Cleaning up...

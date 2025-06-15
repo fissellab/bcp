@@ -1,1 +1,5 @@
-Thu Jun 12 11:49:47 2025 : cli_Sag.c : cmdprompt : exit
+Sun Jun 15 13:50:54 2025 : cli_Sag.c : cmdprompt : start spec 120khz
+Sun Jun 15 13:50:54 2025 : cli_Sag.c : exec_command : Started 120kHz spec script
+Sun Jun 15 13:53:01 2025 : cli_Sag.c : cmdprompt : stop spec
+Sun Jun 15 13:53:02 2025 : cli_Sag.c : exec_command : Stopped 120kHz spec script
+Sun Jun 15 13:53:04 2025 : cli_Sag.c : cmdprompt : exit
