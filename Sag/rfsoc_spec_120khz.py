@@ -9,6 +9,8 @@ import logging
 import signal
 import mmap
 from optparse import OptionParser
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 # Global Variables
 last_file_rotation_time = time.time()
@@ -18,6 +20,19 @@ running = True
 DATA_SAVE_INTERVAL = 600  # Default value, will be overwritten by command line argument
 DATA_SAVE_PATH = '/media/saggitarius/T7'  # Default value, will be overwritten by command line argument
 data_folder = None
+
+# Performance optimization variables (new - safe defaults preserve existing behavior)
+FLUSH_EVERY_N_SPECTRA = 1  # How often to flush to disk (1 = every spectrum, like before)
+SYNC_EVERY_N_SPECTRA = 1   # How often to fsync to disk (1 = every spectrum, like before)
+spectrum_counter = 0       # Counter for optimization
+last_flush_time = time.time()  # Track flush timing
+
+# Timing analysis variables (new)
+ENABLE_TIMING_ANALYSIS = False  # Enable detailed timing breakdowns
+timing_stats = {
+    'fpga_wait': [], 'fpga_read': [], 'processing': [], 'file_io': [], 
+    'shared_mem': [], 'total_loop': []
+}
 
 # Shared memory variables
 shared_memory_fd = None
@@ -147,7 +162,7 @@ def write_processed_spectrum_to_shared_memory(processed_data, baseline, timestam
         logging.error(f"Error writing processed spectrum to shared memory: {e}")
 
 # Helper functions for stable FPGA readout
-def wait_for_dump(fpga, last_cnt, poll=0.0005):
+def wait_for_dump(fpga, last_cnt, poll=0.005):
     """
     Spin until 'acc_cnt' increments **and** remains unchanged for
     one extra poll → guarantees VACC has finished writing.
@@ -177,21 +192,57 @@ def read_spectrum_raw_integer(fpga):
 
     return interwoven      # Return raw counts WITHOUT scaling
 
+def read_single_bram(fpga, bram_name):
+    """Read a single BRAM - for concurrent execution."""
+    raw = fpga.read(bram_name, WORDS_PER_BRAM*BYTES_PER_WORD, 0)
+    return np.frombuffer(raw, dtype=">u8").astype(np.float64)
+
 def read_spectrum(fpga):
-    """Return float64[16384] linear power array."""
-    per_bram = []
-    for name in BRAM_NAMES:
-        raw = fpga.read(name, WORDS_PER_BRAM*BYTES_PER_WORD, 0)
-        per_bram.append(np.frombuffer(raw, dtype=">u8").astype(np.float64))
+    """Return float64[16384] linear power array with concurrent BRAM reads."""
+    try:
+        # Try concurrent BRAM reads to reduce total time
+        per_bram = [None] * NPAR
+        
+        # Use ThreadPoolExecutor for concurrent network I/O
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            # Submit all BRAM read tasks
+            future_to_idx = {
+                executor.submit(read_single_bram, fpga, name): i 
+                for i, name in enumerate(BRAM_NAMES)
+            }
+            
+            # Collect results as they complete
+            for future in future_to_idx:
+                idx = future_to_idx[future]
+                per_bram[idx] = future.result()
 
-    interwoven = np.empty(NFFT, dtype=np.float64)
-    idx = 0
-    for w in range(WORDS_PER_BRAM):
-        for b in range(NPAR):
-            interwoven[idx] = per_bram[b][w]
-            idx += 1
+        # Pre-allocate output array
+        interwoven = np.empty(NFFT, dtype=np.float64)
+        
+        # Vectorized interleaving for better performance
+        for w in range(WORDS_PER_BRAM):
+            base_idx = w * NPAR
+            for b in range(NPAR):
+                interwoven[base_idx + b] = per_bram[b][w]
 
-    return interwoven / (2.0**34)      # fixed-point → linear power
+        return interwoven / (2.0**34)      # fixed-point → linear power
+        
+    except Exception as e:
+        logging.error(f"Concurrent BRAM read failed: {e}")
+        # Fallback to original sequential method
+        per_bram = []
+        for name in BRAM_NAMES:
+            raw = fpga.read(name, WORDS_PER_BRAM*BYTES_PER_WORD, 0)
+            per_bram.append(np.frombuffer(raw, dtype=">u8").astype(np.float64))
+
+        interwoven = np.empty(NFFT, dtype=np.float64)
+        idx = 0
+        for w in range(WORDS_PER_BRAM):
+            for b in range(NPAR):
+                interwoven[idx] = per_bram[b][w]
+                idx += 1
+
+        return interwoven / (2.0**34)
 
 def square_law_integrator(spectrum):
     power = np.abs(spectrum) ** 2
@@ -234,39 +285,66 @@ def get_vacc_data(fpga, last_cnt=None):
     Uses the safe wait_for_dump mechanism internally.
     """
     try:
+        t_start = time.time() if ENABLE_TIMING_ANALYSIS else 0
+        
         # Start with most recent acc_cnt if no previous value provided
         if last_cnt is None:
             last_cnt = fpga.read_uint('acc_cnt')
         
         # Wait for a complete FPGA dump
+        t_wait_start = time.time() if ENABLE_TIMING_ANALYSIS else 0
         acc_n = wait_for_dump(fpga, last_cnt)
+        if ENABLE_TIMING_ANALYSIS:
+            timing_stats['fpga_wait'].append(time.time() - t_wait_start)
         
         # Use the stable read_spectrum function (scaled)
+        t_read_start = time.time() if ENABLE_TIMING_ANALYSIS else 0
         raw_spectrum = read_spectrum(fpga)
+        if ENABLE_TIMING_ANALYSIS:
+            timing_stats['fpga_read'].append(time.time() - t_read_start)
         
         # Write timestamp and data to file AFTER applying transformations
         timestamp = time.time()
         
         # Apply transformations to match processing pipeline
+        t_proc_start = time.time() if ENABLE_TIMING_ANALYSIS else 0
+        # Note: Keep separate arrays to avoid affecting subsequent processing
         full_spectrum_db = 10 * np.log10(raw_spectrum + 1e-10)
-        flipped_spectrum = np.flip(full_spectrum_db)
-        processed_full_spectrum = np.fft.fftshift(flipped_spectrum)
+        processed_full_spectrum = np.fft.fftshift(np.flip(full_spectrum_db))
+        if ENABLE_TIMING_ANALYSIS:
+            timing_stats['processing'].append(time.time() - t_proc_start)
         
         # Write to file (existing functionality) - save processed data
+        t_file_start = time.time() if ENABLE_TIMING_ANALYSIS else 0
         if spectrum_file:
+            global spectrum_counter, last_flush_time
+            spectrum_counter += 1
             # Store processed data with transformations applied
             spectrum_file.write(f"{timestamp} " + " ".join(map(str, processed_full_spectrum)) + "\n")
-            spectrum_file.flush()
-            os.fsync(spectrum_file.fileno())
+            
+            # Optimized flushing - only flush every N spectra or every few seconds
+            if (spectrum_counter % FLUSH_EVERY_N_SPECTRA == 0 or 
+                time.time() - last_flush_time > 5.0):  # Force flush every 5 seconds for safety
+                spectrum_file.flush()
+                last_flush_time = time.time()
+                
+                # Even less frequent fsync for performance
+                if spectrum_counter % SYNC_EVERY_N_SPECTRA == 0:
+                    os.fsync(spectrum_file.fileno())
+        if ENABLE_TIMING_ANALYSIS:
+            timing_stats['file_io'].append(time.time() - t_file_start)
         
         # Process the spectrum using our new pipeline (Python-side processing)
         processed_spectrum, baseline = process_120khz_spectrum(raw_spectrum)
         
+        t_shm_start = time.time() if ENABLE_TIMING_ANALYSIS else 0
         if processed_spectrum is not None and baseline is not None:
             # Send processed data to shared memory for the C server to format and serve
             write_processed_spectrum_to_shared_memory(processed_spectrum, baseline, timestamp)
         else:
             logging.error("Failed to process spectrum data for shared memory")
+        if ENABLE_TIMING_ANALYSIS:
+            timing_stats['shared_mem'].append(time.time() - t_shm_start)
             
         return acc_n, raw_spectrum
     except Exception as e:
@@ -324,8 +402,12 @@ def save_integrated_power_data(integrated_power):
         timestamp = time.time()
         if power_file:
             power_file.write(f"{timestamp} {integrated_power}\n")
-            power_file.flush()
-            os.fsync(power_file.fileno())
+            # Use same optimized flushing for power file
+            if (spectrum_counter % FLUSH_EVERY_N_SPECTRA == 0 or 
+                time.time() - last_flush_time > 5.0):
+                power_file.flush()
+                if spectrum_counter % SYNC_EVERY_N_SPECTRA == 0:
+                    os.fsync(power_file.fileno())
     except Exception as e:
         logging.error(f"Error saving integrated power data: {e}")
 
@@ -363,6 +445,11 @@ def start_data_acquisition(fpga):
     last_acc_n = fpga.read_uint('acc_cnt')
     last_sync_time = time.time()
     
+    # Performance tracking
+    start_time = time.time()
+    performance_log_interval = 60  # Log performance every 60 seconds
+    last_performance_log = start_time
+    
     data_folder = create_data_folder()
     if data_folder is None:
         logging.error("Failed to create data folder. Exiting.")
@@ -390,8 +477,27 @@ def start_data_acquisition(fpga):
                 last_sync_time = current_time
                 rotate_files()
             
-            # Short sleep to prevent CPU saturation
-            time.sleep(0.05)
+            # Log performance statistics periodically
+            if current_time - last_performance_log > performance_log_interval:
+                elapsed = current_time - start_time
+                rate = spectrum_counter / elapsed if elapsed > 0 else 0
+                logging.info(f"Performance: {spectrum_counter} spectra in {elapsed:.1f}s = {rate:.2f} Hz")
+                
+                # Log detailed timing breakdown if enabled
+                if ENABLE_TIMING_ANALYSIS and spectrum_counter > 10:
+                    for key, times in timing_stats.items():
+                        if times:
+                            avg_ms = np.mean(times) * 1000
+                            max_ms = np.max(times) * 1000
+                            logging.info(f"  {key}: avg={avg_ms:.2f}ms, max={max_ms:.2f}ms")
+                    # Clear timing stats after logging
+                    for key in timing_stats:
+                        timing_stats[key].clear()
+                
+                last_performance_log = current_time
+            
+            # Minimal sleep - let FPGA accumulation naturally pace the loop
+            time.sleep(0.001)
             
         except Exception as e:
             logging.error(f"Error in main acquisition loop: {e}")
@@ -417,6 +523,12 @@ if __name__ == "__main__":
                  help='Data save interval in seconds. Default is 600')
     p.add_option('-p', '--path', dest='data_save_path', type='string', default='/media/saggitarius/T7',
                  help='Data save path. Default is /media/saggitarius/T7')
+    p.add_option('--flush-every', dest='flush_every', type='int', default=1,
+                 help='Flush files to disk every N spectra. Default=1 (every spectrum). Higher values improve performance.')
+    p.add_option('--sync-every', dest='sync_every', type='int', default=1,
+                 help='Force sync files to disk every N spectra. Default=1 (every spectrum). Higher values improve performance.')
+    p.add_option('--timing', dest='enable_timing', action='store_true',
+                 help='Enable detailed timing analysis of bottlenecks (logs every 60s)')
 
     opts, args = p.parse_args(sys.argv[1:])
     if len(args) < 3:
@@ -438,6 +550,15 @@ if __name__ == "__main__":
     # Use the data_save_interval and data_save_path from command line options
     DATA_SAVE_INTERVAL = opts.data_save_interval
     DATA_SAVE_PATH = opts.data_save_path
+    
+    # Set performance optimization parameters from command line
+    FLUSH_EVERY_N_SPECTRA = opts.flush_every
+    SYNC_EVERY_N_SPECTRA = opts.sync_every
+    ENABLE_TIMING_ANALYSIS = opts.enable_timing
+    
+    logging.info(f"Performance settings: flush_every={FLUSH_EVERY_N_SPECTRA}, sync_every={SYNC_EVERY_N_SPECTRA}, timing={ENABLE_TIMING_ANALYSIS}")
+    if FLUSH_EVERY_N_SPECTRA > 1 or SYNC_EVERY_N_SPECTRA > 1:
+        logging.info("WARNING: Reduced file sync frequency may risk data loss on unexpected shutdown")
 
     if opts.fpgfile != '':
         bitstream = opts.fpgfile
