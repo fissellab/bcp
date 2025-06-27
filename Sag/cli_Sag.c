@@ -195,8 +195,8 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
                     // Start GPS UDP server if enabled
                     if (config.gps.udp_server_enabled) {
                         if (gps_start_udp_server()) {
-                            printf("GPS UDP server started on port %d for %d authorized clients.\n", 
-                                   config.gps.udp_server_port, config.gps.udp_client_count);
+                            printf("GPS UDP server started on port %d.\n", 
+                                   config.gps.udp_server_port);
                             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "GPS UDP server started");
                         } else {
                             printf("Failed to start GPS UDP server.\n");

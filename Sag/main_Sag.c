@@ -37,27 +37,11 @@ void print_config() {
     printf("  File Rotation Interval: %d seconds\n", config.gps.file_rotation_interval);
     printf("  UDP Server Enabled: %s\n", config.gps.udp_server_enabled ? "Yes" : "No");
     printf("  UDP Server Port: %d\n", config.gps.udp_server_port);
-    printf("  UDP Client IPs (%d): ", config.gps.udp_client_count);
-    for (int i = 0; i < config.gps.udp_client_count; i++) {
-        printf("%s", config.gps.udp_client_ips[i]);
-        if (i < config.gps.udp_client_count - 1) {
-            printf(", ");
-        }
-    }
-    printf("\n");
     printf("  UDP Buffer Size: %d\n", config.gps.udp_buffer_size);
     printf("  Power Control: PBOB %d, Relay %d\n", config.gps.pbob_id, config.gps.relay_id);
     printf("\nSpectrometer Server settings:\n");
     printf("  Enabled: %s\n", config.spectrometer_server.enabled ? "Yes" : "No");
     printf("  UDP Server Port: %d\n", config.spectrometer_server.udp_server_port);
-    printf("  UDP Client IPs (%d): ", config.spectrometer_server.udp_client_count);
-    for (int i = 0; i < config.spectrometer_server.udp_client_count; i++) {
-        printf("%s", config.spectrometer_server.udp_client_ips[i]);
-        if (i < config.spectrometer_server.udp_client_count - 1) {
-            printf(", ");
-        }
-    }
-    printf("\n");
     printf("  UDP Buffer Size: %d\n", config.spectrometer_server.udp_buffer_size);
     printf("  Max Request Rate: %d req/sec\n", config.spectrometer_server.max_request_rate);
     printf("  Water Maser Freq: %.3f GHz\n", config.spectrometer_server.water_maser_freq);
@@ -168,8 +152,8 @@ int main(int argc, char* argv[]) {
             // Start spectrometer UDP server
             if (spec_server_start()) {
                 char spec_msg[256];
-                snprintf(spec_msg, sizeof(spec_msg), "Spectrometer UDP server started on port %d for %d authorized clients", 
-                        config.spectrometer_server.udp_server_port, config.spectrometer_server.udp_client_count);
+                snprintf(spec_msg, sizeof(spec_msg), "Spectrometer UDP server started on port %d", 
+                        config.spectrometer_server.udp_server_port);
                 printf("%s\n", spec_msg);
                 write_to_log(main_log, "main_Sag.c", "main", spec_msg);
             } else {
