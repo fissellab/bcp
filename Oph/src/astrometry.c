@@ -1,3 +1,6 @@
+#define _GNU_SOURCE
+#define _DEFAULT_SOURCE
+#define _USE_MATH_DEFINES
 #include <stdlib.h>
 #include <math.h>
 #include <astrometry/os-features.h>
@@ -22,8 +25,8 @@
 #include "lens_adapter.h"
 #include "bvexcam.h"
 #include "file_io_Oph.h"
+#include "gps_server.h"
 
-#define _USE_MATH_DEFINES
 /* Longitude and latitude constants (deg) */
 #define backyard_lat  44.224327
 #define backyard_long -76.498007
@@ -32,13 +35,14 @@
 engine_t * engine = NULL;
 solver_t * solver = NULL;
 int solver_timelimit;
-
+extern GPS_data curr_gps;
+extern int server_running;
 /* Astrometry parameters global structure, accessible from commands.c as well */
 struct astrometry all_astro_params = {
 	.timelimit = 1,
 	.rawtime = 0,
 	.logodds = 1e8,
-	.latitude = backyard_lat,
+	.latitude =backyard_lat,
 	.longitude = backyard_long,
 	.hm = backyard_hm,
 	.ra = 0, 
@@ -96,7 +100,28 @@ int initAstrometry(FILE* log) {
 		write_to_log(log,"astrometry.c","lostInSpace", "Bad configuration file in Astrometry constructor.");
 		return -1;
 	}
-
+	if(config.gps_server.enabled && server_running){
+		if(curr_gps.gps_lat != 0){
+			all_astro_params.latitude=curr_gps.gps_lat;
+		}else{
+			all_astro_params.latitude=config.bvexcam.lat;
+		}
+		if(curr_gps.gps_lon != 0){
+			all_astro_params.longitude=curr_gps.gps_lon;
+		}else{
+			all_astro_params.longitude=config.bvexcam.lon;
+		}
+		if(curr_gps.gps_alt !=0){
+			all_astro_params.hm=curr_gps.gps_alt;
+		}else{
+			all_astro_params.hm=config.bvexcam.alt;
+		}
+	}else{
+		all_astro_params.latitude=config.bvexcam.lat;
+		all_astro_params.longitude=config.bvexcam.lon;
+		all_astro_params.hm=config.bvexcam.alt;
+	}
+	
 	// set solver timeout
 	solver_timelimit = (int) all_astro_params.timelimit;
 	solver->timer_callback = timeout;

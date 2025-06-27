@@ -1,61 +1,3 @@
-
-/* HOW TO USE THIS PROGRAM:
-** 
-** This program is designed so that only two-letter commands need to be input to
-** execute camera changes.
-** e.g., cmd_status = runCommand("mi\r", file_descriptor, birger_output);
-** where 'mi' is the command.
-** 
-** All camera settings are listed in the Canon EF 232 user manual.
-** https://birger.com/products/lens_controller/manuals/canon_ef232/Canon%20EF-232%20Library%20User%20Manual%201.3.pdf
-** 
-** COMMANDS:
-**  Aperture:
-** 		in: initialize aperture motor; aperture will fully open
-** 		da: print aperture information
-** 		ma: move aperture to absolute position
-** 		mc: move aperture to fully stopped down limit
-** 		mn: move aperture incremental (mn2 moves the aperture by +2, not to +2)
-** 		mo: move aperture to completely open
-** 		pa: print aperture position
-**  Focus:
-** 		eh: set absolute lens focus position (0...0x3FFF)
-** 		fa: move focus to absolute position
-** 		fd: print focus distance range
-** 		ff: fast focus
-** 		fp: print the raw focus positions
-** 		la: learn the focus range
-** 		mf: move focus incremental (mf200 moves the focus by +200, not to +200; 
-**                                  mf-200 increments down 200)
-** 		mi: move focus to the infinity stop
-** 		mz: move focus to the zero stop
-** 		pf: print focus position
-** 		sf: set the focus counter
-**  Misc:
-** 		bv: print the bootloader version
-** 		de: dump EEPROM
-** 		ds: prints distance stops
-** 		dz: prints the zoom range
-** 		ex: exit to the bootloader
-** 		gs: echo current device and lens statuses
-** 		hv: print the hardware version
-** 		id: print basic lens identification (zoom and f-number)
-** 		is: turn image stabilization off/on
-** 		ll: library loaded check
-** 		lp: lens presence
-** 		ls: query lens for status immediately and print
-** 		lv: print the library version string
-** 		pl: lens power
-** 		rm: set response modes
-** 		se: temporarily set non-volatile (EEMPROM) byte
-** 		sg: set GPIO
-** 		sm: set special modes
-** 		sn: print the device serial number
-** 		sr: set spontaneous responses off/on
-** 		vs: print the short version string
-** 		we: write non-volatile parameters to EEPROM
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,6 +7,10 @@
 #include <ueye.h>
 #include <math.h>
 #include <time.h>
+#include <unistd.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 #include "lens_adapter.h"
 #include "camera.h"
@@ -92,6 +38,7 @@ struct camera_params all_camera_params = {
     .photos_per_focus = 3,     // take 3 pictures per focus position by default
     .flux = 0,                 // first auto-focus max flux found will set this
     .solve_img = 0,            // Flips to 1 if star camera solves
+    .save_image = 1,           // Start with image saving enabled by default
 };
 
 char * birger_output, * buffer;

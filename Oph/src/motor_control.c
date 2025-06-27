@@ -13,10 +13,13 @@
 #include "ec_motor.h"
 #include "file_io_Oph.h"
 #include "lazisusan.h"
+#include "astrometry.h"
 
 AxesModeStruct axes_mode = {
 	.dir = 1,
 	.on_target = 0,
+	.on_target_el=0,
+	.on_target_az=0,
 };
 ScanModeStruct scan_mode = {
 	.mode = NONE,
@@ -37,6 +40,9 @@ extern FILE* motor_log;
 pthread_t motors;
 extern int comms_ok;
 extern double motor_offset;
+extern struct astrometry all_astro_params;
+extern double parking_pos;
+
 float p_pub = 0;
 float i_pub = 0;
 float d_pub = 0;
@@ -211,10 +217,14 @@ static float calculate_velocity_enc(void){
 }
 
 void go_to_enc(double angle){
-	
+
 	axes_mode.mode = POS;
 	axes_mode.dest = angle;
 
+}
+
+void go_to_park(){
+	go_to_enc(parking_pos);
 }
 
 void do_enc_dither(){
@@ -309,22 +319,39 @@ void track(){
 		az_delta = fabs(axes_mode.dest_az-get_angle());
 		if((az_delta < 0.1) && (el_delta <0.1)){
 			axes_mode.on_target = 1;
+			axes_mode.on_target_el = 1;
+			axes_mode.on_target_az = 1;
 		}else{
 			axes_mode.on_target = 0;
+
+			if(az_delta <0.1){
+				axes_mode.on_target_az = 1;
+				axes_mode.on_target_el = 0;
+			}else if (el_delta < 0.1){
+				axes_mode.on_target_az = 0;
+				axes_mode.on_target_el = 1;
+			}else{
+				axes_mode.on_target_az = 0;
+				axes_mode.on_target_el = 0;
+			}
 		}
 	}else if(!config.lazisusan.enabled){
 		el_delta = fabs(MotorData[GETREADINDEX(motor_index)].position-axes_mode.dest);
 		if(el_delta < 0.1){
 			axes_mode.on_target = 1;
+			axes_mode.on_target_el = 1;
 		}else{
 			axes_mode.on_target = 0;
+			axes_mode.on_target_el = 0;
 		}
 	}else if(!config.motor.enabled){
 		az_delta = fabs(axes_mode.dest_az-get_angle());
 		if(az_delta <0.1){
 			axes_mode.on_target = 1;
+			axes_mode.on_target_az = 1;
 		}else{
 			axes_mode.on_target = 0;
+			axes_mode.on_target_az = 0;
 		}
 
 	}
@@ -332,34 +359,85 @@ void track(){
 }
 
 void enc_onoff(){
-	static int firsttime = 1;
+	static int on_to_off = 0;
 	static double t_start;
 	double t_now;
 	struct timeval time;
 	gettimeofday(&time,NULL);
 	t_now = time.tv_sec+time.tv_usec/1e6;
 	track();
-	if(firsttime){
+
+	if(scan_mode.scan == 0){
 		scan_mode.on_position = 0;
-		if(axes_mode.on_target ){
-			firsttime = 0;
+		if(axes_mode.on_target_el){
 			scan_mode.on_position = 1;
 			t_start = t_now;
-		}
-	}else if((t_now-t_start)>scan_mode.time){
-		t_start = t_now;
-		if(scan_mode.on_position){
-			scan_mode.on_position = 0;
+			on_to_off = 0;
 			scan_mode.scan++;
-		}else{
-			scan_mode.on_position = 1;
+		}
+	}else{
+
+		if((scan_mode.on_position == -1) || (on_to_off == 1)){
+                	axes_mode.dest += scan_mode.offset;
+       		 }
+
+		if((t_now-t_start)>scan_mode.time){
+			if(scan_mode.on_position == 1){
+				on_to_off = 1;
+				scan_mode.on_position = 0;
+				scan_mode.scan++;
+			}else if(scan_mode.on_position == -1){
+				on_to_off = -1;
+				scan_mode.on_position = 0;
+				scan_mode.scan++;
+			}else if(axes_mode.on_target_el){
+				t_start = t_now;
+				if(on_to_off == -1){
+					scan_mode.on_position = 1;
+					on_to_off = 0;
+				}else if(on_to_off == 1){
+					scan_mode.on_position = -1;
+					on_to_off = 0;
+				}
+			}
 		}
 	}
-	if(!scan_mode.on_position){
-		axes_mode.dest += scan_mode.offset;
-	}
+}
+
+void set_el_offset(double cal_angle){
+        double curr_ang = MotorData[GETREADINDEX(motor_index)].position;
+        motor_offset = motor_offset -cal_angle+curr_ang;
+	parking_pos = parking_pos - curr_ang + cal_angle;
+}
+
+int check_sc(){
+        static int az_prev;
+        static int firsttime = 1;
+        if(firsttime){
+                firsttime = 0;
+                az_prev= all_astro_params.az;
+
+                if(all_astro_params.az != 0.0){
+                        return 1;
+                }else{
+                        return 0;
+                }
+        }
+        if(az_prev != all_astro_params.az){
+                az_prev = all_astro_params.az;
+
+                if(all_astro_params.az != 0.0){
+                        return 1;
+                }else{
+                        return 0;
+                }
+        }else{
+
+                return 0;
+        }
 
 }
+
 
 void command_motor(void){
 	
@@ -375,15 +453,15 @@ void command_motor(void){
 			enc_onoff();
 		}
 	}
-	
+	if(config.bvexcam.enabled){
+		//if(check_sc()){
+			//set_el_offset(all_astro_params.alt);
+			//set_offset(all_astro_params.az);
+		//}
+	}
 	v_req = calculate_velocity_enc();
 	current = calculate_current(v_req);
 	set_current(current);
-}
-
-void set_el_offset(double cal_angle){
-	double curr_ang = MotorData[GETREADINDEX(motor_index)].position;
-	motor_offset = motor_offset -cal_angle+curr_ang;
 }
 
 int start_motor(void){

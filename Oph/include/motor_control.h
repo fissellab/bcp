@@ -23,7 +23,9 @@ typedef struct{
 	double vel;
         double vel_az;
 	double dest_az;
-	int on_target; 
+	int on_target;
+	int on_target_az;
+	int on_target_el; 
 
 }AxesModeStruct;
 
@@ -47,11 +49,15 @@ void go_to_enc(double angle);
 void set_el_offset(double cal_angle);
 int start_motor(void);
 void print_motor_PID();
+void go_to_park();
 
 extern AxesModeStruct axes_mode;
 extern ScanModeStruct scan_mode;
 extern pthread_t motors;
 extern SkyCoord target;
+extern float p_pub;
+extern float i_pub;
+extern float d_pub;
 
 
 

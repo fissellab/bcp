@@ -256,5 +256,5 @@ extern int ready;
 extern FILE* motor_log;
 extern int comms_ok;
 extern double motor_offset;
-
+extern double parking_pos;
 #endif

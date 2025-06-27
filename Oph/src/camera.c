@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+#define _DEFAULT_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -15,6 +17,11 @@
 #include "lens_adapter.h"
 #include "matrix.h"
 #include "file_io_Oph.h"
+#include "gps_server.h"
+
+// Forward declaration for notification function
+void notifyImageServer(const char* image_path, int blob_count, time_t timestamp, 
+                      void* raw_data, int width, int height);
 
 void merge(double A[], int p, int q, int r, double X[],double Y[]);
 void part(double A[], int p, int r, double X[], double Y[]);
@@ -44,6 +51,8 @@ int curr_red_gain, curr_green_gain, curr_blue_gain, curr_gamma, curr_gain_boost;
 unsigned int curr_timeout;
 int bl_offset, bl_mode;
 int prev_dynamic_hp;
+extern GPS_data curr_gps;
+extern int server_running;
 
 /* Blob parameters global structure (defined in camera.h) */
 struct blob_params all_blob_params = {
@@ -130,6 +139,8 @@ int initCamera(FILE* log) {
     unsigned int enable = 1;   
 
     all_camera_params.exposure_time = config.bvexcam.t_exp;
+    // Initialize save_image from config file
+    all_camera_params.save_image = config.bvexcam.save_image;
     // load the camera parameters
     if (loadCamera(log) < 0) {
         return -1;
@@ -853,21 +864,33 @@ int findBlobs(char * input_buffer, int w, int h, double ** star_x,
 
             for (int j = j0 + 1; j < j1 - 1; j++) {
                 for (int i = i0 + 1; i < i1 - 1; i++) {
-                  output_buffer[i + j*w] = ic[i + j*w]+pixel_offset;
+                    // FIX: Properly clamp double values to valid uint8_t range (0-255)
+                    double pixel_val = ic[i + j*w] + pixel_offset;
+                    if (pixel_val < 0.0) pixel_val = 0.0;
+                    if (pixel_val > 255.0) pixel_val = 255.0;
+                    output_buffer[i + j*w] = (unsigned char)pixel_val;
                 }
             }
 
             for (int j = 0; j < b; j++) {
                 for (int i = i0; i < i1; i++) {
-                  output_buffer[i + (j + j0)*w] = 
-                  output_buffer[i + (j1 - j - 1)*w] = mean + pixel_offset;
+                    // FIX: Properly clamp double values to valid uint8_t range (0-255)
+                    double pixel_val = mean + pixel_offset;
+                    if (pixel_val < 0.0) pixel_val = 0.0;
+                    if (pixel_val > 255.0) pixel_val = 255.0;
+                    output_buffer[i + (j + j0)*w] = (unsigned char)pixel_val;
+                    output_buffer[i + (j1 - j - 1)*w] = (unsigned char)pixel_val;
                 }
             }
 
             for (int j = j0; j < j1; j++) {
                 for (int i = 0; i < b; i++) {
-                  output_buffer[i + i0 + j*w] = 
-                  output_buffer[i1 - i - 1 + j*w] = mean + pixel_offset;
+                    // FIX: Properly clamp double values to valid uint8_t range (0-255)
+                    double pixel_val = mean + pixel_offset;
+                    if (pixel_val < 0.0) pixel_val = 0.0;
+                    if (pixel_val > 255.0) pixel_val = 255.0;
+                    output_buffer[i + i0 + j*w] = (unsigned char)pixel_val;
+                    output_buffer[i1 - i - 1 + j*w] = (unsigned char)pixel_val;
                 }
             }
         } else {
@@ -877,8 +900,9 @@ int findBlobs(char * input_buffer, int w, int h, double ** star_x,
 
             for (int j = j0; j < j1; j++) {
                 for (int i = i0; i < i1; i++) {
-                  int idx = i + j*w;
-                  output_buffer[idx] = input_buffer[idx];
+                    int idx = i + j*w;
+                    // FIX: Ensure we cast to unsigned char to maintain proper pixel values
+                    output_buffer[idx] = (unsigned char)input_buffer[idx];
                 }
             }
         }
@@ -1110,7 +1134,19 @@ int doCameraAndAstrometry(FILE* log) {
             tm_info->tm_yday++;           
         }
     }
+    if(config.gps_server.enabled && server_running){
+                if(curr_gps.gps_lat != 0){
+                        all_astro_params.latitude=curr_gps.gps_lat;
+                }
 
+                if(curr_gps.gps_lon != 0){
+                        all_astro_params.longitude=curr_gps.gps_lon;
+                }
+
+                if(curr_gps.gps_alt !=0){
+                        all_astro_params.hm=curr_gps.gps_alt;
+                }
+    }
     // data file to pass to lostInSpace
     strftime(datafile, sizeof(datafile), 
              join_path(config.bvexcam.workdir,"/data_%b-%d.txt"), tm_info);
@@ -1128,7 +1164,8 @@ int doCameraAndAstrometry(FILE* log) {
     }
 
     if (first_time) {
-        output_buffer = calloc(1, CAMERA_WIDTH*CAMERA_HEIGHT);
+        // FIX: Allocate as unsigned char array for proper image data handling
+        output_buffer = calloc(CAMERA_WIDTH*CAMERA_HEIGHT, sizeof(unsigned char));
         if (output_buffer == NULL) {
             fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Error allocating output buffer: %s.\n", time(NULL), 
                     strerror(errno));
@@ -1308,6 +1345,14 @@ int doCameraAndAstrometry(FILE* log) {
         return -1;
     }
 */
+    // FIX: Save original camera image data BEFORE it gets overwritten by blob processing
+    static char *original_camera_data = NULL;
+    if (!original_camera_data) {
+        original_camera_data = malloc(CAMERA_WIDTH * CAMERA_HEIGHT);
+    }
+    // Make a copy of the original camera data before any processing
+    memcpy(original_camera_data, memory, CAMERA_WIDTH * CAMERA_HEIGHT);
+
     if(all_camera_params.solve_img||all_camera_params.focus_mode){
     	// find the blobs in the image
     	blob_count = findBlobs(memory, CAMERA_WIDTH, CAMERA_HEIGHT, &star_x, 
@@ -1491,7 +1536,7 @@ int doCameraAndAstrometry(FILE* log) {
         	fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Time going into Astrometry.net: %s\n", time(NULL), buff);
 
         	if (fprintf(fptr, "\r%li|%s|", tv.tv_sec, buff) < 0) {
-            		fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Unable to write time and blob count to observing "
+            		fprintf(log, "[%ld][camera.c][doCamreaAndAstrometry] Unable to write time and blob count to observing "
                             "file: %s.\n", time(NULL), strerror(errno));
         	}
         	fflush(fptr);
@@ -1508,7 +1553,7 @@ int doCameraAndAstrometry(FILE* log) {
 
         	// get current time right after solving
         	if (clock_gettime(CLOCK_REALTIME, &camera_tp_end) == -1) {
-            		fprintf(log, "[%ld][camera.c][doCameraAndAstrometry] Error ending timer: %s.\n", time(NULL), strerror(errno));
+            		fprintf(log, "[%ld][camera.c][doCamreaAndAstrometry] Error ending timer: %s.\n", time(NULL), strerror(errno));
         	}
 
         	// calculate time it took camera program to run in nanoseconds
@@ -1528,19 +1573,31 @@ int doCameraAndAstrometry(FILE* log) {
 	}
     }
 
-    // save image for future reference
-    ImageFileParams.pwchFileName = filename;
-    if (is_ImageFile(camera_handle, IS_IMAGE_FILE_CMD_SAVE, 
-                    (void *) &ImageFileParams, sizeof(ImageFileParams)) == -1) {
-        const char * last_error_str = printCameraError();
-        fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Failed to save image: %s\n", time(NULL), last_error_str);
-    }
-
-    wprintf(L"Saving to \"%s\"\n", filename);
-    // unlink whatever the latest saved image was linked to before
-    unlink(join_path(config.bvexcam.workdir,"/latest_saved_image.bmp"));
-    // sym link current date to latest image for live Kst updates
-    symlink(date, join_path(config.bvexcam.workdir,"/latest_saved_image.bmp"));
+    // save image for future reference (if enabled via CLI or config)
+    if (all_camera_params.save_image) {
+        ImageFileParams.pwchFileName = filename;
+        if (is_ImageFile(camera_handle, IS_IMAGE_FILE_CMD_SAVE, 
+                        (void *) &ImageFileParams, sizeof(ImageFileParams)) == -1) {
+            const char * last_error_str = printCameraError();
+            fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Failed to save image: %s\n", time(NULL), last_error_str);
+        } else {
+            wprintf(L"Saving to \"%s\"\n", filename);
+        }
+        
+        // unlink whatever the latest saved image was linked to before
+        unlink(join_path(config.bvexcam.workdir,"/latest_saved_image.bmp"));
+        // sym link current date to latest image for live Kst updates
+        symlink(date, join_path(config.bvexcam.workdir,"/latest_saved_image.bmp"));
+         } else {
+         if (verbose) {
+             printf("Image saving disabled - skipping save operation\n");
+         }
+     }
+    
+    // Notify image server of new image for downlink
+    // FIX: Send original camera image data (before blob processing) instead of processed buffers
+    // The 'memory' buffer was overwritten by processed data, so use original_camera_data
+    notifyImageServer(date, blob_count, tv.tv_sec, original_camera_data, CAMERA_WIDTH, CAMERA_HEIGHT);
 
     // make a table of blobs for Kst
     if (all_camera_params.solve_img){
@@ -1556,6 +1613,11 @@ int doCameraAndAstrometry(FILE* log) {
 
         if (output_buffer != NULL) {
             free(output_buffer);
+        }
+        
+        // FIX: Free the original camera data buffer
+        if (original_camera_data != NULL) {
+            free(original_camera_data);
         }
         
         if (mask != NULL) {

@@ -1,0 +1,27 @@
+[1750440251][main_Oph.c][main] Started logfile
+[1750440251][main_Oph.c][main] Starting command log
+[1750440251][main_Oph.c][main] Starting PBoBs
+[1750440251][main_Oph.c][main] PBoBs started successfully
+[1750440251][main_Oph.c][main] Starting bvexcam log
+[1750440251][main_Oph.c][main] Starting starcam downlink
+[1750440251][main_Oph.c][main] Successfully started starcam downlink
+[1750440251][main_Oph.c][main] Starting motor log
+[1750440251][main_Oph.c][main] Starting GPS server
+[1750440251][main_Oph.c][main] Starting GPS server log
+[1750440251][main_Oph.c][main] Starting telemetry server
+[1750440251][main_Oph.c][main] Starting telemetry server log
+[1750440251][main_Oph.c][main] Successfully started telemetry server
+[1750440271][cli_Oph.c][exec_command] Starting bvexcam
+[1750445369][main_Oph.c][main] Successfully shut down bvexcam
+[1750445369][main_Oph.c][main] Motor already shutdown
+
+[1750445369][Main_Oph.c][main] Shutting down lockpin
+[1750445369][main_Oph.c][main] Lockpin shutdown complete
+[1750445369][Main_Oph.c][main] Shutting down GPS_server
+[1750445369][main_Oph.c][main] GPS server shutdown complete
+[1750445369][Main_Oph.c][main] Shutting down telemetry_server
+[1750445369][main_Oph.c][main] Telemetry server shutdown complete
+[1750445369][main_Oph.c][main] Shutting down starcam downlink
+[1750445369][main_Oph.c][main] Starcam downlink shutdown complete
+[1750445369][main_Oph.c][main] Shutting down PBoB
+[1750445369][main_Oph.c][main]  PBoB shutdown complete
