@@ -1,8 +1,8 @@
-Fri Jun 27 14:03:39 2025 : main_Sag.c : main : Started logfile
-Fri Jun 27 14:03:39 2025 : main_Sag.c : main : Starting command log
-Fri Jun 27 14:03:39 2025 : main_Sag.c : main : GPS initialized - awaiting gps_start command
-Fri Jun 27 14:03:39 2025 : main_Sag.c : main : Spectrometer server initialized
-Fri Jun 27 14:03:39 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081 for 4 authorized clients
-Fri Jun 27 14:03:39 2025 : main_Sag.c : main : PBoB client initialized successfully
-Fri Jun 27 14:06:52 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
-Fri Jun 27 14:06:52 2025 : main_Sag.c : main : PBoB client cleaned up
+Fri Jun 27 15:45:40 2025 : main_Sag.c : main : Started logfile
+Fri Jun 27 15:45:40 2025 : main_Sag.c : main : Starting command log
+Fri Jun 27 15:45:40 2025 : main_Sag.c : main : GPS initialized - awaiting gps_start command
+Fri Jun 27 15:45:40 2025 : main_Sag.c : main : Spectrometer server initialized
+Fri Jun 27 15:45:40 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081
+Fri Jun 27 15:45:40 2025 : main_Sag.c : main : PBoB client initialized successfully
+Fri Jun 27 15:45:43 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
+Fri Jun 27 15:45:43 2025 : main_Sag.c : main : PBoB client cleaned up

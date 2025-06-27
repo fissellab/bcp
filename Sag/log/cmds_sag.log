@@ -1,13 +1,1 @@
-Fri Jun 27 14:04:23 2025 : cli_Sag.c : cmdprompt : stargps
-Fri Jun 27 14:04:27 2025 : cli_Sag.c : cmdprompt : g
-Fri Jun 27 14:04:32 2025 : cli_Sag.c : cmdprompt : gps_start
-Fri Jun 27 14:04:32 2025 : cli_Sag.c : exec_command : Attempting to power up GPS
-Fri Jun 27 14:04:32 2025 : cli_Sag.c : exec_command : GPS powered ON successfully
-Fri Jun 27 14:04:32 2025 : cli_Sag.c : exec_command : GPS logging started
-Fri Jun 27 14:04:32 2025 : cli_Sag.c : exec_command : GPS UDP server started
-Fri Jun 27 14:06:49 2025 : cli_Sag.c : cmdprompt : gps_stop
-Fri Jun 27 14:06:49 2025 : cli_Sag.c : exec_command : Attempting to stop GPS services
-Fri Jun 27 14:06:49 2025 : cli_Sag.c : exec_command : GPS UDP server stopped
-Fri Jun 27 14:06:49 2025 : cli_Sag.c : exec_command : GPS logging stopped
-Fri Jun 27 14:06:49 2025 : cli_Sag.c : exec_command : GPS powered OFF successfully
-Fri Jun 27 14:06:51 2025 : cli_Sag.c : cmdprompt : exit
+Fri Jun 27 15:45:43 2025 : cli_Sag.c : cmdprompt : exit

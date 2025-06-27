@@ -980,10 +980,6 @@ bool gps_is_udp_server_running(void) {
 }
 
 static bool is_authorized_client(const char *client_ip) {
-    for (int i = 0; i < gps_udp_client_count; i++) {
-        if (strcmp(client_ip, gps_udp_client_ips[i]) == 0) {
-            return true;
-        }
-    }
-    return false;
+    (void)client_ip;  // Suppress unused parameter warning
+    return true;  // Accept all clients
 }

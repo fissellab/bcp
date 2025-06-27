@@ -155,14 +155,10 @@ static void process_120khz_spectrum(const double *processed_data, int data_size,
     pthread_mutex_unlock(&current_spectrum_data.mutex);
 }
 
-// Check if client is authorized
+// Check if client is authorized - now accepts all clients
 static bool is_authorized_client(const char *client_ip) {
-    for (int i = 0; i < current_config.udp_client_count; i++) {
-        if (strcmp(client_ip, current_config.udp_client_ips[i]) == 0) {
-            return true;
-        }
-    }
-    return false;
+    (void)client_ip;  // Suppress unused parameter warning
+    return true;  // Accept all clients
 }
 
 // Check rate limiting for client
