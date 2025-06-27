@@ -68,6 +68,10 @@ void read_in_config(const char* filepath) {
     config_lookup_int(&cfg, "rfsoc_spectrometer.accumulation_length", &config.rfsoc.accumulation_length);
     config_lookup_int(&cfg, "rfsoc_spectrometer.num_channels", &config.rfsoc.num_channels);
     config_lookup_int(&cfg, "rfsoc_spectrometer.num_fft_points", &config.rfsoc.num_fft_points);
+    
+    // Read RFSoC power control settings
+    config_lookup_int(&cfg, "rfsoc_spectrometer.pbob_id", &config.rfsoc.pbob_id);
+    config_lookup_int(&cfg, "rfsoc_spectrometer.relay_id", &config.rfsoc.relay_id);
 
     // Read gps section
     config_lookup_int(&cfg, "gps.enabled", &config.gps.enabled);
@@ -111,6 +115,10 @@ void read_in_config(const char* filepath) {
     }
     
     config_lookup_int(&cfg, "gps.udp_buffer_size", &config.gps.udp_buffer_size);
+    
+    // Read GPS power control settings
+    config_lookup_int(&cfg, "gps.pbob_id", &config.gps.pbob_id);
+    config_lookup_int(&cfg, "gps.relay_id", &config.gps.relay_id);
 
     // Read spectrometer_server section
     config_lookup_int(&cfg, "spectrometer_server.enabled", &config.spectrometer_server.enabled);
@@ -143,6 +151,16 @@ void read_in_config(const char* filepath) {
     config_lookup_float(&cfg, "spectrometer_server.zoom_window_width", &config.spectrometer_server.zoom_window_width);
     config_lookup_float(&cfg, "spectrometer_server.if_lower", &config.spectrometer_server.if_lower);
     config_lookup_float(&cfg, "spectrometer_server.if_upper", &config.spectrometer_server.if_upper);
+
+    // Read pbob_client section
+    config_lookup_int(&cfg, "pbob_client.enabled", &config.pbob_client.enabled);
+    config_lookup_int(&cfg, "pbob_client.port", &config.pbob_client.port);
+    config_lookup_int(&cfg, "pbob_client.timeout", &config.pbob_client.timeout);
+    
+    if (config_lookup_string(&cfg, "pbob_client.ip", &tmpstr)) {
+        strncpy(config.pbob_client.ip, tmpstr, sizeof(config.pbob_client.ip) - 1);
+        config.pbob_client.ip[sizeof(config.pbob_client.ip) - 1] = '\0';
+    }
 
     config_destroy(&cfg);
 }

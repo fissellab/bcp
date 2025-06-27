@@ -24,6 +24,9 @@ typedef struct conf_params {
         int accumulation_length;
         int num_channels;
         int num_fft_points;
+        // Power control settings
+        int pbob_id;
+        int relay_id;
     } rfsoc;
     struct {
         int enabled;
@@ -38,6 +41,10 @@ typedef struct conf_params {
         char udp_client_ips[MAX_UDP_CLIENTS][16];  // Array of client IPs
         int udp_client_count;                      // Number of authorized clients
         int udp_buffer_size;
+        
+        // Power control settings
+        int pbob_id;
+        int relay_id;
     } gps;
     struct {
         int enabled;
@@ -53,6 +60,12 @@ typedef struct conf_params {
         double if_lower;                           // 20.96608 GHz
         double if_upper;                           // 22.93216 GHz
     } spectrometer_server;
+    struct {
+        int enabled;
+        char ip[16];
+        int port;
+        int timeout;
+    } pbob_client;
 } conf_params_t;
 
 extern conf_params_t config;

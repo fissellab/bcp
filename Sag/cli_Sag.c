@@ -10,6 +10,9 @@
 #include "cli_Sag.h"
 #include "gps.h"
 #include "spectrometer_server.h"
+#include "pbob_client.h"
+
+extern conf_params_t config;  // Access to global configuration
 
 int exiting = 0;
 int spec_running = 0;
@@ -129,6 +132,121 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
             }
         } else {
             printf("Unknown start command: %s\n", sub_arg);
+        }
+    } else if (strcmp(cmd, "rfsoc_on") == 0) {
+        if (pbob_client_is_enabled()) {
+            printf("Powering up RFSoC (PBOB %d, Relay %d)...\n", config.rfsoc.pbob_id, config.rfsoc.relay_id);
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to power up RFSoC");
+            
+            int result = pbob_send_command(config.rfsoc.pbob_id, config.rfsoc.relay_id);
+            if (result == 1) {
+                printf("RFSoC power ON successful!\n");
+                printf("Please wait 40 seconds for complete RFSoC bootup before starting spectrometer...\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "RFSoC powered ON successfully");
+                
+                // Show countdown
+                for (int i = 40; i > 0; i--) {
+                    printf("\rBootup countdown: %2d seconds remaining...", i);
+                    fflush(stdout);
+                    sleep(1);
+                }
+                printf("\nRFSoC bootup complete! You can now use 'start spec' commands.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "RFSoC bootup countdown completed");
+            } else {
+                printf("Failed to power up RFSoC. Check PBoB server connection.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to power up RFSoC");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted rfsoc_on but PBoB client not available");
+        }
+    } else if (strcmp(cmd, "rfsoc_off") == 0) {
+        if (pbob_client_is_enabled()) {
+            printf("Powering down RFSoC (PBOB %d, Relay %d)...\n", config.rfsoc.pbob_id, config.rfsoc.relay_id);
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to power down RFSoC");
+            
+            int result = pbob_send_command(config.rfsoc.pbob_id, config.rfsoc.relay_id);
+            if (result == 1) {
+                printf("RFSoC powered OFF successfully.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "RFSoC powered OFF successfully");
+            } else {
+                printf("Failed to power down RFSoC. Check PBoB server connection.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to power down RFSoC");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted rfsoc_off but PBoB client not available");
+        }
+    } else if (strcmp(cmd, "gps_start") == 0) {
+        if (pbob_client_is_enabled()) {
+            printf("Powering up GPS (PBOB %d, Relay %d)...\n", config.gps.pbob_id, config.gps.relay_id);
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to power up GPS");
+            
+            int result = pbob_send_command(config.gps.pbob_id, config.gps.relay_id);
+            if (result == 1) {
+                printf("GPS power ON successful!\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "GPS powered ON successfully");
+                
+                // Start GPS logging
+                if (gps_start_logging()) {
+                    printf("GPS logging started.\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "GPS logging started");
+                    
+                    // Start GPS UDP server if enabled
+                    if (config.gps.udp_server_enabled) {
+                        if (gps_start_udp_server()) {
+                            printf("GPS UDP server started on port %d for %d authorized clients.\n", 
+                                   config.gps.udp_server_port, config.gps.udp_client_count);
+                            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "GPS UDP server started");
+                        } else {
+                            printf("Failed to start GPS UDP server.\n");
+                            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to start GPS UDP server");
+                        }
+                    }
+                } else {
+                    printf("Failed to start GPS logging.\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to start GPS logging");
+                }
+            } else {
+                printf("Failed to power up GPS. Check PBoB server connection.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to power up GPS");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted gps_start but PBoB client not available");
+        }
+    } else if (strcmp(cmd, "gps_stop") == 0) {
+        if (pbob_client_is_enabled()) {
+            printf("Stopping GPS services...\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to stop GPS services");
+            
+            // Stop GPS UDP server if running
+            if (gps_is_udp_server_running()) {
+                gps_stop_udp_server();
+                printf("GPS UDP server stopped.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "GPS UDP server stopped");
+            }
+            
+            // Stop GPS logging if running
+            if (gps_is_logging()) {
+                gps_stop_logging();
+                printf("GPS logging stopped.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "GPS logging stopped");
+            }
+            
+            // Power down GPS
+            printf("Powering down GPS (PBOB %d, Relay %d)...\n", config.gps.pbob_id, config.gps.relay_id);
+            int result = pbob_send_command(config.gps.pbob_id, config.gps.relay_id);
+            if (result == 1) {
+                printf("GPS powered OFF successfully.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "GPS powered OFF successfully");
+            } else {
+                printf("Failed to power down GPS. Check PBoB server connection.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to power down GPS");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted gps_stop but PBoB client not available");
         }
     } else if (strcmp(cmd, "stop") == 0) {
         // Check for "stop spec" or "stop spec 120khz"

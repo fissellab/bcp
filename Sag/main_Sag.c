@@ -10,6 +10,7 @@
 #include "cli_Sag.h"
 #include "gps.h"
 #include "spectrometer_server.h"
+#include "pbob_client.h"
 
 void print_config() {
     printf("Configuration parameters:\n");
@@ -27,6 +28,7 @@ void print_config() {
     printf("  Accumulation Length: %d\n", config.rfsoc.accumulation_length);
     printf("  Number of Channels: %d\n", config.rfsoc.num_channels);
     printf("  Number of FFT Points: %d\n", config.rfsoc.num_fft_points);
+    printf("  Power Control: PBOB %d, Relay %d\n", config.rfsoc.pbob_id, config.rfsoc.relay_id);
     printf("\nGPS settings:\n");
     printf("  Enabled: %s\n", config.gps.enabled ? "Yes" : "No");
     printf("  Port: %s\n", config.gps.port);
@@ -44,6 +46,7 @@ void print_config() {
     }
     printf("\n");
     printf("  UDP Buffer Size: %d\n", config.gps.udp_buffer_size);
+    printf("  Power Control: PBOB %d, Relay %d\n", config.gps.pbob_id, config.gps.relay_id);
     printf("\nSpectrometer Server settings:\n");
     printf("  Enabled: %s\n", config.spectrometer_server.enabled ? "Yes" : "No");
     printf("  UDP Server Port: %d\n", config.spectrometer_server.udp_server_port);
@@ -60,6 +63,11 @@ void print_config() {
     printf("  Water Maser Freq: %.3f GHz\n", config.spectrometer_server.water_maser_freq);
     printf("  Zoom Window Width: %.3f GHz\n", config.spectrometer_server.zoom_window_width);
     printf("  IF Range: %.5f - %.5f GHz\n", config.spectrometer_server.if_lower, config.spectrometer_server.if_upper);
+    printf("\nPBoB Client settings:\n");
+    printf("  Enabled: %s\n", config.pbob_client.enabled ? "Yes" : "No");
+    printf("  Server IP: %s\n", config.pbob_client.ip);
+    printf("  Server Port: %d\n", config.pbob_client.port);
+    printf("  Timeout: %d ms\n", config.pbob_client.timeout);
 }
 
 int main(int argc, char* argv[]) {
@@ -100,7 +108,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Initialize and start GPS if enabled
+    // Initialize GPS configuration if enabled (but don't start it automatically)
     if (config.gps.enabled) {
         gps_config_t gps_config;
         strncpy(gps_config.port, config.gps.port, sizeof(gps_config.port) - 1);
@@ -122,32 +130,8 @@ int main(int argc, char* argv[]) {
 
         int gps_init_result = gps_init(&gps_config);
         if (gps_init_result == 0) {
-            write_to_log(main_log, "main_Sag.c", "main", "GPS initialized");
-            
-            // Automatically start GPS logging
-            if (gps_start_logging()) {
-                printf("GPS logging started automatically.\n");
-                write_to_log(main_log, "main_Sag.c", "main", "GPS logging started automatically");
-                
-                // Start GPS UDP server only if enabled
-                if (config.gps.udp_server_enabled) {
-                    if (gps_start_udp_server()) {
-                        char udp_msg[256];
-                        snprintf(udp_msg, sizeof(udp_msg), "GPS UDP server started on port %d for %d authorized clients", 
-                                config.gps.udp_server_port, config.gps.udp_client_count);
-                        printf("%s\n", udp_msg);
-                        write_to_log(main_log, "main_Sag.c", "main", udp_msg);
-                    } else {
-                        printf("Failed to start GPS UDP server.\n");
-                        write_to_log(main_log, "main_Sag.c", "main", "Failed to start GPS UDP server");
-                    }
-                } else {
-                    write_to_log(main_log, "main_Sag.c", "main", "GPS UDP server disabled in configuration");
-                }
-            } else {
-                printf("Failed to start GPS logging automatically.\n");
-                write_to_log(main_log, "main_Sag.c", "main", "Failed to start GPS logging automatically");
-            }
+            printf("GPS initialized (use 'gps_start' to power on and begin logging).\n");
+            write_to_log(main_log, "main_Sag.c", "main", "GPS initialized - awaiting gps_start command");
         } else {
             char error_msg[100];
             snprintf(error_msg, sizeof(error_msg), "Failed to initialize GPS. Error code: %d", gps_init_result);
@@ -201,6 +185,28 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "Spectrometer server disabled in configuration");
     }
 
+    // Initialize PBoB client if enabled
+    if (config.pbob_client.enabled) {
+        pbob_client_config_t pbob_config;
+        pbob_config.enabled = config.pbob_client.enabled;
+        strncpy(pbob_config.ip, config.pbob_client.ip, sizeof(pbob_config.ip) - 1);
+        pbob_config.ip[sizeof(pbob_config.ip) - 1] = '\0';
+        pbob_config.port = config.pbob_client.port;
+        pbob_config.timeout = config.pbob_client.timeout;
+
+        int pbob_init_result = pbob_client_init(&pbob_config);
+        if (pbob_init_result == 0) {
+            printf("PBoB client initialized successfully (Server: %s:%d)\n", 
+                   config.pbob_client.ip, config.pbob_client.port);
+            write_to_log(main_log, "main_Sag.c", "main", "PBoB client initialized successfully");
+        } else {
+            printf("Failed to initialize PBoB client\n");
+            write_to_log(main_log, "main_Sag.c", "main", "Failed to initialize PBoB client");
+        }
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "PBoB client disabled in configuration");
+    }
+
     // Start the command prompt
     cmdprompt(cmd_log, config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, 
               config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
@@ -228,6 +234,12 @@ int main(int argc, char* argv[]) {
             gps_stop_logging();
             write_to_log(main_log, "main_Sag.c", "main", "GPS logging stopped during cleanup");
         }
+    }
+
+    // Cleanup PBoB client
+    if (config.pbob_client.enabled) {
+        pbob_client_cleanup();
+        write_to_log(main_log, "main_Sag.c", "main", "PBoB client cleaned up");
     }
 
     fclose(cmd_log);

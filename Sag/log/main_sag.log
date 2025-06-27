@@ -1,28 +1,8 @@
-Sun Jun 15 17:47:53 2025 : main_Sag.c : main : Started logfile
-Sun Jun 15 17:47:53 2025 : main_Sag.c : main : Starting command log
-Sun Jun 15 17:47:53 2025 : main_Sag.c : main : GPS initialized
-Sun Jun 15 17:47:53 2025 : main_Sag.c : main : GPS logging started automatically
-Sun Jun 15 17:47:53 2025 : main_Sag.c : main : GPS UDP server started on port 8080 for 3 authorized clients
-Sun Jun 15 17:47:53 2025 : main_Sag.c : main : Spectrometer server initialized
-Sun Jun 15 17:47:53 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081 for 3 authorized clients
-Sun Jun 15 17:50:34 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
-Sun Jun 15 17:50:34 2025 : main_Sag.c : main : GPS UDP server stopped during cleanup
-Sun Jun 15 17:50:34 2025 : main_Sag.c : main : GPS logging stopped during cleanup
-onnecting to FPGA at 172.20.3.12...
-2025-06-15 17:48:00,487 - INFO - Connected to FPGA
-2025-06-15 17:48:00,488 - INFO - Programming FPGA with rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg
-2025-06-15 17:48:02,087 - INFO - FPGA programmed successfully
-2025-06-15 17:48:04,090 - INFO - Reading FPGA system information
-2025-06-15 17:48:04,570 - INFO - Setting acc_len to 32768
-2025-06-15 17:48:04,675 - INFO - Setting adc_chan_sel to 0
-2025-06-15 17:48:04,780 - INFO - Resetting counters
-2025-06-15 17:48:09,793 - INFO - Connected to existing shared memory for UDP server communication
-2025-06-15 17:48:09,794 - INFO - Starting 120 kHz resolution spectrometer acquisition
-2025-06-15 17:48:09,794 - INFO - FFT size: 16384, Frequency resolution: 0.120000 MHz
-2025-06-15 17:48:09,794 - INFO - Water maser processing: center_bin=10574, zoom_bins=83
-2025-06-15 17:48:09,795 - INFO - Zoom window: bins 10491-10657 (167 points)
-2025-06-15 17:48:09,795 - INFO - Frequency range: 22.225000-22.245000 GHz
-2025-06-15 17:48:09,796 - INFO - Data acquisition in progress...
-2025-06-15 17:49:09,973 - INFO - Performance: 127 spectra in 60.2s = 2.11 Hz
-2025-06-15 17:50:10,365 - INFO - Performance: 253 spectra in 120.5s = 2.10 Hz
-2025-06-15 17:50:31,060 - INFO - Received termination signal. Cleaning up...
+Fri Jun 27 14:03:39 2025 : main_Sag.c : main : Started logfile
+Fri Jun 27 14:03:39 2025 : main_Sag.c : main : Starting command log
+Fri Jun 27 14:03:39 2025 : main_Sag.c : main : GPS initialized - awaiting gps_start command
+Fri Jun 27 14:03:39 2025 : main_Sag.c : main : Spectrometer server initialized
+Fri Jun 27 14:03:39 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081 for 4 authorized clients
+Fri Jun 27 14:03:39 2025 : main_Sag.c : main : PBoB client initialized successfully
+Fri Jun 27 14:06:52 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
+Fri Jun 27 14:06:52 2025 : main_Sag.c : main : PBoB client cleaned up
