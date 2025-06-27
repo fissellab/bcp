@@ -1,5 +1,6 @@
 #include <sys/types.h>  
 #include <sys/socket.h> 
+#include <sys/time.h>
 #include <string.h>     
 #include <stdlib.h>     
 #include <netinet/in.h>     
@@ -95,6 +96,7 @@ int sockfd;//Socket port
 
 int ret;//retrun value of pthread
 
+FILE * bvexcam_log;
 /* Helper function to display the Star Camera terminal header.
 ** Input: None.
 ** Output: None.

@@ -2,14 +2,17 @@ cmake_minimum_required(VERSION 3.24)
 
 project(bcp_oph VERSION 0.1 LANGUAGES C)
 
+# Enable vcpkg integration
+#find_package(nanopb CONFIG REQUIRED)
+
 # sometimes I have to uncomment this line to get cmake to find
 # vcpkg installed packages. Not sure why.
 # include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
-add_subdirectory(
-    ../bvex-link/bcp-fetch-client
-    ../bvex-link/bcp-fetch-client/build
-)
+#add_subdirectory(
+#    ../bvex-link/bcp-fetch-client
+#    ../bvex-link/bcp-fetch-client/build
+#)
 # we now have a target called bcp-fetch
 
 # gather all source files from src/ into variable _srcFiles
@@ -33,14 +36,15 @@ target_include_directories(main PRIVATE
 
 
 target_link_libraries(main
-    bcp-fetch
     pthread
     config
     curses
     ueye_api  # requires omp5
     m
     astrometry
+    LabJackM
     glib-2.0
+    jpeg
     /usr/local/lib/libsofa_c.a
     /usr/local/lib/libsoem.a
 )

@@ -33,7 +33,8 @@ struct camera_params {
     int focus_step;             // granularity of auto-focusing checker
     int photos_per_focus;       // number of photos per auto-focusing position
     int flux;                   // brightness of most recent maximum flux
-    int solve_img;
+    int solve_img;              // flag to solve astrometry (1 = on, 0 = off)
+    int save_image;             // flag to save images (1 = on, 0 = off)
 };
 #pragma pack(pop)
 

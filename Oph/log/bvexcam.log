@@ -1,0 +1,447 @@
+[1750440276][lens_adapter.c][runCommand] mf -80
+OK
+DONE-80,0
+
+[1750440276][lens_adapter.c][initLensAdapter] Focus moved to desired default position.
+[1750440276][lens_adapter.c][initLensAdapter] Focus at 80 counts below infinity:
+[1750440277][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:14
+
+[1750440277][lens_adapter.c][initLensAdapter] Default focus value: 14
+[1750440280][lens_adapter.c][runCommand] pa
+OK
+0,f28
+
+[1750440280][lens_adapter.c][runCommand] in camera params, curr aper is: 28
+[1750440501][lens_adapter.c][beginAutoFocus] Beginning the auto-focus process...
+[1750440501][lens_adapter.c][beginAutoFocus] Auto-focusing parameters: start = -86, stop = 69, step = 5.
+[1750440502][lens_adapter.c][runCommand] mf -100
+OK
+DONE-100,0
+
+[1750440502][lens_adapter.c][beginAutoFocus] Focus moved to beginning of auto-focusing range.
+[1750440503][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-86
+
+[1750440505][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -86 has value 1130.
+[1750440506][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -86 has value 1130.
+[1750440508][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -86 has value 1145.
+[1750440508][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -86 is 1145.
+[1750440509][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440509][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440510][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-81
+
+[1750440511][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -81 has value 1181.
+[1750440512][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -81 has value 1175.
+[1750440514][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -81 has value 1185.
+[1750440514][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -81 is 1185.
+[1750440515][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440515][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440516][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-76
+
+[1750440517][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -76 has value 1190.
+[1750440518][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -76 has value 1200.
+[1750440520][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -76 has value 1195.
+[1750440520][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -76 is 1200.
+[1750440521][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440521][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440522][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-71
+
+[1750440523][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -71 has value 1200.
+[1750440524][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -71 has value 1196.
+[1750440526][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -71 has value 1200.
+[1750440526][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -71 is 1200.
+[1750440527][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440527][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440528][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-66
+
+[1750440529][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -66 has value 1200.
+[1750440530][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -66 has value 1200.
+[1750440532][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -66 has value 1215.
+[1750440532][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -66 is 1215.
+[1750440533][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440533][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440534][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-61
+
+[1750440535][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -61 has value 1250.
+[1750440536][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -61 has value 1231.
+[1750440538][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -61 has value 1231.
+[1750440538][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -61 is 1250.
+[1750440539][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440539][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440540][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-56
+
+[1750440541][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -56 has value 1248.
+[1750440542][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -56 has value 1245.
+[1750440544][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -56 has value 1275.
+[1750440544][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -56 is 1275.
+[1750440545][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440545][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440546][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-51
+
+[1750440547][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -51 has value 1275.
+[1750440548][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -51 has value 1287.
+[1750440549][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -51 has value 1270.
+[1750440549][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -51 is 1287.
+[1750440550][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440550][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440551][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-46
+
+[1750440553][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -46 has value 1285.
+[1750440554][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -46 has value 1285.
+[1750440555][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -46 has value 1290.
+[1750440555][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -46 is 1290.
+[1750440556][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440556][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440557][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-41
+
+[1750440559][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -41 has value 1306.
+[1750440560][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -41 has value 1310.
+[1750440561][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -41 has value 1315.
+[1750440561][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -41 is 1315.
+[1750440562][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440562][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440563][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-36
+
+[1750440565][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -36 has value 1315.
+[1750440566][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -36 has value 1325.
+[1750440567][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -36 has value 1320.
+[1750440567][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -36 is 1325.
+[1750440568][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440568][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440569][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-31
+
+[1750440570][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -31 has value 1345.
+[1750440572][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -31 has value 1350.
+[1750440573][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -31 has value 1337.
+[1750440573][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -31 is 1350.
+[1750440574][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440574][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440575][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-26
+
+[1750440576][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -26 has value 1368.
+[1750440578][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -26 has value 1387.
+[1750440579][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -26 has value 1360.
+[1750440579][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -26 is 1387.
+[1750440580][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440580][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440581][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-21
+
+[1750440582][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -21 has value 1381.
+[1750440583][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -21 has value 1387.
+[1750440585][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -21 has value 1393.
+[1750440585][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -21 is 1393.
+[1750440586][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440586][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440587][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-16
+
+[1750440588][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -16 has value 1395.
+[1750440589][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -16 has value 1381.
+[1750440591][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -16 has value 1406.
+[1750440591][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -16 is 1406.
+[1750440592][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440592][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440593][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-11
+
+[1750440594][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -11 has value 1395.
+[1750440595][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -11 has value 1406.
+[1750440596][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -11 has value 1400.
+[1750440596][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -11 is 1406.
+[1750440597][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440597][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440598][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-6
+
+[1750440600][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -6 has value 1416.
+[1750440601][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -6 has value 1415.
+[1750440602][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -6 has value 1410.
+[1750440602][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -6 is 1416.
+[1750440603][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440603][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440604][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:-1
+
+[1750440606][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus -1 has value 1420.
+[1750440607][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus -1 has value 1430.
+[1750440608][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus -1 has value 1456.
+[1750440608][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus -1 is 1456.
+[1750440609][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440609][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440610][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:4
+
+[1750440612][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 4 has value 1450.
+[1750440613][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 4 has value 1468.
+[1750440614][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 4 has value 1475.
+[1750440614][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 4 is 1475.
+[1750440615][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440615][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440616][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:9
+
+[1750440617][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 9 has value 1468.
+[1750440619][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 9 has value 1465.
+[1750440620][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 9 has value 1475.
+[1750440620][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 9 is 1475.
+[1750440621][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440621][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440622][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:14
+
+[1750440623][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 14 has value 1481.
+[1750440625][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 14 has value 1462.
+[1750440626][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 14 has value 1475.
+[1750440626][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 14 is 1481.
+[1750440627][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440627][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440628][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:19
+
+[1750440629][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 19 has value 1495.
+[1750440630][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 19 has value 1495.
+[1750440632][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 19 has value 1481.
+[1750440632][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 19 is 1495.
+[1750440633][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440633][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440634][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:24
+
+[1750440635][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 24 has value 1510.
+[1750440636][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 24 has value 1515.
+[1750440637][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 24 has value 1505.
+[1750440637][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 24 is 1515.
+[1750440638][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440638][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440639][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:29
+
+[1750440641][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 29 has value 1515.
+[1750440642][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 29 has value 1518.
+[1750440643][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 29 has value 1505.
+[1750440643][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 29 is 1518.
+[1750440644][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440644][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440645][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:34
+
+[1750440647][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 34 has value 1568.
+[1750440648][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 34 has value 1570.
+[1750440649][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 34 has value 1585.
+[1750440649][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 34 is 1585.
+[1750440650][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440650][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440651][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:39
+
+[1750440653][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 39 has value 1600.
+[1750440654][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 39 has value 1590.
+[1750440655][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 39 has value 1590.
+[1750440655][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 39 is 1600.
+[1750440656][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440656][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440657][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:44
+
+[1750440658][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 44 has value 1600.
+[1750440660][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 44 has value 1595.
+[1750440661][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 44 has value 1606.
+[1750440661][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 44 is 1606.
+[1750440662][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440662][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440663][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:49
+
+[1750440664][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 49 has value 1618.
+[1750440666][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 49 has value 1605.
+[1750440667][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 49 has value 1612.
+[1750440667][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 49 is 1618.
+[1750440668][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440668][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440669][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:54
+
+[1750440670][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 54 has value 1643.
+[1750440671][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 54 has value 1625.
+[1750440673][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 54 has value 1625.
+[1750440673][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 54 is 1643.
+[1750440674][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440674][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440675][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:59
+
+[1750440676][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 59 has value 1650.
+[1750440677][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 59 has value 1648.
+[1750440679][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 59 has value 1656.
+[1750440679][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 59 is 1656.
+[1750440680][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440680][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440681][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:64
+
+[1750440682][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 64 has value 1655.
+[1750440683][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 64 has value 1662.
+[1750440684][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 64 has value 1656.
+[1750440684][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 64 is 1662.
+[1750440685][lens_adapter.c][runCommand] mf 5
+OK
+DONE5,0
+
+[1750440685][lens_adapter.c][shiftFocus] Focus moved to next focus position in auto-focusing range.
+[1750440686][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:69
+
+[1750440688][camera.c][doCameraAndAstrometry] Brightest blob for photo 1 at focus 69 has value 1655.
+[1750440689][camera.c][doCameraAndAstrometry] Brightest blob for photo 2 at focus 69 has value 1650.
+[1750440690][camera.c][doCameraAndAstrometry] Brightest blob for photo 3 at focus 69 has value 1660.
+[1750440690][camera.c][doCameraAndAstrometry] Brighest blob among 3 photos for focus 69 is 1660.
+[1750440690][lens_adapter.c][calculateOptimalFocus] Could not find focus corresponding to maximum flux.
+
+[1750440690][lens_adapter.c][defaultFocusPosition] Moving to default focus position..
+[1750440690][lens_adapter.c][deaultFocusPosition] Default focus = 14, all_camera_params.focus_position = 69, default focus - focus position = -55
+[1750440691][lens_adapter.c][runCommand] mf -55
+OK
+DONE-55,0
+
+[1750440692][lens_adapter.c][runCommand] fp
+OK
+fmin:-769  fmax:94  current:14
+
+[1750445369][bvexcam.c][run_bvexcam] Successfully exited astrometry

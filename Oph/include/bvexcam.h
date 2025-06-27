@@ -10,4 +10,5 @@ extern struct conf_params config;
 void * processClient(void* log);
 int init_bvexcam(FILE* log);
 void * run_bvexcam(void *log);
+extern FILE* bvexcam_log;
 #endif
