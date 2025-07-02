@@ -162,5 +162,17 @@ void read_in_config(const char* filepath) {
         config.pbob_client.ip[sizeof(config.pbob_client.ip) - 1] = '\0';
     }
 
+    // Read vlbi section
+    config_lookup_int(&cfg, "vlbi.enabled", &config.vlbi.enabled);
+    config_lookup_int(&cfg, "vlbi.aquila_port", &config.vlbi.aquila_port);
+    config_lookup_int(&cfg, "vlbi.timeout", &config.vlbi.timeout);
+    config_lookup_int(&cfg, "vlbi.ping_timeout", &config.vlbi.ping_timeout);
+    config_lookup_int(&cfg, "vlbi.status_check_interval", &config.vlbi.status_check_interval);
+    
+    if (config_lookup_string(&cfg, "vlbi.aquila_ip", &tmpstr)) {
+        strncpy(config.vlbi.aquila_ip, tmpstr, sizeof(config.vlbi.aquila_ip) - 1);
+        config.vlbi.aquila_ip[sizeof(config.vlbi.aquila_ip) - 1] = '\0';
+    }
+
     config_destroy(&cfg);
 }

@@ -66,6 +66,15 @@ typedef struct conf_params {
         int port;
         int timeout;
     } pbob_client;
+    
+    struct {
+        int enabled;
+        char aquila_ip[16];
+        int aquila_port;
+        int timeout;
+        int ping_timeout;
+        int status_check_interval;
+    } vlbi;
 } conf_params_t;
 
 extern conf_params_t config;
