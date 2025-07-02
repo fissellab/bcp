@@ -1,0 +1,24 @@
+[Unit]
+Description=VLBI Controller Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=aquila
+Group=aquila
+WorkingDirectory=/home/aquila
+ExecStart=/usr/bin/python3 /home/aquila/vlbi_controller.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target 

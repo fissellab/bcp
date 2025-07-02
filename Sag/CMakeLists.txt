@@ -22,6 +22,7 @@ add_executable(
         gps.c
         spectrometer_server.c
         pbob_client.c
+        vlbi_client.c
 )
 
 target_include_directories(main PRIVATE 

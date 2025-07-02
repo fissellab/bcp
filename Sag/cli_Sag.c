@@ -11,6 +11,7 @@
 #include "gps.h"
 #include "spectrometer_server.h"
 #include "pbob_client.h"
+#include "vlbi_client.h"
 
 extern conf_params_t config;  // Access to global configuration
 
@@ -247,6 +248,90 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
         } else {
             printf("PBoB client is not enabled or initialized.\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted gps_stop but PBoB client not available");
+        }
+    } else if (strcmp(cmd, "start_vlbi") == 0) {
+        if (vlbi_client_is_enabled()) {
+            printf("Starting VLBI logging on aquila (%s)...\n", config.vlbi.aquila_ip);
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to start VLBI logging");
+            
+            // First check connectivity
+            if (vlbi_check_connectivity()) {
+                int result = vlbi_start_logging();
+                if (result == 1) {
+                    printf("VLBI logging started successfully!\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "VLBI logging started successfully");
+                } else {
+                    printf("Failed to start VLBI logging. Check VLBI daemon status.\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to start VLBI logging");
+                }
+            } else {
+                printf("Cannot reach VLBI daemon. Check network connection and daemon status.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "VLBI daemon not reachable");
+            }
+        } else {
+            printf("VLBI client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted start_vlbi but VLBI client not available");
+        }
+    } else if (strcmp(cmd, "stop_vlbi") == 0) {
+        if (vlbi_client_is_enabled()) {
+            printf("Stopping VLBI logging on aquila (%s)...\n", config.vlbi.aquila_ip);
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to stop VLBI logging");
+            
+            int result = vlbi_stop_logging();
+            if (result == 1) {
+                printf("VLBI logging stopped successfully!\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "VLBI logging stopped successfully");
+            } else {
+                printf("Failed to stop VLBI logging. Check VLBI daemon status.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to stop VLBI logging");
+            }
+        } else {
+            printf("VLBI client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted stop_vlbi but VLBI client not available");
+        }
+    } else if (strcmp(cmd, "vlbi_status") == 0) {
+        if (vlbi_client_is_enabled()) {
+            vlbi_status_t status;
+            printf("Checking VLBI status on aquila (%s)...\n", config.vlbi.aquila_ip);
+            
+            int result = vlbi_get_status(&status);
+            if (result == 1) {
+                printf("VLBI Status:\n");
+                printf("  Running: %s\n", status.is_running ? "Yes" : "No");
+                if (status.is_running && status.pid > 0) {
+                    printf("  Process ID: %d\n", status.pid);
+                }
+                if (strlen(status.timestamp) > 0) {
+                    printf("  Last Update: %s\n", status.timestamp);
+                }
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "VLBI status check successful");
+            } else {
+                printf("Failed to get VLBI status.\n");
+                if (strlen(status.last_error) > 0) {
+                    printf("Error: %s\n", status.last_error);
+                }
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to get VLBI status");
+            }
+        } else {
+            printf("VLBI client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted vlbi_status but VLBI client not available");
+        }
+    } else if (strcmp(cmd, "vlbi_check") == 0) {
+        if (vlbi_client_is_enabled()) {
+            printf("Checking VLBI daemon connectivity...\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Checking VLBI daemon connectivity");
+            
+            int result = vlbi_check_connectivity();
+            if (result == 1) {
+                printf("VLBI daemon connectivity check passed!\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "VLBI connectivity check successful");
+            } else {
+                printf("VLBI daemon connectivity check failed!\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "VLBI connectivity check failed");
+            }
+        } else {
+            printf("VLBI client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted vlbi_check but VLBI client not available");
         }
     } else if (strcmp(cmd, "stop") == 0) {
         // Check for "stop spec" or "stop spec 120khz"

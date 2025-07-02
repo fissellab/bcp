@@ -11,6 +11,7 @@
 #include "gps.h"
 #include "spectrometer_server.h"
 #include "pbob_client.h"
+#include "vlbi_client.h"
 
 void print_config() {
     printf("Configuration parameters:\n");
@@ -52,6 +53,13 @@ void print_config() {
     printf("  Server IP: %s\n", config.pbob_client.ip);
     printf("  Server Port: %d\n", config.pbob_client.port);
     printf("  Timeout: %d ms\n", config.pbob_client.timeout);
+    printf("\nVLBI Client settings:\n");
+    printf("  Enabled: %s\n", config.vlbi.enabled ? "Yes" : "No");
+    printf("  Aquila IP: %s\n", config.vlbi.aquila_ip);
+    printf("  Aquila Port: %d\n", config.vlbi.aquila_port);
+    printf("  Timeout: %d ms\n", config.vlbi.timeout);
+    printf("  Ping Timeout: %d s\n", config.vlbi.ping_timeout);
+    printf("  Status Check Interval: %d s\n", config.vlbi.status_check_interval);
 }
 
 int main(int argc, char* argv[]) {
@@ -191,6 +199,30 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "PBoB client disabled in configuration");
     }
 
+    // Initialize VLBI client
+    if (config.vlbi.enabled) {
+        vlbi_client_config_t vlbi_config;
+        vlbi_config.enabled = config.vlbi.enabled;
+        strncpy(vlbi_config.aquila_ip, config.vlbi.aquila_ip, sizeof(vlbi_config.aquila_ip) - 1);
+        vlbi_config.aquila_ip[sizeof(vlbi_config.aquila_ip) - 1] = '\0';
+        vlbi_config.aquila_port = config.vlbi.aquila_port;
+        vlbi_config.timeout = config.vlbi.timeout;
+        vlbi_config.ping_timeout = config.vlbi.ping_timeout;
+        vlbi_config.status_check_interval = config.vlbi.status_check_interval;
+
+        int vlbi_init_result = vlbi_client_init(&vlbi_config);
+        if (vlbi_init_result == 0) {
+            printf("VLBI client initialized successfully (Aquila: %s:%d)\n", 
+                   config.vlbi.aquila_ip, config.vlbi.aquila_port);
+            write_to_log(main_log, "main_Sag.c", "main", "VLBI client initialized successfully");
+        } else {
+            printf("Failed to initialize VLBI client\n");
+            write_to_log(main_log, "main_Sag.c", "main", "Failed to initialize VLBI client");
+        }
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "VLBI client disabled in configuration");
+    }
+
     // Start the command prompt
     cmdprompt(cmd_log, config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, 
               config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
@@ -224,6 +256,12 @@ int main(int argc, char* argv[]) {
     if (config.pbob_client.enabled) {
         pbob_client_cleanup();
         write_to_log(main_log, "main_Sag.c", "main", "PBoB client cleaned up");
+    }
+
+    // Cleanup VLBI client
+    if (config.vlbi.enabled) {
+        vlbi_client_cleanup();
+        write_to_log(main_log, "main_Sag.c", "main", "VLBI client cleaned up");
     }
 
     fclose(cmd_log);
