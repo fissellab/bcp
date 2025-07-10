@@ -1,0 +1,24 @@
+[Unit]
+Description=RFSoC Clock Control Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/casper
+ExecStart=/usr/bin/python3 /home/casper/rfsoc_daemon.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+
+# Security settings (relaxed since we need hardware access)
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target 

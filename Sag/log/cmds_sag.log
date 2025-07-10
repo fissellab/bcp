@@ -1,1 +1,4 @@
-Fri Jun 27 15:45:43 2025 : cli_Sag.c : cmdprompt : exit
+Tue Jul  8 13:23:44 2025 : cli_Sag.c : cmdprompt : gps_stop
+Tue Jul  8 13:23:44 2025 : cli_Sag.c : exec_command : Attempting to stop GPS services
+Tue Jul  8 13:23:44 2025 : cli_Sag.c : exec_command : GPS powered OFF successfully
+Tue Jul  8 13:23:49 2025 : cli_Sag.c : cmdprompt : exit
