@@ -21,8 +21,11 @@ add_executable(
         cli_Sag.c
         gps.c
         spectrometer_server.c
+        telemetry_server.c
         pbob_client.c
+        ticc_client.c
         vlbi_client.c
+        rfsoc_client.c
 )
 
 target_include_directories(main PRIVATE 

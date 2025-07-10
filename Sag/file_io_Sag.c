@@ -152,6 +152,37 @@ void read_in_config(const char* filepath) {
     config_lookup_float(&cfg, "spectrometer_server.if_lower", &config.spectrometer_server.if_lower);
     config_lookup_float(&cfg, "spectrometer_server.if_upper", &config.spectrometer_server.if_upper);
 
+    // Read telemetry_server section
+    config_lookup_int(&cfg, "telemetry_server.enabled", &config.telemetry_server.enabled);
+    config_lookup_int(&cfg, "telemetry_server.port", &config.telemetry_server.port);
+    config_lookup_int(&cfg, "telemetry_server.timeout", &config.telemetry_server.timeout);
+    config_lookup_int(&cfg, "telemetry_server.udp_buffer_size", &config.telemetry_server.udp_buffer_size);
+    
+    if (config_lookup_string(&cfg, "telemetry_server.ip", &tmpstr)) {
+        strncpy(config.telemetry_server.ip, tmpstr, sizeof(config.telemetry_server.ip) - 1);
+        config.telemetry_server.ip[sizeof(config.telemetry_server.ip) - 1] = '\0';
+    }
+    
+    // Read telemetry UDP client IPs array
+    config_setting_t *tel_client_ips_array = config_lookup(&cfg, "telemetry_server.udp_client_ips");
+    if (tel_client_ips_array != NULL && config_setting_is_array(tel_client_ips_array)) {
+        int count = config_setting_length(tel_client_ips_array);
+        if (count > MAX_UDP_CLIENTS) {
+            count = MAX_UDP_CLIENTS;  // Limit to max supported clients
+        }
+        config.telemetry_server.udp_client_count = count;
+        
+        for (int i = 0; i < count; i++) {
+            const char *ip = config_setting_get_string_elem(tel_client_ips_array, i);
+            if (ip != NULL) {
+                strncpy(config.telemetry_server.udp_client_ips[i], ip, 15);
+                config.telemetry_server.udp_client_ips[i][15] = '\0';
+            }
+        }
+    } else {
+        config.telemetry_server.udp_client_count = 0;
+    }
+
     // Read pbob_client section
     config_lookup_int(&cfg, "pbob_client.enabled", &config.pbob_client.enabled);
     config_lookup_int(&cfg, "pbob_client.port", &config.pbob_client.port);
@@ -173,6 +204,35 @@ void read_in_config(const char* filepath) {
         strncpy(config.vlbi.aquila_ip, tmpstr, sizeof(config.vlbi.aquila_ip) - 1);
         config.vlbi.aquila_ip[sizeof(config.vlbi.aquila_ip) - 1] = '\0';
     }
+
+    // Read rfsoc_daemon section
+    config_lookup_int(&cfg, "rfsoc_daemon.enabled", &config.rfsoc_daemon.enabled);
+    config_lookup_int(&cfg, "rfsoc_daemon.rfsoc_port", &config.rfsoc_daemon.rfsoc_port);
+    config_lookup_int(&cfg, "rfsoc_daemon.timeout", &config.rfsoc_daemon.timeout);
+    
+    if (config_lookup_string(&cfg, "rfsoc_daemon.rfsoc_ip", &tmpstr)) {
+        strncpy(config.rfsoc_daemon.rfsoc_ip, tmpstr, sizeof(config.rfsoc_daemon.rfsoc_ip) - 1);
+        config.rfsoc_daemon.rfsoc_ip[sizeof(config.rfsoc_daemon.rfsoc_ip) - 1] = '\0';
+    }
+
+    // Read ticc section
+    config_lookup_int(&cfg, "ticc.enabled", &config.ticc.enabled);
+    config_lookup_int(&cfg, "ticc.baud_rate", &config.ticc.baud_rate);
+    config_lookup_int(&cfg, "ticc.file_rotation_interval", &config.ticc.file_rotation_interval);
+
+    if (config_lookup_string(&cfg, "ticc.port", &tmpstr)) {
+        strncpy(config.ticc.port, tmpstr, sizeof(config.ticc.port) - 1);
+        config.ticc.port[sizeof(config.ticc.port) - 1] = '\0';
+    }
+
+    if (config_lookup_string(&cfg, "ticc.data_save_path", &tmpstr)) {
+        strncpy(config.ticc.data_save_path, tmpstr, sizeof(config.ticc.data_save_path) - 1);
+        config.ticc.data_save_path[sizeof(config.ticc.data_save_path) - 1] = '\0';
+    }
+    
+    // Read TICC power control settings
+    config_lookup_int(&cfg, "ticc.pbob_id", &config.ticc.pbob_id);
+    config_lookup_int(&cfg, "ticc.relay_id", &config.ticc.relay_id);
 
     config_destroy(&cfg);
 }

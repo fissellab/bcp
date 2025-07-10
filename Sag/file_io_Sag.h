@@ -65,6 +65,15 @@ typedef struct conf_params {
         char ip[16];
         int port;
         int timeout;
+        int udp_buffer_size;
+        char udp_client_ips[MAX_UDP_CLIENTS][16];  // Array of authorized client IPs
+        int udp_client_count;                      // Number of authorized clients
+    } telemetry_server;
+    struct {
+        int enabled;
+        char ip[16];
+        int port;
+        int timeout;
     } pbob_client;
     
     struct {
@@ -75,6 +84,25 @@ typedef struct conf_params {
         int ping_timeout;
         int status_check_interval;
     } vlbi;
+    
+    struct {
+        int enabled;
+        char rfsoc_ip[16];
+        int rfsoc_port;
+        int timeout;
+    } rfsoc_daemon;
+    
+    struct {
+        int enabled;
+        char port[256];
+        int baud_rate;
+        char data_save_path[256];
+        int file_rotation_interval;
+        
+        // Power control settings
+        int pbob_id;
+        int relay_id;
+    } ticc;
 } conf_params_t;
 
 extern conf_params_t config;

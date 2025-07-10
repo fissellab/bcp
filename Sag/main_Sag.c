@@ -10,8 +10,11 @@
 #include "cli_Sag.h"
 #include "gps.h"
 #include "spectrometer_server.h"
+#include "telemetry_server.h"
 #include "pbob_client.h"
 #include "vlbi_client.h"
+#include "rfsoc_client.h"
+#include "ticc_client.h"
 
 void print_config() {
     printf("Configuration parameters:\n");
@@ -48,6 +51,13 @@ void print_config() {
     printf("  Water Maser Freq: %.3f GHz\n", config.spectrometer_server.water_maser_freq);
     printf("  Zoom Window Width: %.3f GHz\n", config.spectrometer_server.zoom_window_width);
     printf("  IF Range: %.5f - %.5f GHz\n", config.spectrometer_server.if_lower, config.spectrometer_server.if_upper);
+    printf("\nTelemetry Server settings:\n");
+    printf("  Enabled: %s\n", config.telemetry_server.enabled ? "Yes" : "No");
+    printf("  Server IP: %s\n", config.telemetry_server.ip);
+    printf("  Server Port: %d\n", config.telemetry_server.port);
+    printf("  Timeout: %d us\n", config.telemetry_server.timeout);
+    printf("  UDP Buffer Size: %d\n", config.telemetry_server.udp_buffer_size);
+    printf("  Authorized Clients: %d\n", config.telemetry_server.udp_client_count);
     printf("\nPBoB Client settings:\n");
     printf("  Enabled: %s\n", config.pbob_client.enabled ? "Yes" : "No");
     printf("  Server IP: %s\n", config.pbob_client.ip);
@@ -60,6 +70,18 @@ void print_config() {
     printf("  Timeout: %d ms\n", config.vlbi.timeout);
     printf("  Ping Timeout: %d s\n", config.vlbi.ping_timeout);
     printf("  Status Check Interval: %d s\n", config.vlbi.status_check_interval);
+    printf("\nRFSoC Daemon Client settings:\n");
+    printf("  Enabled: %s\n", config.rfsoc_daemon.enabled ? "Yes" : "No");
+    printf("  RFSoC IP: %s\n", config.rfsoc_daemon.rfsoc_ip);
+    printf("  RFSoC Port: %d\n", config.rfsoc_daemon.rfsoc_port);
+    printf("  Timeout: %d ms\n", config.rfsoc_daemon.timeout);
+    printf("\nTICC Client settings:\n");
+    printf("  Enabled: %s\n", config.ticc.enabled ? "Yes" : "No");
+    printf("  Serial Port: %s\n", config.ticc.port);
+    printf("  Baud Rate: %d\n", config.ticc.baud_rate);
+    printf("  Data Save Path: %s\n", config.ticc.data_save_path);
+    printf("  File Rotation Interval: %d seconds\n", config.ticc.file_rotation_interval);
+    printf("  Power Control: PBOB %d, Relay %d\n", config.ticc.pbob_id, config.ticc.relay_id);
 }
 
 int main(int argc, char* argv[]) {
@@ -223,6 +245,94 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "VLBI client disabled in configuration");
     }
 
+    // Initialize RFSoC daemon client
+    if (config.rfsoc_daemon.enabled) {
+        rfsoc_client_config_t rfsoc_config;
+        rfsoc_config.enabled = config.rfsoc_daemon.enabled;
+        strncpy(rfsoc_config.rfsoc_ip, config.rfsoc_daemon.rfsoc_ip, sizeof(rfsoc_config.rfsoc_ip) - 1);
+        rfsoc_config.rfsoc_ip[sizeof(rfsoc_config.rfsoc_ip) - 1] = '\0';
+        rfsoc_config.rfsoc_port = config.rfsoc_daemon.rfsoc_port;
+        rfsoc_config.timeout = config.rfsoc_daemon.timeout;
+
+        int rfsoc_init_result = rfsoc_client_init(&rfsoc_config);
+        if (rfsoc_init_result == 0) {
+            printf("RFSoC daemon client initialized successfully (RFSoC: %s:%d)\n", 
+                   config.rfsoc_daemon.rfsoc_ip, config.rfsoc_daemon.rfsoc_port);
+            write_to_log(main_log, "main_Sag.c", "main", "RFSoC daemon client initialized successfully");
+        } else {
+            printf("Failed to initialize RFSoC daemon client\n");
+            write_to_log(main_log, "main_Sag.c", "main", "Failed to initialize RFSoC daemon client");
+        }
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "RFSoC daemon client disabled in configuration");
+    }
+
+    // Initialize TICC client if enabled
+    if (config.ticc.enabled) {
+        ticc_client_config_t ticc_config;
+        ticc_config.enabled = config.ticc.enabled;
+        strncpy(ticc_config.port, config.ticc.port, sizeof(ticc_config.port) - 1);
+        ticc_config.port[sizeof(ticc_config.port) - 1] = '\0';
+        ticc_config.baud_rate = config.ticc.baud_rate;
+        strncpy(ticc_config.data_save_path, config.ticc.data_save_path, sizeof(ticc_config.data_save_path) - 1);
+        ticc_config.data_save_path[sizeof(ticc_config.data_save_path) - 1] = '\0';
+        ticc_config.file_rotation_interval = config.ticc.file_rotation_interval;
+        ticc_config.pbob_id = config.ticc.pbob_id;
+        ticc_config.relay_id = config.ticc.relay_id;
+
+        int ticc_init_result = ticc_client_init(&ticc_config);
+        if (ticc_init_result == 0) {
+            printf("TICC client initialized successfully (Port: %s, Baud: %d)\n", 
+                   config.ticc.port, config.ticc.baud_rate);
+            write_to_log(main_log, "main_Sag.c", "main", "TICC client initialized successfully");
+        } else {
+            printf("Failed to initialize TICC client\n");
+            write_to_log(main_log, "main_Sag.c", "main", "Failed to initialize TICC client");
+        }
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "TICC client disabled in configuration");
+    }
+
+    // Initialize and start Telemetry Server if enabled
+    if (config.telemetry_server.enabled) {
+        telemetry_server_config_t tel_config;
+        tel_config.enabled = config.telemetry_server.enabled;
+        strncpy(tel_config.ip, config.telemetry_server.ip, sizeof(tel_config.ip) - 1);
+        tel_config.ip[sizeof(tel_config.ip) - 1] = '\0';
+        tel_config.port = config.telemetry_server.port;
+        tel_config.timeout = config.telemetry_server.timeout;
+        tel_config.udp_buffer_size = config.telemetry_server.udp_buffer_size;
+        tel_config.udp_client_count = config.telemetry_server.udp_client_count;
+        for (int i = 0; i < config.telemetry_server.udp_client_count; i++) {
+            strncpy(tel_config.udp_client_ips[i], config.telemetry_server.udp_client_ips[i], 
+                    sizeof(tel_config.udp_client_ips[i]) - 1);
+            tel_config.udp_client_ips[i][sizeof(tel_config.udp_client_ips[i]) - 1] = '\0';
+        }
+
+        int tel_init_result = telemetry_server_init(&tel_config);
+        if (tel_init_result == 0) {
+            write_to_log(main_log, "main_Sag.c", "main", "Telemetry server initialized");
+            
+            // Start telemetry server
+            if (telemetry_server_start()) {
+                char tel_msg[256];
+                snprintf(tel_msg, sizeof(tel_msg), "Telemetry server started on %s:%d", 
+                        config.telemetry_server.ip, config.telemetry_server.port);
+                printf("%s\n", tel_msg);
+                write_to_log(main_log, "main_Sag.c", "main", tel_msg);
+            } else {
+                printf("Failed to start Telemetry server.\n");
+                write_to_log(main_log, "main_Sag.c", "main", "Failed to start Telemetry server");
+            }
+        } else {
+            char error_msg[100];
+            snprintf(error_msg, sizeof(error_msg), "Failed to initialize Telemetry server. Error code: %d", tel_init_result);
+            write_to_log(main_log, "main_Sag.c", "main", error_msg);
+        }
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "Telemetry server disabled in configuration");
+    }
+
     // Start the command prompt
     cmdprompt(cmd_log, config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, 
               config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
@@ -262,6 +372,29 @@ int main(int argc, char* argv[]) {
     if (config.vlbi.enabled) {
         vlbi_client_cleanup();
         write_to_log(main_log, "main_Sag.c", "main", "VLBI client cleaned up");
+    }
+
+    // Cleanup RFSoC daemon client
+    if (config.rfsoc_daemon.enabled) {
+        rfsoc_client_cleanup();
+        write_to_log(main_log, "main_Sag.c", "main", "RFSoC daemon client cleaned up");
+    }
+
+    // Cleanup TICC client
+    if (config.ticc.enabled) {
+        ticc_client_cleanup();
+        write_to_log(main_log, "main_Sag.c", "main", "TICC client cleaned up");
+    }
+
+    // Cleanup Telemetry server
+    if (config.telemetry_server.enabled) {
+        // Stop telemetry server if running
+        if (telemetry_server_is_running()) {
+            telemetry_server_stop();
+            printf("Telemetry server stopped during cleanup\n");
+            write_to_log(main_log, "main_Sag.c", "main", "Telemetry server stopped during cleanup");
+        }
+        telemetry_server_cleanup();
     }
 
     fclose(cmd_log);
