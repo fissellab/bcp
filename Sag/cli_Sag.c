@@ -12,6 +12,8 @@
 #include "spectrometer_server.h"
 #include "pbob_client.h"
 #include "vlbi_client.h"
+#include "rfsoc_client.h"
+#include "ticc_client.h"
 
 extern conf_params_t config;  // Access to global configuration
 
@@ -332,6 +334,179 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
         } else {
             printf("VLBI client is not enabled or initialized.\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted vlbi_check but VLBI client not available");
+        }
+    } else if (strcmp(cmd, "rfsoc_configure_ocxo") == 0) {
+        if (rfsoc_client_is_enabled()) {
+            printf("Configuring RFSoC clock on %s...\n", config.rfsoc_daemon.rfsoc_ip);
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to configure RFSoC clock");
+            
+            // First check connectivity
+            if (rfsoc_check_connectivity()) {
+                int result = rfsoc_configure_clock();
+                if (result == 1) {
+                    printf("RFSoC clock configuration completed successfully!\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "RFSoC clock configuration successful");
+                } else {
+                    printf("Failed to configure RFSoC clock. Check daemon status and script.\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to configure RFSoC clock");
+                }
+            } else {
+                printf("Cannot reach RFSoC daemon. Check network connection and daemon status.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "RFSoC daemon not reachable");
+            }
+        } else {
+            printf("RFSoC client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted rfsoc_configure_ocxo but RFSoC client not available");
+        }
+    } else if (strcmp(cmd, "rfsoc_clock_status") == 0) {
+        if (rfsoc_client_is_enabled()) {
+            rfsoc_clock_status_t status;
+            printf("Checking RFSoC clock status on %s...\n", config.rfsoc_daemon.rfsoc_ip);
+            
+            int result = rfsoc_get_clock_status(&status);
+            if (result == 1) {
+                printf("RFSoC Clock Status:\n");
+                printf("  Script Available: %s\n", status.script_available ? "Yes" : "No");
+                printf("  Script Executable: %s\n", status.script_executable ? "Yes" : "No");
+                printf("  Script Path: %s\n", status.script_path);
+                if (strlen(status.timestamp) > 0) {
+                    printf("  Last Check: %s\n", status.timestamp);
+                }
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "RFSoC clock status check successful");
+            } else {
+                printf("Failed to get RFSoC clock status.\n");
+                if (strlen(status.last_error) > 0) {
+                    printf("Error: %s\n", status.last_error);
+                }
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to get RFSoC clock status");
+            }
+        } else {
+            printf("RFSoC client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted rfsoc_clock_status but RFSoC client not available");
+        }
+    } else if (strcmp(cmd, "rfsoc_check") == 0) {
+        if (rfsoc_client_is_enabled()) {
+            printf("Checking RFSoC daemon connectivity...\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Checking RFSoC daemon connectivity");
+            
+            int result = rfsoc_check_connectivity();
+            if (result == 1) {
+                printf("RFSoC daemon connectivity check passed!\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "RFSoC connectivity check successful");
+            } else {
+                printf("RFSoC daemon connectivity check failed!\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "RFSoC connectivity check failed");
+            }
+        } else {
+            printf("RFSoC client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted rfsoc_check but RFSoC client not available");
+        }
+    } else if (strcmp(cmd, "start_timing_chain") == 0) {
+        if (pbob_client_is_enabled()) {
+            printf("Powering up timing chain (PBOB %d, Relay %d)...\n", config.ticc.pbob_id, config.ticc.relay_id);
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to power up timing chain");
+            
+            int result = pbob_send_command(config.ticc.pbob_id, config.ticc.relay_id);
+            if (result == 1) {
+                printf("Timing chain power ON successful!\n");
+                printf("The timing chain is now powered and ready for TICC measurements.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Timing chain powered ON successfully");
+            } else {
+                printf("Failed to power up timing chain. Check PBoB server connection.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to power up timing chain");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted start_timing_chain but PBoB client not available");
+        }
+    } else if (strcmp(cmd, "stop_timing_chain") == 0) {
+        if (pbob_client_is_enabled()) {
+            printf("Powering down timing chain (PBOB %d, Relay %d)...\n", config.ticc.pbob_id, config.ticc.relay_id);
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to power down timing chain");
+            
+            int result = pbob_send_command(config.ticc.pbob_id, config.ticc.relay_id);
+            if (result == 1) {
+                printf("Timing chain power OFF successful!\n");
+                printf("The timing chain has been powered down.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Timing chain powered OFF successfully");
+            } else {
+                printf("Failed to power down timing chain. Check PBoB server connection.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to power down timing chain");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted stop_timing_chain but PBoB client not available");
+        }
+    } else if (strcmp(cmd, "start_ticc") == 0) {
+        if (ticc_client_is_enabled()) {
+            printf("Starting TICC data collection...\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to start TICC data collection");
+            
+            int result = ticc_start_logging();
+            if (result == 0) {
+                printf("TICC data collection started successfully!\n");
+                printf("Data will be saved to: %s\n", config.ticc.data_save_path);
+                printf("Serial port: %s at %d baud\n", config.ticc.port, config.ticc.baud_rate);
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "TICC data collection started successfully");
+            } else {
+                printf("Failed to start TICC data collection.\n");
+                ticc_status_t status;
+                if (ticc_get_status(&status) == 0 && strlen(status.last_error) > 0) {
+                    printf("Error: %s\n", status.last_error);
+                }
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to start TICC data collection");
+            }
+        } else {
+            printf("TICC client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted start_ticc but TICC client not available");
+        }
+    } else if (strcmp(cmd, "stop_ticc") == 0) {
+        if (ticc_client_is_enabled()) {
+            printf("Stopping TICC data collection...\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to stop TICC data collection");
+            
+            int result = ticc_stop_logging();
+            if (result == 0) {
+                printf("TICC data collection stopped successfully.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "TICC data collection stopped successfully");
+            } else {
+                printf("Failed to stop TICC data collection.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to stop TICC data collection");
+            }
+        } else {
+            printf("TICC client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted stop_ticc but TICC client not available");
+        }
+    } else if (strcmp(cmd, "ticc_status") == 0) {
+        if (ticc_client_is_enabled()) {
+            ticc_status_t status;
+            printf("Checking TICC status...\n");
+            
+            int result = ticc_get_status(&status);
+            if (result == 0) {
+                printf("TICC Status:\n");
+                printf("  Data Collection: %s\n", status.is_logging ? "Running" : "Stopped");
+                printf("  Device Configured: %s\n", status.is_configured ? "Yes" : "No");
+                
+                if (status.is_logging) {
+                    printf("  Current Data File: %s\n", status.current_file);
+                    printf("  Measurements Collected: %d\n", status.measurement_count);
+                    printf("  Running Since: %s", ctime(&status.start_time));
+                    printf("  Latest Measurement: %+.11f seconds\n", status.last_measurement);
+                }
+                
+                if (strlen(status.last_error) > 0) {
+                    printf("  Last Error: %s\n", status.last_error);
+                }
+                
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "TICC status check successful");
+            } else {
+                printf("Failed to get TICC status.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to get TICC status");
+            }
+        } else {
+            printf("TICC client is not enabled or initialized.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted ticc_status but TICC client not available");
         }
     } else if (strcmp(cmd, "stop") == 0) {
         // Check for "stop spec" or "stop spec 120khz"
