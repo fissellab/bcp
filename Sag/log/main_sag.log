@@ -1,15 +1,18 @@
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : Started logfile
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : Starting command log
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : GPS initialized - awaiting gps_start command
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : Failed to initialize Spectrometer server. Error code: -1
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : PBoB client initialized successfully
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : VLBI client initialized successfully
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : RFSoC daemon client initialized successfully
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : TICC client initialized successfully
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : Telemetry server initialized
-Tue Jul  8 13:23:39 2025 : main_Sag.c : main : Telemetry server started on 0.0.0.0:8082
-Tue Jul  8 13:23:49 2025 : main_Sag.c : main : PBoB client cleaned up
-Tue Jul  8 13:23:49 2025 : main_Sag.c : main : VLBI client cleaned up
-Tue Jul  8 13:23:49 2025 : main_Sag.c : main : RFSoC daemon client cleaned up
-Tue Jul  8 13:23:49 2025 : main_Sag.c : main : TICC client cleaned up
-Tue Jul  8 13:23:49 2025 : main_Sag.c : main : Telemetry server stopped during cleanup
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : Started logfile
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : Starting command log
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : GPS initialized - awaiting gps_start command
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : Spectrometer server initialized
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : PBoB client initialized successfully
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : VLBI client initialized successfully
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : RFSoC daemon client initialized successfully
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : TICC client initialized successfully
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : Telemetry server initialized
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : Telemetry server started on 0.0.0.0:8082
+Mon Jul 14 14:03:58 2025 : main_Sag.c : main : PR59 telemetry interface initialized
+Mon Jul 14 14:11:49 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
+Mon Jul 14 14:11:49 2025 : main_Sag.c : main : PBoB client cleaned up
+Mon Jul 14 14:11:49 2025 : main_Sag.c : main : VLBI client cleaned up
+Mon Jul 14 14:11:49 2025 : main_Sag.c : main : RFSoC daemon client cleaned up
+Mon Jul 14 14:11:49 2025 : main_Sag.c : main : TICC client cleaned up
+Mon Jul 14 14:11:49 2025 : main_Sag.c : main : Telemetry server stopped during cleanup

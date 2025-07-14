@@ -21,6 +21,8 @@ int exiting = 0;
 int spec_running = 0;
 int spec_120khz = 0; // Flag to track if 120kHz spectrometer is running
 pid_t python_pid;
+int pr59_running = 0; // Flag to track if PR59 is running
+pid_t pr59_pid;
 
 void run_python_script(const char* script_name, const char* logpath, const char* hostname, const char* mode, int data_save_interval, const char* data_save_path) {
     char interval_str[20];
@@ -54,6 +56,17 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
             waitpid(python_pid, NULL, 0);
             printf("Stopped spec script\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped spec script");
+        }
+        
+        // Stop PR59 if running
+        if (pr59_running) {
+            pr59_running = 0;
+            printf("Stopping PR59 TEC controller...\n");
+            kill(pr59_pid, SIGTERM);
+            waitpid(pr59_pid, NULL, 0);
+            printf("Stopped PR59 TEC controller\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped PR59 TEC controller during exit");
+        }
         
         // Stop GPS UDP server first if running
         if (gps_is_udp_server_running()) {
@@ -66,7 +79,6 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
             gps_stop_logging();
             printf("Stopped GPS logging\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped GPS logging");
-            }
         }
         exiting = 1;
     } else if (strcmp(cmd, "start") == 0) {
@@ -507,6 +519,126 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
         } else {
             printf("TICC client is not enabled or initialized.\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted ticc_status but TICC client not available");
+        }
+    } else if (strcmp(cmd, "start_pr59") == 0) {
+        if (config.pr59.enabled) {
+            if (!pr59_running) {
+                printf("Starting PR59 TEC controller...\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to start PR59 TEC controller");
+                
+                pr59_running = 1;
+                pr59_pid = fork();
+                if (pr59_pid == 0) {
+                    // Child process - run tec_control_3 with BCP config file
+                    execlp("./build/tec_control_3", "tec_control_3", "bcp_Sag.config", (char*)NULL);
+                    perror("execlp failed for PR59");
+                    exit(1);
+                } else if (pr59_pid < 0) {
+                    perror("fork failed for PR59");
+                    pr59_running = 0;
+                } else {
+                    // Parent process
+                    printf("PR59 TEC controller started successfully!\n");
+                    printf("Serial port: %s\n", config.pr59.port);
+                    printf("Target temperature: %.1f°C\n", config.pr59.setpoint_temp);
+                    printf("PID parameters: Kp=%.3f, Ki=%.3f, Kd=%.3f\n", 
+                           config.pr59.kp, config.pr59.ki, config.pr59.kd);
+                    printf("Data logging to: %s\n", config.pr59.data_save_path);
+                    printf("Use 'stop_pr59' to stop the controller.\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "PR59 TEC controller started successfully");
+                }
+            } else {
+                printf("PR59 TEC controller is already running\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to start PR59 but it was already running");
+            }
+        } else {
+            printf("PR59 is not enabled in configuration.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted start_pr59 but PR59 not enabled");
+        }
+    } else if (strcmp(cmd, "stop_pr59") == 0) {
+        if (config.pr59.enabled) {
+            if (pr59_running) {
+                printf("Stopping PR59 TEC controller...\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to stop PR59 TEC controller");
+                
+                pr59_running = 0;
+                
+                // Send SIGTERM first for graceful shutdown
+                kill(pr59_pid, SIGTERM);
+                
+                // Wait for up to 10 seconds for the process to terminate
+                int status;
+                int timeout = 10;
+                while (timeout > 0) {
+                    pid_t result = waitpid(pr59_pid, &status, WNOHANG);
+                    if (result == pr59_pid) {
+                        printf("PR59 TEC controller stopped successfully.\n");
+                        write_to_log(cmdlog, "cli_Sag.c", "exec_command", "PR59 TEC controller stopped successfully");
+                        break;
+                    } else if (result == -1) {
+                        perror("waitpid failed for PR59");
+                        break;
+                    }
+                    sleep(1);
+                    timeout--;
+                }
+                
+                // If the process hasn't terminated, use SIGKILL
+                if (timeout == 0) {
+                    printf("PR59 controller not responding, force stopping...\n");
+                    kill(pr59_pid, SIGKILL);
+                    waitpid(pr59_pid, NULL, 0);
+                    printf("PR59 TEC controller force stopped.\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "PR59 TEC controller force stopped");
+                }
+            } else {
+                printf("PR59 TEC controller is not running\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to stop PR59 but it was not running");
+            }
+        } else {
+            printf("PR59 is not enabled in configuration.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted stop_pr59 but PR59 not enabled");
+        }
+    } else if (strcmp(cmd, "pr59_status") == 0) {
+        if (config.pr59.enabled) {
+            if (pr59_running) {
+                printf("Showing PR59 status display. Press 'q' to exit.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Started PR59 status display");
+                
+                // Send SIGUSR1 to toggle status display on
+                kill(pr59_pid, SIGUSR1);
+                
+                // Save terminal settings
+                struct termios old_term;
+                tcgetattr(STDIN_FILENO, &old_term);
+                struct termios new_term = old_term;
+                new_term.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+                tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+                
+                // Wait for 'q' key press
+                char c;
+                while ((c = getchar()) != 'q' && c != 'Q') {
+                    // Keep reading until 'q' is pressed
+                }
+                
+                // Send SIGUSR1 to toggle status display off
+                kill(pr59_pid, SIGUSR1);
+                
+                // Restore terminal settings
+                tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
+                
+                // Flush any remaining input
+                fflush(stdin);
+                
+                printf("\nPR59 status display stopped.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped PR59 status display");
+            } else {
+                printf("PR59 TEC controller is not running. Use 'start_pr59' first.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted pr59_status but PR59 not running");
+            }
+        } else {
+            printf("PR59 is not enabled in configuration.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted pr59_status but PR59 not enabled");
         }
     } else if (strcmp(cmd, "stop") == 0) {
         // Check for "stop spec" or "stop spec 120khz"

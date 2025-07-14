@@ -14,6 +14,7 @@
 #include "file_io_Sag.h"
 #include "telemetry_server.h"
 #include "gps.h"
+#include "pr59_interface.h"
 
 // Global variables
 struct sockaddr_in tel_client_addr;
@@ -120,34 +121,22 @@ void telemetry_sock_listen(int sockfd, char* buffer) {
     }
 }
 
-// Check if client IP is authorized
+// Check if client IP is authorized - now accepts all clients
 static bool is_authorized_client(const char *client_ip) {
-    if (server_config.udp_client_count == 0) {
-        return true; // No restrictions if no clients specified
-    }
-    
-    for (int i = 0; i < server_config.udp_client_count; i++) {
-        if (strcmp(client_ip, server_config.udp_client_ips[i]) == 0) {
-            return true;
-        }
-    }
-    return false;
+    (void)client_ip;  // Suppress unused parameter warning
+    return true;  // Accept all clients
 }
 
 // Process telemetry requests and send appropriate responses
 void telemetry_send_metric(int sockfd, char* id) {
-    // Get client IP for logging and authorization
+    // Get client IP for logging
     char client_ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &tel_client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
     
-    // Check authorization
-    if (!is_authorized_client(client_ip)) {
-        char log_msg[256];
-        snprintf(log_msg, sizeof(log_msg), "Rejected request '%s' from unauthorized client: %s", id, client_ip);
-        write_to_log(telemetry_server_log, "telemetry_server.c", "telemetry_send_metric", log_msg);
-        telemetry_sendString(sockfd, "ERROR:UNAUTHORIZED");
-        return;
-    }
+    // Log request for debugging (optional)
+    char log_msg[256];
+    snprintf(log_msg, sizeof(log_msg), "Processing request '%s' from client: %s", id, client_ip);
+    write_to_log(telemetry_server_log, "telemetry_server.c", "telemetry_send_metric", log_msg);
 
     // GPS telemetry channels
     if (strcmp(id, "gps_lat") == 0) {
@@ -202,6 +191,86 @@ void telemetry_send_metric(int sockfd, char* id) {
         }
     } else if (strcmp(id, "gps_logging") == 0) {
         telemetry_sendInt(sockfd, gps_is_logging() ? 1 : 0);
+    }
+    
+    // PR59 TEC controller telemetry channels
+    else if (strcmp(id, "pr59_kp") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendFloat(sockfd, pr59_data.kp);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_ki") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendFloat(sockfd, pr59_data.ki);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_kd") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendFloat(sockfd, pr59_data.kd);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_timestamp") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendDouble(sockfd, (double)pr59_data.timestamp);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_temp") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendFloat(sockfd, pr59_data.temperature);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_fet_temp") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendFloat(sockfd, pr59_data.fet_temperature);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_current") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendFloat(sockfd, pr59_data.current);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_voltage") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendFloat(sockfd, pr59_data.voltage);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_power") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            telemetry_sendFloat(sockfd, pr59_data.power);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "pr59_running") == 0) {
+        telemetry_sendInt(sockfd, pr59_is_running() ? 1 : 0);
+    } else if (strcmp(id, "pr59_status") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            char status_str[64];
+            const char* thermal_status = pr59_data.is_at_setpoint ? "setpoint" : 
+                                       (pr59_data.is_heating ? "heating" : "cooling");
+            snprintf(status_str, sizeof(status_str), "running:%s,thermal:%s",
+                    pr59_data.is_running ? "yes" : "no", thermal_status);
+            telemetry_sendString(sockfd, status_str);
+        } else {
+            telemetry_sendString(sockfd, "not_running");
+        }
     }
     // System status channels
     else if (strcmp(id, "uptime") == 0) {

@@ -26,6 +26,7 @@ add_executable(
         ticc_client.c
         vlbi_client.c
         rfsoc_client.c
+        pr59_interface.c
 )
 
 target_include_directories(main PRIVATE 
@@ -43,4 +44,17 @@ target_link_libraries(main
     config
     m
     ${JSON_C_LIBRARIES}
+)
+
+# Add PR59 TEC controller executable
+add_executable(
+    tec_control_3
+        PR59/tec_control_3.c
+        pr59_interface.c
+)
+
+target_link_libraries(tec_control_3
+    config
+    m
+    pthread
 )
