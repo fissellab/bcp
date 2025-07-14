@@ -1,4 +1,7 @@
-Tue Jul  8 13:23:44 2025 : cli_Sag.c : cmdprompt : gps_stop
-Tue Jul  8 13:23:44 2025 : cli_Sag.c : exec_command : Attempting to stop GPS services
-Tue Jul  8 13:23:44 2025 : cli_Sag.c : exec_command : GPS powered OFF successfully
-Tue Jul  8 13:23:49 2025 : cli_Sag.c : cmdprompt : exit
+Mon Jul 14 14:04:07 2025 : cli_Sag.c : cmdprompt : start_pr59
+Mon Jul 14 14:04:07 2025 : cli_Sag.c : exec_command : Attempting to start PR59 TEC controller
+Mon Jul 14 14:04:07 2025 : cli_Sag.c : exec_command : PR59 TEC controller started successfully
+Mon Jul 14 14:11:33 2025 : cli_Sag.c : cmdprompt : stop_pr59
+Mon Jul 14 14:11:33 2025 : cli_Sag.c : exec_command : Attempting to stop PR59 TEC controller
+Mon Jul 14 14:11:34 2025 : cli_Sag.c : exec_command : PR59 TEC controller stopped successfully
+Mon Jul 14 14:11:49 2025 : cli_Sag.c : cmdprompt : exit

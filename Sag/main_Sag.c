@@ -6,6 +6,8 @@
 #include <libconfig.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
+#include <sys/wait.h>
 #include "file_io_Sag.h"
 #include "cli_Sag.h"
 #include "gps.h"
@@ -15,6 +17,11 @@
 #include "vlbi_client.h"
 #include "rfsoc_client.h"
 #include "ticc_client.h"
+#include "pr59_interface.h"
+
+// External variables from cli_Sag.c
+extern int pr59_running;
+extern pid_t pr59_pid;
 
 void print_config() {
     printf("Configuration parameters:\n");
@@ -82,6 +89,13 @@ void print_config() {
     printf("  Data Save Path: %s\n", config.ticc.data_save_path);
     printf("  File Rotation Interval: %d seconds\n", config.ticc.file_rotation_interval);
     printf("  Power Control: PBOB %d, Relay %d\n", config.ticc.pbob_id, config.ticc.relay_id);
+    printf("\nPR59 TEC Controller settings:\n");
+    printf("  Enabled: %s\n", config.pr59.enabled ? "Yes" : "No");
+    printf("  Serial Port: %s\n", config.pr59.port);
+    printf("  Target Temperature: %.1f°C\n", config.pr59.setpoint_temp);
+    printf("  PID Parameters: Kp=%.3f, Ki=%.3f, Kd=%.3f\n", config.pr59.kp, config.pr59.ki, config.pr59.kd);
+    printf("  Deadband: ±%.2f°C\n", config.pr59.deadband);
+    printf("  Data Save Path: %s\n", config.pr59.data_save_path);
 }
 
 int main(int argc, char* argv[]) {
@@ -333,6 +347,13 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "Telemetry server disabled in configuration");
     }
 
+    // Initialize PR59 telemetry interface
+    if (pr59_interface_init() == 0) {
+        write_to_log(main_log, "main_Sag.c", "main", "PR59 telemetry interface initialized");
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "Failed to initialize PR59 telemetry interface");
+    }
+
     // Start the command prompt
     cmdprompt(cmd_log, config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, 
               config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
@@ -386,6 +407,14 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "TICC client cleaned up");
     }
 
+    // Cleanup PR59 if running
+    if (config.pr59.enabled && pr59_running) {
+        printf("Stopping PR59 TEC controller during cleanup...\n");
+        kill(pr59_pid, SIGTERM);
+        waitpid(pr59_pid, NULL, 0);
+        write_to_log(main_log, "main_Sag.c", "main", "PR59 TEC controller stopped during cleanup");
+    }
+
     // Cleanup Telemetry server
     if (config.telemetry_server.enabled) {
         // Stop telemetry server if running
@@ -396,6 +425,9 @@ int main(int argc, char* argv[]) {
         }
         telemetry_server_cleanup();
     }
+
+    // Cleanup PR59 telemetry interface
+    pr59_interface_cleanup();
 
     fclose(cmd_log);
     fclose(main_log);

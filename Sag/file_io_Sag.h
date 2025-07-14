@@ -103,6 +103,17 @@ typedef struct conf_params {
         int pbob_id;
         int relay_id;
     } ticc;
+    
+    struct {
+        int enabled;
+        char port[256];               // Serial port path (e.g., "/dev/tec-controller")
+        float setpoint_temp;          // Target temperature in °C
+        float kp;                     // PID proportional gain
+        float ki;                     // PID integral gain  
+        float kd;                     // PID derivative gain
+        float deadband;               // Temperature deadband in °C
+        char data_save_path[256];     // Directory for log files
+    } pr59;
 } conf_params_t;
 
 extern conf_params_t config;

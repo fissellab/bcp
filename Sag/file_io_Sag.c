@@ -234,5 +234,24 @@ void read_in_config(const char* filepath) {
     config_lookup_int(&cfg, "ticc.pbob_id", &config.ticc.pbob_id);
     config_lookup_int(&cfg, "ticc.relay_id", &config.ticc.relay_id);
 
+    // Read pr59 section
+    config_lookup_int(&cfg, "pr59.enabled", &config.pr59.enabled);
+
+    if (config_lookup_string(&cfg, "pr59.port", &tmpstr)) {
+        strncpy(config.pr59.port, tmpstr, sizeof(config.pr59.port) - 1);
+        config.pr59.port[sizeof(config.pr59.port) - 1] = '\0';
+    }
+
+    config_lookup_float(&cfg, "pr59.setpoint_temp", &config.pr59.setpoint_temp);
+    config_lookup_float(&cfg, "pr59.kp", &config.pr59.kp);
+    config_lookup_float(&cfg, "pr59.ki", &config.pr59.ki);
+    config_lookup_float(&cfg, "pr59.kd", &config.pr59.kd);
+    config_lookup_float(&cfg, "pr59.deadband", &config.pr59.deadband);
+
+    if (config_lookup_string(&cfg, "pr59.data_save_path", &tmpstr)) {
+        strncpy(config.pr59.data_save_path, tmpstr, sizeof(config.pr59.data_save_path) - 1);
+        config.pr59.data_save_path[sizeof(config.pr59.data_save_path) - 1] = '\0';
+    }
+
     config_destroy(&cfg);
 }

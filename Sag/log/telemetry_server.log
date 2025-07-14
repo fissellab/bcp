@@ -51,3 +51,841 @@ Tue Jul  8 13:23:39 2025 : telemetry_server.c : telemetry_init_socket : Telemetr
 Tue Jul  8 13:23:39 2025 : telemetry_server.c : telemetry_server_thread : Telemetry server thread started
 Tue Jul  8 13:23:49 2025 : telemetry_server.c : telemetry_server_thread : Shutting down telemetry server
 Tue Jul  8 13:23:49 2025 : telemetry_server.c : telemetry_server_stop : Telemetry server stopped
+Mon Jul 14 12:56:22 2025 : telemetry_server.c : telemetry_server_init : Telemetry server initialized
+Mon Jul 14 12:56:22 2025 : telemetry_server.c : telemetry_server_start : Telemetry server started
+Mon Jul 14 12:56:22 2025 : telemetry_server.c : telemetry_init_socket : Telemetry server started successfully on port 8082
+Mon Jul 14 12:56:22 2025 : telemetry_server.c : telemetry_server_thread : Telemetry server thread started
+Mon Jul 14 12:57:42 2025 : telemetry_server.c : telemetry_server_init : Telemetry server initialized
+Mon Jul 14 12:57:42 2025 : telemetry_server.c : telemetry_server_start : Telemetry server started
+Mon Jul 14 12:57:42 2025 : telemetry_server.c : telemetry_init_socket : Telemetry server started successfully on port 8082
+Mon Jul 14 12:57:42 2025 : telemetry_server.c : telemetry_server_thread : Telemetry server thread started
+Mon Jul 14 12:59:28 2025 : telemetry_server.c : telemetry_server_thread : Shutting down telemetry server
+Mon Jul 14 12:59:28 2025 : telemetry_server.c : telemetry_server_stop : Telemetry server stopped
+Mon Jul 14 13:09:15 2025 : telemetry_server.c : telemetry_server_init : Telemetry server initialized
+Mon Jul 14 13:09:15 2025 : telemetry_server.c : telemetry_init_socket : Telemetry server started successfully on port 8082
+Mon Jul 14 13:09:15 2025 : telemetry_server.c : telemetry_server_start : Telemetry server started
+Mon Jul 14 13:09:15 2025 : telemetry_server.c : telemetry_server_thread : Telemetry server thread started
+Mon Jul 14 13:11:14 2025 : telemetry_server.c : telemetry_server_thread : Shutting down telemetry server
+Mon Jul 14 13:11:14 2025 : telemetry_server.c : telemetry_server_stop : Telemetry server stopped
+Mon Jul 14 13:27:20 2025 : telemetry_server.c : telemetry_server_init : Telemetry server initialized
+Mon Jul 14 13:27:20 2025 : telemetry_server.c : telemetry_server_start : Telemetry server started
+Mon Jul 14 13:42:16 2025 : telemetry_server.c : telemetry_server_init : Telemetry server initialized
+Mon Jul 14 13:42:16 2025 : telemetry_server.c : telemetry_server_start : Telemetry server started
+Mon Jul 14 13:42:16 2025 : telemetry_server.c : telemetry_init_socket : Telemetry server started successfully on port 8082
+Mon Jul 14 13:42:16 2025 : telemetry_server.c : telemetry_server_thread : Telemetry server thread started
+Mon Jul 14 13:42:24 2025 : telemetry_server.c : telemetry_server_thread : Shutting down telemetry server
+Mon Jul 14 13:42:24 2025 : telemetry_server.c : telemetry_server_stop : Telemetry server stopped
+Mon Jul 14 13:45:33 2025 : telemetry_server.c : telemetry_server_init : Telemetry server initialized
+Mon Jul 14 13:45:33 2025 : telemetry_server.c : telemetry_init_socket : Telemetry server started successfully on port 8082
+Mon Jul 14 13:45:33 2025 : telemetry_server.c : telemetry_server_thread : Telemetry server thread started
+Mon Jul 14 13:45:33 2025 : telemetry_server.c : telemetry_server_start : Telemetry server started
+Mon Jul 14 13:49:10 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:13 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:59 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:49:59 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'AUTH pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'LOGIN pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'GET pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'QUERY pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'GET_PR59:pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'PR59:pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'TELEMETRY:pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'admin pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'bvex pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59 pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:03 2025 : telemetry_server.c : telemetry_send_metric : Rejected request '{"channel": "pr59_temp"}' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:03 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'user:bvex
+pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:03 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'token:123
+pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:17 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:17 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:17 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:18 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:18 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:18 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:18 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:18 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:18 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:18 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:19 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:19 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:19 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:19 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:20 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:20 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:20 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:20 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:21 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:22 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:23 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:26 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:28 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:28 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:28 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:28 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:35 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:50:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:54 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:55 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:56 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:57 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:58 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:59 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:59 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:59 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:59 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:54:59 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:00 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:02 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:03 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:03 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:03 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:03 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:24 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:25 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:27 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:29 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:30 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:31 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:32 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:33 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:34 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:36 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:37 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:38 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:39 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:40 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:41 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:42 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:43 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:44 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:45 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:46 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:47 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:48 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:49 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:50 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_running' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:51 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_status' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_ki' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_kd' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_timestamp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_fet_temp' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:52 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_current' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_voltage' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:55:53 2025 : telemetry_server.c : telemetry_send_metric : Rejected request 'pr59_power' from unauthorized client: 100.105.58.60
+Mon Jul 14 13:59:49 2025 : telemetry_server.c : telemetry_server_thread : Shutting down telemetry server
+Mon Jul 14 13:59:49 2025 : telemetry_server.c : telemetry_server_stop : Telemetry server stopped
+Mon Jul 14 14:03:58 2025 : telemetry_server.c : telemetry_server_init : Telemetry server initialized
+Mon Jul 14 14:03:58 2025 : telemetry_server.c : telemetry_server_start : Telemetry server started
+Mon Jul 14 14:03:58 2025 : telemetry_server.c : telemetry_init_socket : Telemetry server started successfully on port 8082
+Mon Jul 14 14:03:58 2025 : telemetry_server.c : telemetry_server_thread : Telemetry server thread started
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:22 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:23 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:24 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:29 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:31 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:35 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:36 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:37 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:05:39 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:26 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:08:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:27 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:30 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:32 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:33 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:45 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:47 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:48 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kp' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_ki' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_kd' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_timestamp' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_fet_temp' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_current' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_voltage' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_power' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_running' from client: 100.105.58.60
+Mon Jul 14 14:08:49 2025 : telemetry_server.c : telemetry_send_metric : Processing request 'pr59_status' from client: 100.105.58.60
+Mon Jul 14 14:11:49 2025 : telemetry_server.c : telemetry_server_thread : Shutting down telemetry server
+Mon Jul 14 14:11:49 2025 : telemetry_server.c : telemetry_server_stop : Telemetry server stopped
