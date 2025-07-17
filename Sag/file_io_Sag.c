@@ -234,6 +234,34 @@ void read_in_config(const char* filepath) {
     config_lookup_int(&cfg, "ticc.pbob_id", &config.ticc.pbob_id);
     config_lookup_int(&cfg, "ticc.relay_id", &config.ticc.relay_id);
 
+    // Read heaters section
+    config_lookup_int(&cfg, "heaters.enabled", &config.heaters.enabled);
+    config_lookup_int(&cfg, "heaters.pbob_id", &config.heaters.pbob_id);
+    config_lookup_int(&cfg, "heaters.relay_id", &config.heaters.relay_id);
+    config_lookup_int(&cfg, "heaters.port", &config.heaters.port);
+    config_lookup_int(&cfg, "heaters.current_cap", &config.heaters.current_cap);
+    config_lookup_int(&cfg, "heaters.timeout", &config.heaters.timeout);
+
+    if (config_lookup_string(&cfg, "heaters.logfile", &tmpstr)) {
+        strncpy(config.heaters.logfile, tmpstr, sizeof(config.heaters.logfile) - 1);
+        config.heaters.logfile[sizeof(config.heaters.logfile) - 1] = '\0';
+    }
+
+    if (config_lookup_string(&cfg, "heaters.heater_ip", &tmpstr)) {
+        strncpy(config.heaters.heater_ip, tmpstr, sizeof(config.heaters.heater_ip) - 1);
+        config.heaters.heater_ip[sizeof(config.heaters.heater_ip) - 1] = '\0';
+    }
+
+    if (config_lookup_string(&cfg, "heaters.server_ip", &tmpstr)) {
+        strncpy(config.heaters.server_ip, tmpstr, sizeof(config.heaters.server_ip) - 1);
+        config.heaters.server_ip[sizeof(config.heaters.server_ip) - 1] = '\0';
+    }
+
+    if (config_lookup_string(&cfg, "heaters.workdir", &tmpstr)) {
+        strncpy(config.heaters.workdir, tmpstr, sizeof(config.heaters.workdir) - 1);
+        config.heaters.workdir[sizeof(config.heaters.workdir) - 1] = '\0';
+    }
+
     // Read pr59 section
     config_lookup_int(&cfg, "pr59.enabled", &config.pr59.enabled);
 

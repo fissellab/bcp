@@ -1,0 +1,13 @@
+build/
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+CMakeFiles/
+pkgs/
+bvex-link/
+vcpkg_installed/
+log/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

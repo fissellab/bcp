@@ -103,6 +103,19 @@ typedef struct conf_params {
         int pbob_id;
         int relay_id;
     } ticc;
+
+    struct {
+        int enabled;
+        char logfile[16];
+        char heater_ip[16];
+        int pbob_id;
+        int relay_id;
+        int port;
+        char server_ip[16];
+        char workdir[256];
+        int current_cap;
+        int timeout;
+    } heaters;
     
     struct {
         int enabled;

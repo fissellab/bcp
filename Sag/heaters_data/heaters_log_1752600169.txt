@@ -1,0 +1,52 @@
+Tue Jul 15 13:22:49 2025 : heaters.c : run_heaters_thread : Attempting to connect to LabJack T7 at 172.20.3.16
+Tue Jul 15 13:22:49 2025 : heaters.c : init_socket_heaters : UDP socket initialized successfully
+Tue Jul 15 13:22:49 2025 : heaters.c : calibrate_current : Starting current calibration
+Tue Jul 15 13:22:56 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:57 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:57 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:58 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:58 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:58 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:58 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:58 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:59 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:59 2025 : heaters.c : calibrate_current : Calibration read error for heater 0: LJME_RECONNECT_FAILED
+Tue Jul 15 13:22:59 2025 : heaters.c : calibrate_current : Heater 0 calibration failed - no valid readings
+Tue Jul 15 13:22:59 2025 : heaters.c : set_relay_state : Error setting relay 1 state: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:00 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:00 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:00 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:00 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:00 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:01 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:01 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:01 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:01 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:01 2025 : heaters.c : calibrate_current : Calibration read error for heater 1: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:02 2025 : heaters.c : calibrate_current : Heater 1 calibration failed - no valid readings
+Tue Jul 15 13:23:02 2025 : heaters.c : set_relay_state : Error setting relay 2 state: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:03 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:03 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:03 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:03 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:03 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:04 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:04 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:04 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:04 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:04 2025 : heaters.c : calibrate_current : Calibration read error for heater 2: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:05 2025 : heaters.c : calibrate_current : Heater 2 calibration failed - no valid readings
+Tue Jul 15 13:23:05 2025 : heaters.c : set_relay_state : Error setting relay 3 state: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:05 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:05 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:05 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:06 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:06 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:06 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:06 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:06 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:07 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:07 2025 : heaters.c : calibrate_current : Calibration read error for heater 3: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:07 2025 : heaters.c : calibrate_current : Heater 3 calibration failed - no valid readings
+Tue Jul 15 13:23:08 2025 : heaters.c : set_relay_state : Error setting relay 4 state: LJME_RECONNECT_FAILED
+Tue Jul 15 13:23:08 2025 : heaters.c : calibrate_current : Calibration read error for heater 4: LJME_RECONNECT_FAILED

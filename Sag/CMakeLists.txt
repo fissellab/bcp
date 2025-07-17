@@ -27,6 +27,7 @@ add_executable(
         vlbi_client.c
         rfsoc_client.c
         pr59_interface.c
+        heaters.c
 )
 
 target_include_directories(main PRIVATE 
@@ -44,6 +45,7 @@ target_link_libraries(main
     config
     m
     ${JSON_C_LIBRARIES}
+    LabJackM
 )
 
 # Add PR59 TEC controller executable

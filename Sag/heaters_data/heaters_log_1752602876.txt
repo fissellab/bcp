@@ -1,0 +1,780 @@
+Tue Jul 15 14:07:56 2025 : heaters.c : run_heaters_thread : Attempting to connect to LabJack T7 at 172.20.3.16
+Tue Jul 15 14:07:56 2025 : heaters.c : init_socket_heaters : UDP socket initialized successfully
+Tue Jul 15 14:07:56 2025 : heaters.c : calibrate_current : Starting current calibration
+Tue Jul 15 14:07:58 2025 : heaters.c : calibrate_current : Heater 0 calibration complete. Offset: 0.030078 A (10 readings)
+Tue Jul 15 14:08:01 2025 : heaters.c : calibrate_current : Heater 1 calibration complete. Offset: 0.001260 A (10 readings)
+Tue Jul 15 14:08:03 2025 : heaters.c : calibrate_current : Heater 2 calibration complete. Offset: 0.030092 A (10 readings)
+Tue Jul 15 14:08:06 2025 : heaters.c : calibrate_current : Heater 3 calibration complete. Offset: 0.001256 A (10 readings)
+Tue Jul 15 14:08:08 2025 : heaters.c : calibrate_current : Heater 4 calibration complete. Offset: 0.030085 A (10 readings)
+Tue Jul 15 14:08:08 2025 : heaters.c : calibrate_current : Current calibration complete
+Tue Jul 15 14:08:08 2025 : heaters.c : run_heaters_thread : LabJack initialization complete - heater control active
+Tue Jul 15 14:08:08 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000020 A
+Tue Jul 15 14:08:08 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000124 A
+Tue Jul 15 14:08:08 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000008 A
+Tue Jul 15 14:08:08 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000005 A
+Tue Jul 15 14:08:08 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000013 A
+Tue Jul 15 14:08:08 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.6°C (total current: 0.00A)
+Tue Jul 15 14:08:08 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.5°C (total current: 0.00A)
+Tue Jul 15 14:08:08 2025 : heaters.c : run_heaters_thread : Status: LabJack OK | Total current 0.00A/3.0A | Active heaters: -- H1 -- H3 --
+Tue Jul 15 14:08:09 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:09 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045422 A
+Tue Jul 15 14:08:09 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:09 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045376 A
+Tue Jul 15 14:08:09 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:09 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.0°C (total current: 0.09A)
+Tue Jul 15 14:08:09 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.3°C (total current: 0.09A)
+Tue Jul 15 14:08:09 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000001 A
+Tue Jul 15 14:08:09 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000131 A
+Tue Jul 15 14:08:10 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000010 A
+Tue Jul 15 14:08:10 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000004 A
+Tue Jul 15 14:08:10 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000004 A
+Tue Jul 15 14:08:10 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:10 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000005 A
+Tue Jul 15 14:08:10 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000131 A
+Tue Jul 15 14:08:10 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000007 A
+Tue Jul 15 14:08:10 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000005 A
+Tue Jul 15 14:08:10 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000002 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000006 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000085 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000010 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000000 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000038 A
+Tue Jul 15 14:08:11 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.7°C (total current: 0.00A)
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045444 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045396 A
+Tue Jul 15 14:08:11 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:11 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 939.0°C (total current: 0.09A)
+Tue Jul 15 14:08:11 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 934.3°C (total current: 0.09A)
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000006 A
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000075 A
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000014 A
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000001 A
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000029 A
+Tue Jul 15 14:08:12 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.5°C (total current: 0.00A)
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000015 A
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000074 A
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000036 A
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000001 A
+Tue Jul 15 14:08:12 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000020 A
+Tue Jul 15 14:08:12 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045419 A
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045464 A
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:13 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.7°C (total current: 0.09A)
+Tue Jul 15 14:08:13 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.8°C (total current: 0.09A)
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000006 A
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000052 A
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000009 A
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000003 A
+Tue Jul 15 14:08:13 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000002 A
+Tue Jul 15 14:08:13 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.8°C (total current: 0.00A)
+Tue Jul 15 14:08:13 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045422 A
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045403 A
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:14 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.6°C (total current: 0.09A)
+Tue Jul 15 14:08:14 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.2°C (total current: 0.09A)
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000021 A
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000043 A
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000002 A
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:14 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000016 A
+Tue Jul 15 14:08:14 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.0°C (total current: 0.00A)
+Tue Jul 15 14:08:14 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045424 A
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045385 A
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:15 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.2°C (total current: 0.09A)
+Tue Jul 15 14:08:15 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.4°C (total current: 0.09A)
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000010 A
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000052 A
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000016 A
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000001 A
+Tue Jul 15 14:08:15 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000013 A
+Tue Jul 15 14:08:15 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.5°C (total current: 0.00A)
+Tue Jul 15 14:08:15 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045424 A
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045378 A
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:16 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.3°C (total current: 0.09A)
+Tue Jul 15 14:08:16 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.4°C (total current: 0.09A)
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000005 A
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000123 A
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000015 A
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000003 A
+Tue Jul 15 14:08:16 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000000 A
+Tue Jul 15 14:08:16 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.4°C (total current: 0.00A)
+Tue Jul 15 14:08:16 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045527 A
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045409 A
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:17 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.4°C (total current: 0.09A)
+Tue Jul 15 14:08:17 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.7°C (total current: 0.09A)
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000017 A
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000014 A
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000011 A
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000005 A
+Tue Jul 15 14:08:17 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000021 A
+Tue Jul 15 14:08:17 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.6°C (total current: 0.00A)
+Tue Jul 15 14:08:17 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045422 A
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045481 A
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:18 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.3°C (total current: 0.09A)
+Tue Jul 15 14:08:18 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.3°C (total current: 0.09A)
+Tue Jul 15 14:08:18 2025 : heaters.c : run_heaters_thread : Status: LabJack OK | Total current 0.09A/3.0A | Active heaters: -- -- -- -- --
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000005 A
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000106 A
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000003 A
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000004 A
+Tue Jul 15 14:08:18 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000007 A
+Tue Jul 15 14:08:18 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.1°C (total current: 0.00A)
+Tue Jul 15 14:08:18 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045437 A
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045393 A
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:19 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.7°C (total current: 0.09A)
+Tue Jul 15 14:08:19 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.0°C (total current: 0.09A)
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000009 A
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000059 A
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000019 A
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000005 A
+Tue Jul 15 14:08:19 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000027 A
+Tue Jul 15 14:08:19 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.1°C (total current: 0.00A)
+Tue Jul 15 14:08:19 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045417 A
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045549 A
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:20 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 936.8°C (total current: 0.09A)
+Tue Jul 15 14:08:20 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 938.2°C (total current: 0.09A)
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000002 A
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000056 A
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000004 A
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000008 A
+Tue Jul 15 14:08:20 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000001 A
+Tue Jul 15 14:08:20 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.5°C (total current: 0.00A)
+Tue Jul 15 14:08:20 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045468 A
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045386 A
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:21 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.1°C (total current: 0.09A)
+Tue Jul 15 14:08:21 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.1°C (total current: 0.09A)
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000006 A
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000123 A
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000014 A
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000000 A
+Tue Jul 15 14:08:21 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000004 A
+Tue Jul 15 14:08:21 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 28.0°C (total current: 0.00A)
+Tue Jul 15 14:08:21 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045388 A
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045386 A
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:22 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.1°C (total current: 0.09A)
+Tue Jul 15 14:08:22 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.4°C (total current: 0.09A)
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000015 A
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000021 A
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000007 A
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000005 A
+Tue Jul 15 14:08:22 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000018 A
+Tue Jul 15 14:08:22 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.2°C (total current: 0.00A)
+Tue Jul 15 14:08:22 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045424 A
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045411 A
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:23 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.0°C (total current: 0.09A)
+Tue Jul 15 14:08:23 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.9°C (total current: 0.09A)
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000001 A
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000003 A
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000004 A
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000009 A
+Tue Jul 15 14:08:23 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000011 A
+Tue Jul 15 14:08:23 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.5°C (total current: 0.00A)
+Tue Jul 15 14:08:23 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:24 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:24 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045443 A
+Tue Jul 15 14:08:24 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:24 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045383 A
+Tue Jul 15 14:08:24 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:24 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.4°C (total current: 0.09A)
+Tue Jul 15 14:08:24 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.7°C (total current: 0.09A)
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000007 A
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000038 A
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000016 A
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000002 A
+Tue Jul 15 14:08:25 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.6°C (total current: 0.00A)
+Tue Jul 15 14:08:25 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045409 A
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045408 A
+Tue Jul 15 14:08:25 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:25 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.1°C (total current: 0.09A)
+Tue Jul 15 14:08:25 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.1°C (total current: 0.09A)
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000012 A
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000120 A
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000010 A
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000002 A
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000011 A
+Tue Jul 15 14:08:26 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.3°C (total current: 0.00A)
+Tue Jul 15 14:08:26 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045527 A
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045396 A
+Tue Jul 15 14:08:26 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:26 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.7°C (total current: 0.09A)
+Tue Jul 15 14:08:26 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.5°C (total current: 0.09A)
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000014 A
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000052 A
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000023 A
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000002 A
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000024 A
+Tue Jul 15 14:08:27 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.0°C (total current: 0.00A)
+Tue Jul 15 14:08:27 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045410 A
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045368 A
+Tue Jul 15 14:08:27 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:27 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 935.5°C (total current: 0.09A)
+Tue Jul 15 14:08:27 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 935.7°C (total current: 0.09A)
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000002 A
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000029 A
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000001 A
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000003 A
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000005 A
+Tue Jul 15 14:08:28 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.0°C (total current: 0.00A)
+Tue Jul 15 14:08:28 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:28 2025 : heaters.c : run_heaters_thread : Status: LabJack OK | Total current 0.00A/3.0A | Active heaters: -- H1 -- H3 --
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045375 A
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045395 A
+Tue Jul 15 14:08:28 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:28 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.1°C (total current: 0.09A)
+Tue Jul 15 14:08:28 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.4°C (total current: 0.09A)
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000025 A
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000039 A
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000002 A
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000015 A
+Tue Jul 15 14:08:29 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.0°C (total current: 0.00A)
+Tue Jul 15 14:08:29 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045433 A
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045368 A
+Tue Jul 15 14:08:29 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:29 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.1°C (total current: 0.09A)
+Tue Jul 15 14:08:29 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.9°C (total current: 0.09A)
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000006 A
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000028 A
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000013 A
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000000 A
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000003 A
+Tue Jul 15 14:08:30 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.7°C (total current: 0.00A)
+Tue Jul 15 14:08:30 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045400 A
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045383 A
+Tue Jul 15 14:08:30 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:30 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.2°C (total current: 0.09A)
+Tue Jul 15 14:08:30 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.2°C (total current: 0.09A)
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000001 A
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000073 A
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000002 A
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000004 A
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000004 A
+Tue Jul 15 14:08:31 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 24.0°C (total current: 0.00A)
+Tue Jul 15 14:08:31 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045472 A
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045411 A
+Tue Jul 15 14:08:31 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:31 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.2°C (total current: 0.09A)
+Tue Jul 15 14:08:31 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.6°C (total current: 0.09A)
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000021 A
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000051 A
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000002 A
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000002 A
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000016 A
+Tue Jul 15 14:08:32 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.9°C (total current: 0.00A)
+Tue Jul 15 14:08:32 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045469 A
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045372 A
+Tue Jul 15 14:08:32 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:32 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.9°C (total current: 0.09A)
+Tue Jul 15 14:08:32 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.3°C (total current: 0.09A)
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000010 A
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000078 A
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000015 A
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000004 A
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000011 A
+Tue Jul 15 14:08:33 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.4°C (total current: 0.00A)
+Tue Jul 15 14:08:33 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045385 A
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045379 A
+Tue Jul 15 14:08:33 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:33 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 936.5°C (total current: 0.09A)
+Tue Jul 15 14:08:33 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.9°C (total current: 0.09A)
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000001 A
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000048 A
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000003 A
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000008 A
+Tue Jul 15 14:08:34 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 24.5°C (total current: 0.00A)
+Tue Jul 15 14:08:34 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045379 A
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045407 A
+Tue Jul 15 14:08:34 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:34 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.2°C (total current: 0.09A)
+Tue Jul 15 14:08:34 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.0°C (total current: 0.09A)
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000019 A
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000109 A
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000005 A
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000007 A
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000023 A
+Tue Jul 15 14:08:35 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.7°C (total current: 0.00A)
+Tue Jul 15 14:08:35 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045386 A
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045395 A
+Tue Jul 15 14:08:35 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:35 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.4°C (total current: 0.09A)
+Tue Jul 15 14:08:35 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 935.4°C (total current: 0.09A)
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000004 A
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000025 A
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000010 A
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000003 A
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000011 A
+Tue Jul 15 14:08:36 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.3°C (total current: 0.00A)
+Tue Jul 15 14:08:36 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045402 A
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045351 A
+Tue Jul 15 14:08:36 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:36 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.8°C (total current: 0.09A)
+Tue Jul 15 14:08:36 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.7°C (total current: 0.09A)
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000003 A
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000024 A
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000001 A
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000003 A
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000002 A
+Tue Jul 15 14:08:37 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.3°C (total current: 0.00A)
+Tue Jul 15 14:08:37 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045391 A
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045397 A
+Tue Jul 15 14:08:37 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:37 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.6°C (total current: 0.09A)
+Tue Jul 15 14:08:37 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.7°C (total current: 0.09A)
+Tue Jul 15 14:08:38 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000004 A
+Tue Jul 15 14:08:38 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000038 A
+Tue Jul 15 14:08:38 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000005 A
+Tue Jul 15 14:08:38 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:38 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000006 A
+Tue Jul 15 14:08:38 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.6°C (total current: 0.00A)
+Tue Jul 15 14:08:38 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:38 2025 : heaters.c : run_heaters_thread : Status: LabJack OK | Total current 0.00A/3.0A | Active heaters: -- H1 -- H3 --
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045388 A
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045382 A
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:39 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.5°C (total current: 0.09A)
+Tue Jul 15 14:08:39 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.9°C (total current: 0.09A)
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000021 A
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000002 A
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000003 A
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:39 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000019 A
+Tue Jul 15 14:08:39 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.8°C (total current: 0.00A)
+Tue Jul 15 14:08:39 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045440 A
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045398 A
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:40 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.0°C (total current: 0.09A)
+Tue Jul 15 14:08:40 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.8°C (total current: 0.09A)
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000017 A
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000039 A
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000006 A
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000003 A
+Tue Jul 15 14:08:40 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000021 A
+Tue Jul 15 14:08:40 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000007 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000124 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000028 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000004 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000039 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000027 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000084 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000028 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000008 A
+Tue Jul 15 14:08:41 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000022 A
+Tue Jul 15 14:08:41 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.6°C (total current: 0.00A)
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045380 A
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045303 A
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:42 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.5°C (total current: 0.09A)
+Tue Jul 15 14:08:42 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.2°C (total current: 0.09A)
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000018 A
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000086 A
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000001 A
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000002 A
+Tue Jul 15 14:08:42 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000002 A
+Tue Jul 15 14:08:42 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000005 A
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000071 A
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000006 A
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000005 A
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000027 A
+Tue Jul 15 14:08:43 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.5°C (total current: 0.00A)
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045471 A
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045349 A
+Tue Jul 15 14:08:43 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:43 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.5°C (total current: 0.09A)
+Tue Jul 15 14:08:43 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.8°C (total current: 0.09A)
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000003 A
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000030 A
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000025 A
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000024 A
+Tue Jul 15 14:08:44 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.7°C (total current: 0.00A)
+Tue Jul 15 14:08:44 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045374 A
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045442 A
+Tue Jul 15 14:08:44 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:44 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 936.7°C (total current: 0.09A)
+Tue Jul 15 14:08:44 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.6°C (total current: 0.09A)
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000001 A
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000016 A
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000016 A
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000004 A
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000020 A
+Tue Jul 15 14:08:45 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.0°C (total current: 0.00A)
+Tue Jul 15 14:08:45 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.5°C (total current: 0.00A)
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045401 A
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045449 A
+Tue Jul 15 14:08:45 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:45 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.2°C (total current: 0.09A)
+Tue Jul 15 14:08:45 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 938.2°C (total current: 0.09A)
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000001 A
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000112 A
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000007 A
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000002 A
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000003 A
+Tue Jul 15 14:08:46 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.1°C (total current: 0.00A)
+Tue Jul 15 14:08:46 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045430 A
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045324 A
+Tue Jul 15 14:08:46 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:46 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.0°C (total current: 0.09A)
+Tue Jul 15 14:08:46 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.1°C (total current: 0.09A)
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000007 A
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000056 A
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000011 A
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000003 A
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000005 A
+Tue Jul 15 14:08:47 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 24.2°C (total current: 0.00A)
+Tue Jul 15 14:08:47 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045410 A
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045388 A
+Tue Jul 15 14:08:47 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:47 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.9°C (total current: 0.09A)
+Tue Jul 15 14:08:47 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.5°C (total current: 0.09A)
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000021 A
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000077 A
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000007 A
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000016 A
+Tue Jul 15 14:08:48 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 24.9°C (total current: 0.00A)
+Tue Jul 15 14:08:48 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:48 2025 : heaters.c : run_heaters_thread : Status: LabJack OK | Total current 0.00A/3.0A | Active heaters: -- H1 -- H3 --
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045441 A
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045329 A
+Tue Jul 15 14:08:48 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:48 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.1°C (total current: 0.09A)
+Tue Jul 15 14:08:48 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.7°C (total current: 0.09A)
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000012 A
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000057 A
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000012 A
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000008 A
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000021 A
+Tue Jul 15 14:08:49 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.7°C (total current: 0.00A)
+Tue Jul 15 14:08:49 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045403 A
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045327 A
+Tue Jul 15 14:08:49 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:49 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.8°C (total current: 0.09A)
+Tue Jul 15 14:08:49 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.4°C (total current: 0.09A)
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000003 A
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000010 A
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000004 A
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000000 A
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000002 A
+Tue Jul 15 14:08:50 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000001 A
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000011 A
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000004 A
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000002 A
+Tue Jul 15 14:08:50 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000026 A
+Tue Jul 15 14:08:50 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.7°C (total current: 0.00A)
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045409 A
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045343 A
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:51 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.9°C (total current: 0.09A)
+Tue Jul 15 14:08:51 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.2°C (total current: 0.09A)
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000020 A
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000031 A
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000005 A
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000005 A
+Tue Jul 15 14:08:51 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000020 A
+Tue Jul 15 14:08:51 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.4°C (total current: 0.00A)
+Tue Jul 15 14:08:51 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:52 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:52 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045434 A
+Tue Jul 15 14:08:52 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:52 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045366 A
+Tue Jul 15 14:08:52 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:52 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.7°C (total current: 0.09A)
+Tue Jul 15 14:08:52 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.0°C (total current: 0.09A)
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000011 A
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000024 A
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000012 A
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000001 A
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000032 A
+Tue Jul 15 14:08:53 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.5°C (total current: 0.00A)
+Tue Jul 15 14:08:53 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045400 A
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045394 A
+Tue Jul 15 14:08:53 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:53 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 939.2°C (total current: 0.09A)
+Tue Jul 15 14:08:53 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.8°C (total current: 0.09A)
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000015 A
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000056 A
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000014 A
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000005 A
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000009 A
+Tue Jul 15 14:08:54 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.5°C (total current: 0.00A)
+Tue Jul 15 14:08:54 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045409 A
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045411 A
+Tue Jul 15 14:08:54 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:54 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.1°C (total current: 0.09A)
+Tue Jul 15 14:08:54 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.0°C (total current: 0.09A)
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000015 A
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000050 A
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000004 A
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000004 A
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000018 A
+Tue Jul 15 14:08:55 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.7°C (total current: 0.00A)
+Tue Jul 15 14:08:55 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045355 A
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045375 A
+Tue Jul 15 14:08:55 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:55 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.9°C (total current: 0.09A)
+Tue Jul 15 14:08:55 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.6°C (total current: 0.09A)
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000014 A
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000032 A
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000015 A
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000019 A
+Tue Jul 15 14:08:56 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 26.6°C (total current: 0.00A)
+Tue Jul 15 14:08:56 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.5°C (total current: 0.00A)
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045413 A
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045359 A
+Tue Jul 15 14:08:56 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:56 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 936.5°C (total current: 0.09A)
+Tue Jul 15 14:08:56 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.6°C (total current: 0.09A)
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000000 A
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000007 A
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000021 A
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000000 A
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000026 A
+Tue Jul 15 14:08:57 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 24.2°C (total current: 0.00A)
+Tue Jul 15 14:08:57 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045383 A
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045385 A
+Tue Jul 15 14:08:57 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:57 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 936.9°C (total current: 0.09A)
+Tue Jul 15 14:08:57 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.0°C (total current: 0.09A)
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000011 A
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000102 A
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000026 A
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000010 A
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000019 A
+Tue Jul 15 14:08:58 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.4°C (total current: 0.00A)
+Tue Jul 15 14:08:58 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:08:58 2025 : heaters.c : run_heaters_thread : Status: LabJack OK | Total current 0.00A/3.0A | Active heaters: -- H1 -- H3 --
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045378 A
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045381 A
+Tue Jul 15 14:08:58 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:58 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.5°C (total current: 0.09A)
+Tue Jul 15 14:08:58 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.9°C (total current: 0.09A)
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000002 A
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000058 A
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000020 A
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000004 A
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000011 A
+Tue Jul 15 14:08:59 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 24.9°C (total current: 0.00A)
+Tue Jul 15 14:08:59 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045412 A
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045370 A
+Tue Jul 15 14:08:59 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:08:59 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.3°C (total current: 0.09A)
+Tue Jul 15 14:08:59 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.2°C (total current: 0.09A)
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000003 A
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000076 A
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000005 A
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.000004 A
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000012 A
+Tue Jul 15 14:09:00 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 24.8°C (total current: 0.00A)
+Tue Jul 15 14:09:00 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045399 A
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045402 A
+Tue Jul 15 14:09:00 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:09:00 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.0°C (total current: 0.09A)
+Tue Jul 15 14:09:00 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.5°C (total current: 0.09A)
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000004 A
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000068 A
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000005 A
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000006 A
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000002 A
+Tue Jul 15 14:09:01 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.6°C (total current: 0.00A)
+Tue Jul 15 14:09:01 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.3°C (total current: 0.00A)
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045403 A
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045370 A
+Tue Jul 15 14:09:01 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:09:01 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 939.7°C (total current: 0.09A)
+Tue Jul 15 14:09:01 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 935.6°C (total current: 0.09A)
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000010 A
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000039 A
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000002 A
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000002 A
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000018 A
+Tue Jul 15 14:09:02 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000004 A
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN1: -0.000033 A
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000019 A
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000009 A
+Tue Jul 15 14:09:02 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000034 A
+Tue Jul 15 14:09:02 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.8°C (total current: 0.00A)
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045394 A
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045382 A
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:09:03 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 938.1°C (total current: 0.09A)
+Tue Jul 15 14:09:03 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.1°C (total current: 0.09A)
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000002 A
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000085 A
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000017 A
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000001 A
+Tue Jul 15 14:09:03 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000007 A
+Tue Jul 15 14:09:03 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.8°C (total current: 0.00A)
+Tue Jul 15 14:09:03 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045412 A
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045340 A
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:09:04 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.0°C (total current: 0.09A)
+Tue Jul 15 14:09:04 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 936.9°C (total current: 0.09A)
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN2: -0.000002 A
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000125 A
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.000003 A
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000001 A
+Tue Jul 15 14:09:04 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.000001 A
+Tue Jul 15 14:09:04 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 27.2°C (total current: 0.00A)
+Tue Jul 15 14:09:04 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:09:05 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.020443 A
+Tue Jul 15 14:09:05 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.045459 A
+Tue Jul 15 14:09:05 2025 : heaters.c : read_relay_current : Current read from AIN4: 0.020429 A
+Tue Jul 15 14:09:05 2025 : heaters.c : read_relay_current : Current read from AIN3: 0.045372 A
+Tue Jul 15 14:09:05 2025 : heaters.c : read_relay_current : Current read from AIN0: 0.020436 A
+Tue Jul 15 14:09:05 2025 : heaters.c : run_heaters_thread : Heater 1 turned OFF at 937.9°C (total current: 0.09A)
+Tue Jul 15 14:09:05 2025 : heaters.c : run_heaters_thread : Heater 3 turned OFF at 937.2°C (total current: 0.09A)
+Tue Jul 15 14:09:05 2025 : heaters.c : read_relay_current : Current read from AIN2: 0.000001 A
+Tue Jul 15 14:09:05 2025 : heaters.c : read_relay_current : Current read from AIN1: 0.000067 A
+Tue Jul 15 14:09:05 2025 : heaters.c : read_relay_current : Current read from AIN4: -0.000011 A
+Tue Jul 15 14:09:06 2025 : heaters.c : read_relay_current : Current read from AIN3: -0.000001 A
+Tue Jul 15 14:09:06 2025 : heaters.c : read_relay_current : Current read from AIN0: -0.000006 A
+Tue Jul 15 14:09:06 2025 : heaters.c : run_heaters_thread : Heater 1 turned ON at 25.7°C (total current: 0.00A)
+Tue Jul 15 14:09:06 2025 : heaters.c : run_heaters_thread : Heater 3 turned ON at 25.4°C (total current: 0.00A)
+Tue Jul 15 14:09:06 2025 : heaters.c : run_heaters_thread : LabJack connection closed and all heaters turned off
+Tue Jul 15 14:09:06 2025 : heaters.c : do_server_heaters : Shutting down server
+Tue Jul 15 14:09:06 2025 : heaters.c : run_heaters_thread : Heaters shutdown complete

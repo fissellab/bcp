@@ -1,0 +1,293 @@
+Tue Jul 15 13:02:15 2025 : heaters.c : init_socket_heaters : UDP socket initialized successfully
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:15 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:15 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:16 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:16 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:17 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:17 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:17 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:17 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:17 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:17 2025 : heaters.c : do_server_heaters : Invalid relay id received
+Tue Jul 15 13:02:17 2025 : heaters.c : open_labjack : Error opening LabJack: LJME_DEVICE_NOT_FOUND
+Tue Jul 15 13:02:17 2025 : heaters.c : sock_listen_heater : Error receiving data
+Tue Jul 15 13:02:17 2025 : heaters.c : do_server_heaters : Malformed input: missing relay id
+Tue Jul 15 13:02:17 2025 : heaters.c : do_server_heaters : Invalid relay id received

@@ -18,6 +18,7 @@
 #include "rfsoc_client.h"
 #include "ticc_client.h"
 #include "pr59_interface.h"
+#include "heaters.h"
 
 // External variables from cli_Sag.c
 extern int pr59_running;
@@ -89,6 +90,16 @@ void print_config() {
     printf("  Data Save Path: %s\n", config.ticc.data_save_path);
     printf("  File Rotation Interval: %d seconds\n", config.ticc.file_rotation_interval);
     printf("  Power Control: PBOB %d, Relay %d\n", config.ticc.pbob_id, config.ticc.relay_id);
+    printf("\nHeaters settings:\n");
+    printf("  Enabled: %s\n", config.heaters.enabled ? "Yes" : "No");
+    printf("  Heater IP: %s\n", config.heaters.heater_ip);
+    printf("  Log File: %s\n", config.heaters.logfile);
+    printf("  Server IP: %s\n", config.heaters.server_ip);
+    printf("  Port: %d\n", config.heaters.port);
+    printf("  Work Directory: %s\n", config.heaters.workdir);
+    printf("  Current Cap: %d amps\n", config.heaters.current_cap);
+    printf("  Timeout: %d us\n", config.heaters.timeout);
+    printf("  Power Control: PBOB %d, Relay %d\n", config.heaters.pbob_id, config.heaters.relay_id);
     printf("\nPR59 TEC Controller settings:\n");
     printf("  Enabled: %s\n", config.pr59.enabled ? "Yes" : "No");
     printf("  Serial Port: %s\n", config.pr59.port);
@@ -307,6 +318,16 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "TICC client disabled in configuration");
     }
 
+    // Initialize Heaters if enabled
+    if (config.heaters.enabled) {
+        heaters_running = 0;
+        shutdown_heaters = 0;
+        write_to_log(main_log, "main_Sag.c", "main", "Heaters initialized");
+        printf("Heaters module initialized\n");
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "Heaters disabled in configuration");
+    }
+
     // Initialize and start Telemetry Server if enabled
     if (config.telemetry_server.enabled) {
         telemetry_server_config_t tel_config;
@@ -405,6 +426,19 @@ int main(int argc, char* argv[]) {
     if (config.ticc.enabled) {
         ticc_client_cleanup();
         write_to_log(main_log, "main_Sag.c", "main", "TICC client cleaned up");
+    }
+
+    // Cleanup Heaters
+    if (config.heaters.enabled && heaters_running) {
+        printf("Stopping heaters during cleanup...\n");
+        write_to_log(main_log, "main_Sag.c", "main", "Stopping heaters during cleanup");
+        
+        // Signal heater thread to stop
+        shutdown_heaters = 1;
+        pthread_join(main_heaters_thread, NULL);
+        
+        printf("Heaters stopped during cleanup\n");
+        write_to_log(main_log, "main_Sag.c", "main", "Heaters stopped during cleanup");
     }
 
     // Cleanup PR59 if running

@@ -14,6 +14,7 @@
 #include "vlbi_client.h"
 #include "rfsoc_client.h"
 #include "ticc_client.h"
+#include "heaters.h"
 
 extern conf_params_t config;  // Access to global configuration
 
@@ -66,6 +67,15 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
             waitpid(pr59_pid, NULL, 0);
             printf("Stopped PR59 TEC controller\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped PR59 TEC controller during exit");
+        }
+        
+        // Stop heaters if running
+        if (heaters_running) {
+            printf("Stopping heaters...\n");
+            shutdown_heaters = 1;
+            pthread_join(main_heaters_thread, NULL);
+            printf("Stopped heaters\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Stopped heaters on exit");
         }
         
         // Stop GPS UDP server first if running
@@ -519,6 +529,85 @@ void exec_command(char* input, FILE* cmdlog, const char* logpath, const char* ho
         } else {
             printf("TICC client is not enabled or initialized.\n");
             write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted ticc_status but TICC client not available");
+        }
+    } else if (strcmp(cmd, "start_heater_box") == 0) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to start heater box, but heaters are not enabled");
+        } else {
+            if (pbob_client_is_enabled()) {
+                printf("Powering up heater box (PBOB %d, Relay %d)...\n", config.heaters.pbob_id, config.heaters.relay_id);
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to power up heater box");
+                
+                int pbob_result = pbob_send_command(config.heaters.pbob_id, config.heaters.relay_id);
+                if (pbob_result == 1) {
+                    printf("Heater box power ON successful!\n");
+                    printf("Please wait ~10 seconds for LabJack to fully boot before running 'start_heaters'.\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Heater box powered ON successfully");
+                } else {
+                    printf("Failed to power up heater box.\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to power up heater box");
+                }
+            } else {
+                printf("PBoB client is not available.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted heater box start but PBoB client not available");
+            }
+        }
+    } else if (strcmp(cmd, "start_heaters") == 0) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to start heaters, but they are not enabled");
+        } else if (heaters_running) {
+            printf("Heaters are already running.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted to start heaters, but they were already running");
+        } else {
+            printf("Starting heater control system...\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to start heater control system");
+            
+            int heaters_result = pthread_create(&main_heaters_thread, NULL, run_heaters_thread, NULL);
+            if(heaters_result == 0) {
+                printf("Heater control system started successfully!\n");
+                printf("Note: If connection fails, ensure heater box is powered on with 'start_heater_box' first.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Heater control system started successfully");
+            } else {
+                printf("Failed to start heater control thread (error: %d).\n", heaters_result);
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to start heater control thread");
+            }
+        }
+    } else if(strcmp(cmd, "stop_heaters") == 0) {
+        if (heaters_running) {
+            printf("Stopping heaters...\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempting to stop heaters");
+            
+            // Signal heater thread to stop
+            shutdown_heaters = 1;
+            
+            int join_result = pthread_join(main_heaters_thread, NULL);
+            if (join_result == 0) {
+                printf("Heater control thread stopped.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Heater control thread stopped");
+                printf("Heaters powered OFF and shutdown complete.\n");
+            } else {
+                printf("Warning: Error waiting for heater thread to finish (error %d)\n", join_result);
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Error joining heater thread");
+            }
+            
+            if (pbob_client_is_enabled()) {
+                int pbob_result = pbob_send_command(config.heaters.pbob_id, config.heaters.relay_id);
+                if (pbob_result == 1) {
+                    printf("Heater box power OFF successful!\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Heater box powered OFF successfully");
+                } else {
+                    printf("Failed to power OFF heater box!\n");
+                    write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Failed to power OFF heater box");
+                }
+            } else {
+                printf("PBoB client is not available.\n");
+                write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted stop_heaters but PBoB client not available");
+            }
+        } else {
+            printf("Heaters are not running.\n");
+            write_to_log(cmdlog, "cli_Sag.c", "exec_command", "Attempted stop_heaters but heaters were not running");
         }
     } else if (strcmp(cmd, "start_pr59") == 0) {
         if (config.pr59.enabled) {
