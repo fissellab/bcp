@@ -9,7 +9,7 @@
 #include <signal.h>
 #include <math.h>
 #include <libconfig.h>
-#include "../pr59_interface.h"
+#include "pr59_interface.h"
 #define BUFFER_SIZE 256
 #define LOG_BUFFER_SIZE 1024
 #define DEFAULT_PORT "/dev/tec-controller"

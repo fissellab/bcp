@@ -16,21 +16,23 @@ add_subdirectory(
 
 add_executable(
     main
-        file_io_Sag.c
-        main_Sag.c
-        cli_Sag.c
-        gps.c
-        spectrometer_server.c
-        telemetry_server.c
-        pbob_client.c
-        ticc_client.c
-        vlbi_client.c
-        rfsoc_client.c
-        pr59_interface.c
-        heaters.c
+        src/file_io_Sag.c
+        src/main_Sag.c
+        src/cli_Sag.c
+        src/gps.c
+        src/spectrometer_server.c
+        src/telemetry_server.c
+        src/pbob_client.c
+        src/ticc_client.c
+        src/vlbi_client.c
+        src/rfsoc_client.c
+        src/pr59_interface.c
+        src/heaters.c
+        src/position_sensors.c
 )
 
 target_include_directories(main PRIVATE 
+    include
     .
     ${JSON_C_INCLUDE_DIRS}
     ../bvex-link/bcp-fetch-client/include
@@ -52,11 +54,30 @@ target_link_libraries(main
 add_executable(
     tec_control_3
         PR59/tec_control_3.c
-        pr59_interface.c
+        src/pr59_interface.c
+)
+
+target_include_directories(tec_control_3 PRIVATE 
+    include
 )
 
 target_link_libraries(tec_control_3
     config
+    m
+    pthread
+)
+
+# Add position sensor receiver executable
+add_executable(
+    pos_sensors_rx
+        src/pos_sensor_rx.c
+)
+
+target_include_directories(pos_sensors_rx PRIVATE 
+    include
+)
+
+target_link_libraries(pos_sensors_rx
     m
     pthread
 )

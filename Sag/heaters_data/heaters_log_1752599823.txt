@@ -1,3 +1,0 @@
-Tue Jul 15 13:17:03 2025 : heaters.c : run_heaters_thread : Attempting to connect to LabJack T7 at 172.20.3.16
-Tue Jul 15 13:17:03 2025 : heaters.c : init_socket_heaters : UDP socket initialized successfully
-Tue Jul 15 13:17:05 2025 : heaters.c : open_labjack : Error opening LabJack: LJME_DEVICE_NOT_FOUND
