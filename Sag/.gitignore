@@ -12,7 +12,15 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Log files
+# Log files - exclude all log files and log directories
 *.log
-log/*.log
-log/*.txt
+*.txt
+log/
+logs/
+main_sag.log
+cmds_sag.log
+telemetry_server.log
+system_monitor.log
+spectrometer_udp_server.log
+position_sensors.log
+rfsoc_spec_*.log
