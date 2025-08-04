@@ -251,6 +251,16 @@ void read_in_config(const char* filepath) {
     config_lookup_int(&cfg, "heaters.current_cap", &config.heaters.current_cap);
     config_lookup_int(&cfg, "heaters.timeout", &config.heaters.timeout);
 
+    // Read temperature thresholds
+    config_lookup_float(&cfg, "heaters.temp_low_starcam", &config.heaters.temp_low_starcam);
+    config_lookup_float(&cfg, "heaters.temp_high_starcam", &config.heaters.temp_high_starcam);
+    config_lookup_float(&cfg, "heaters.temp_low_motor", &config.heaters.temp_low_motor);
+    config_lookup_float(&cfg, "heaters.temp_high_motor", &config.heaters.temp_high_motor);
+    config_lookup_float(&cfg, "heaters.temp_low_ethernet", &config.heaters.temp_low_ethernet);
+    config_lookup_float(&cfg, "heaters.temp_high_ethernet", &config.heaters.temp_high_ethernet);
+    config_lookup_float(&cfg, "heaters.temp_low_lockpin", &config.heaters.temp_low_lockpin);
+    config_lookup_float(&cfg, "heaters.temp_high_lockpin", &config.heaters.temp_high_lockpin);
+
     if (config_lookup_string(&cfg, "heaters.logfile", &tmpstr)) {
         strncpy(config.heaters.logfile, tmpstr, sizeof(config.heaters.logfile) - 1);
         config.heaters.logfile[sizeof(config.heaters.logfile) - 1] = '\0';
@@ -293,6 +303,10 @@ void read_in_config(const char* filepath) {
         strncpy(config.position_sensors.script_path, tmpstr, sizeof(config.position_sensors.script_path) - 1);
         config.position_sensors.script_path[sizeof(config.position_sensors.script_path) - 1] = '\0';
     }
+    
+    // Read position sensors power control settings
+    config_lookup_int(&cfg, "position_sensors.pbob_id", &config.position_sensors.pbob_id);
+    config_lookup_int(&cfg, "position_sensors.relay_id", &config.position_sensors.relay_id);
 
     // Read pr59 section
     config_lookup_int(&cfg, "pr59.enabled", &config.pr59.enabled);
@@ -323,6 +337,13 @@ void read_in_config(const char* filepath) {
         config.pr59.data_save_path[sizeof(config.pr59.data_save_path) - 1] = '\0';
     }
 
+    // Read backend section
+    config_lookup_int(&cfg, "backend.enabled", &config.backend.enabled);
+    
+    // Read backend power control settings
+    config_lookup_int(&cfg, "backend.pbob_id", &config.backend.pbob_id);
+    config_lookup_int(&cfg, "backend.relay_id", &config.backend.relay_id);
+
     if(!config_lookup_int(&cfg,"cmd_server.port", &config.cmd_server.port)){
 		printf("Missing config.cmd_server.port\n");
 		config_destroy(&cfg);
@@ -336,6 +357,10 @@ void read_in_config(const char* filepath) {
                 exit(0);
 
     }
+
+    // Read system_monitor section
+    config_lookup_int(&cfg, "system_monitor.enabled", &config.system_monitor.enabled);
+    config_lookup_int(&cfg, "system_monitor.update_interval_sec", &config.system_monitor.update_interval_sec);
 
     config_destroy(&cfg);
 }

@@ -13,6 +13,7 @@ import logging
 import signal
 import sys
 import os
+import re
 from datetime import datetime
 
 # Configuration
@@ -26,6 +27,17 @@ PID_FILE = "/home/aquila/vlbi_controller.pid"  # Changed to home directory to av
 vlbi_process = None
 server_socket = None
 running = True
+vlbi_status = {
+    "stage": "stopped",
+    "packets_captured": 0,
+    "data_size_mb": 0.0,
+    "pps_counter": None,
+    "error_count": 0,
+    "last_update": None,
+    "connection_status": "disconnected",
+    "recent_logs": []
+}
+connected_clients = []  # Track clients for status broadcasting
 
 def setup_logging():
     """Setup logging configuration"""
@@ -67,6 +79,121 @@ def cleanup_and_exit():
     logging.info("VLBI Controller daemon stopped")
     sys.exit(0)
 
+def monitor_vlbi_output():
+    """Monitor VLBI script output in real-time and parse status"""
+    global vlbi_process, vlbi_status
+    
+    if vlbi_process is None:
+        return
+    
+    try:
+        for line in iter(vlbi_process.stdout.readline, ''):
+            if not line:
+                break
+                
+            line = line.strip()
+            if not line:
+                continue
+                
+            # Log the output
+            logging.info(f"VLBI: {line}")
+            
+            # Add to recent logs (keep last 50 lines)
+            vlbi_status["recent_logs"].append({
+                "timestamp": datetime.now().isoformat(),
+                "message": line
+            })
+            if len(vlbi_status["recent_logs"]) > 50:
+                vlbi_status["recent_logs"].pop(0)
+            
+            # Parse status information from output
+            parse_vlbi_output(line)
+            
+            # Broadcast status to connected clients
+            broadcast_status_update(line)
+            
+    except Exception as e:
+        logging.error(f"Error monitoring VLBI output: {e}")
+    finally:
+        # Process ended
+        vlbi_status["stage"] = "stopped"
+        vlbi_status["connection_status"] = "disconnected"
+        vlbi_status["last_update"] = datetime.now().isoformat()
+
+def parse_vlbi_output(line):
+    """Parse VLBI output line and extract status information"""
+    global vlbi_status
+    
+    # Update last update time
+    vlbi_status["last_update"] = datetime.now().isoformat()
+    
+    # Parse different types of status lines
+    if "Connecting to" in line:
+        vlbi_status["stage"] = "connecting"
+        vlbi_status["connection_status"] = "connecting"
+    elif "Programming FPGA" in line:
+        vlbi_status["stage"] = "programming"
+    elif "Starting VLBI data capture" in line:
+        vlbi_status["stage"] = "capturing"
+        vlbi_status["connection_status"] = "connected"
+    elif "Packets:" in line:
+        # Extract packet count: "Packets: 15420 (123.4/s)"
+        try:
+            match = re.search(r'Packets:\s*(\d+)', line)
+            if match:
+                vlbi_status["packets_captured"] = int(match.group(1))
+        except:
+            pass
+    elif "Data size:" in line:
+        # Extract data size: "Data size: 128.5 MB"
+        try:
+            match = re.search(r'Data size:\s*([\d.]+)\s*MB', line)
+            if match:
+                vlbi_status["data_size_mb"] = float(match.group(1))
+        except:
+            pass
+    elif "Current VDIF time:" in line:
+        # Extract PPS counter info
+        try:
+            match = re.search(r'(\d{4}-\d{2}-\d{2})', line)
+            if match:
+                vlbi_status["connection_status"] = "capturing"
+        except:
+            pass
+    elif "Error" in line or "error" in line:
+        vlbi_status["error_count"] += 1
+    elif "Failed" in line or "failed" in line:
+        vlbi_status["error_count"] += 1
+        if vlbi_status["stage"] != "stopped":
+            vlbi_status["stage"] = "error"
+
+def broadcast_status_update(log_line):
+    """Broadcast real-time status update to connected clients"""
+    global connected_clients
+    
+    if not connected_clients:
+        return
+        
+    status_update = {
+        "type": "vlbi_status_update",
+        "timestamp": datetime.now().isoformat(),
+        "stage": vlbi_status["stage"],
+        "packets_captured": vlbi_status["packets_captured"],
+        "data_size_mb": vlbi_status["data_size_mb"],
+        "connection_status": vlbi_status["connection_status"],
+        "error_count": vlbi_status["error_count"],
+        "log_line": log_line
+    }
+    
+    # Send to all connected clients
+    message = json.dumps(status_update) + "\n"
+    for client in connected_clients[:]:  # Copy list to avoid modification during iteration
+        try:
+            client.send(message.encode('utf-8'))
+        except:
+            # Remove disconnected clients
+            connected_clients.remove(client)
+
 def get_vlbi_status():
     """Get current VLBI logging status"""
     global vlbi_process
@@ -80,7 +207,7 @@ def get_vlbi_status():
         return "stopped"
 
 def start_vlbi():
-    """Start VLBI logging script"""
+    """Start VLBI logging script with real-time output capture"""
     global vlbi_process
     
     if vlbi_process and vlbi_process.poll() is None:
@@ -92,11 +219,14 @@ def start_vlbi():
             return {"status": "error", "message": f"VLBI script not found: {VLBI_SCRIPT_PATH}"}
         
         logging.info("Starting VLBI logging script...")
+        
+        # Start process with real-time output capture
         vlbi_process = subprocess.Popen(
-            [VLBI_SCRIPT_PATH],
+            ['sudo', VLBI_SCRIPT_PATH],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True
+            stderr=subprocess.STDOUT,  # Merge stderr into stdout
+            universal_newlines=True,
+            bufsize=1  # Line buffered for real-time output
         )
         
         # Give it a moment to start
@@ -104,11 +234,16 @@ def start_vlbi():
         
         if vlbi_process.poll() is None:
             logging.info("VLBI logging script started successfully")
+            
+            # Start output monitoring thread
+            output_thread = threading.Thread(target=monitor_vlbi_output, daemon=True)
+            output_thread.start()
+            
             return {"status": "success", "message": "VLBI logging started", "pid": vlbi_process.pid}
         else:
-            # Process exited immediately
-            stdout, stderr = vlbi_process.communicate()
-            error_msg = f"VLBI script failed to start. Error: {stderr}"
+            # Process exited immediately - get output
+            stdout, _ = vlbi_process.communicate()
+            error_msg = f"VLBI script failed to start. Output: {stdout}"
             logging.error(error_msg)
             return {"status": "error", "message": error_msg}
             
@@ -149,7 +284,9 @@ def stop_vlbi():
         return {"status": "error", "message": error_msg}
 
 def handle_client(client_socket, client_address):
-    """Handle individual client connection"""
+    """Handle individual client connection with enhanced status support"""
+    global connected_clients
+    
     logging.info(f"Client connected from {client_address}")
     
     try:
@@ -164,19 +301,37 @@ def handle_client(client_socket, client_address):
             # Process command
             if data == "start_vlbi":
                 response = start_vlbi()
+            elif data == "start_vlbi_stream":
+                # Add client to streaming list
+                if client_socket not in connected_clients:
+                    connected_clients.append(client_socket)
+                response = start_vlbi()
+                response["streaming"] = True
             elif data == "stop_vlbi":
                 response = stop_vlbi()
-            elif data == "status":
+            elif data == "status" or data == "get_vlbi_status":
                 status = get_vlbi_status()
                 pid = vlbi_process.pid if vlbi_process and vlbi_process.poll() is None else None
                 response = {
                     "status": "success", 
                     "vlbi_status": status,
                     "pid": pid,
+                    "timestamp": datetime.now().isoformat(),
+                    "detailed_status": vlbi_status
+                }
+            elif data == "get_vlbi_logs":
+                response = {
+                    "status": "success",
+                    "logs": vlbi_status["recent_logs"][-20:],  # Last 20 log entries
                     "timestamp": datetime.now().isoformat()
                 }
             elif data == "ping":
                 response = {"status": "success", "message": "pong"}
+            elif data == "stop_stream":
+                # Remove client from streaming list
+                if client_socket in connected_clients:
+                    connected_clients.remove(client_socket)
+                response = {"status": "success", "message": "Streaming stopped"}
             else:
                 response = {"status": "error", "message": f"Unknown command: {data}"}
             
@@ -184,9 +339,17 @@ def handle_client(client_socket, client_address):
             response_json = json.dumps(response) + "\n"
             client_socket.send(response_json.encode('utf-8'))
             
+            # For streaming commands, keep connection open
+            if data == "start_vlbi_stream":
+                # Keep connection alive for streaming
+                continue
+            
     except Exception as e:
         logging.error(f"Error handling client {client_address}: {str(e)}")
     finally:
+        # Remove from streaming clients
+        if client_socket in connected_clients:
+            connected_clients.remove(client_socket)
         client_socket.close()
         logging.info(f"Client {client_address} disconnected")
 

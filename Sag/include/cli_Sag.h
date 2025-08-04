@@ -44,6 +44,7 @@ enum commands {
     encdither,
     enctrack,
     enconoff,
+    trackdither,
     stop_scan,
     set_offset_az,
     set_offset_el,
@@ -60,6 +61,8 @@ enum commands {
     rfsoc_off,
     start_vlbi,
     stop_vlbi,
+    start_backend,
+    stop_backend,
     rfsoc_configure_ocxo,
     start_timing_chain,
     stop_timing_chain,
@@ -72,6 +75,8 @@ enum commands {
     stop_pr59,
     start_position_box,
     stop_position_box,
+    position_box_on,
+    position_box_off,
     exit_both
 
 };

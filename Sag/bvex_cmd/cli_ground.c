@@ -810,6 +810,14 @@ void exec_command(char* input) {
     	com = stop_vlbi;
         create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
     	
+    } else if (strcmp(cmd, "start_backend") == 0) {
+    	com = start_backend;
+        create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
+    	
+    } else if (strcmp(cmd, "stop_backend") == 0) {
+    	com = stop_backend;
+        create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
+    	
     } else if (strcmp(cmd, "start_timing_chain") == 0) {
     	com = start_timing_chain;
         create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
@@ -847,6 +855,12 @@ void exec_command(char* input) {
         create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
     }else if (strcmp(cmd,"stop_position_box") ==0){
         com = stop_position_box;
+        create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
+    }else if (strcmp(cmd,"position_box_on") ==0){
+        com = position_box_on;
+        create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
+    }else if (strcmp(cmd,"position_box_off") ==0){
+        com = position_box_off;
         create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
     }else {
     	cmd_unknown=1;

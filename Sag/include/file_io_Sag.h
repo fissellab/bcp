@@ -105,6 +105,13 @@ typedef struct conf_params {
     } ticc;
 
     struct {
+        int enabled;
+        // Power control settings for backend computer
+        int pbob_id;
+        int relay_id;
+    } backend;
+
+    struct {
 	int port;
 	int timeout;
     }cmd_server;
@@ -119,6 +126,15 @@ typedef struct conf_params {
         char workdir[256];
         int current_cap;
         int timeout;
+        // Temperature thresholds for each heater type
+        double temp_low_starcam;
+        double temp_high_starcam;
+        double temp_low_motor;
+        double temp_high_motor;
+        double temp_low_ethernet;
+        double temp_high_ethernet;
+        double temp_low_lockpin;
+        double temp_high_lockpin;
     } heaters;
     
     struct {
@@ -130,6 +146,10 @@ typedef struct conf_params {
         int retry_attempts;           // Number of retry attempts for connection
         char script_path[256];        // Path to run_pos_sensors.sh script
         int telemetry_rate_hz;        // Rate for SPI gyro telemetry transmission (default: 10)
+        
+        // Power control settings
+        int pbob_id;                  // PBoB number for position sensor power control
+        int relay_id;                 // Relay number for position sensor power control
     } position_sensors;
     
     struct {
@@ -142,6 +162,11 @@ typedef struct conf_params {
         float deadband;               // Temperature deadband in °C
         char data_save_path[256];     // Directory for log files
     } pr59;
+    
+    struct {
+        int enabled;                  // 1 to enable system monitoring, 0 to disable
+        int update_interval_sec;      // Update interval in seconds (default: 10)
+    } system_monitor;
 } conf_params_t;
 
 extern conf_params_t config;

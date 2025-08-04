@@ -654,7 +654,7 @@ if __name__ == "__main__":
         bitstream = opts.fpgfile
     else:
         if mode == 1:
-            fpg_prebuilt = 'rfsoc4x2_tut_spec_cx_14pt_fft/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg'
+            fpg_prebuilt = './rfsoc4x2_tut_spec_cx_14pt_fft/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg'
         else:
             fpg_prebuilt = './rfsoc4x2_tut_spec/outputs/rfsoc4x2_tut_spec_2023-03-31_1109.fpg'
 

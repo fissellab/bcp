@@ -1,0 +1,13 @@
+Mon Aug  4 12:38:13 2025 : cli_Sag.c : exec_command : Attempting to power up GPS
+Mon Aug  4 12:38:13 2025 : cli_Sag.c : exec_command : GPS power toggled successfully (should be ON)
+Mon Aug  4 12:38:13 2025 : cli_Sag.c : exec_command : GPS logging started
+Mon Aug  4 14:22:58 2025 : cli_Sag.c : exec_command : Comprehensive BCP shutdown initiated
+Mon Aug  4 14:22:58 2025 : cli_Sag.c : exec_command : GPS logging stopped during exit
+Mon Aug  4 14:23:01 2025 : cli_Sag.c : exec_command : VLBI stopped during exit
+Mon Aug  4 14:23:01 2025 : cli_Sag.c : exec_command : RFSoC was not powered ON this session, skipping shutdown
+Mon Aug  4 14:23:01 2025 : cli_Sag.c : exec_command : GPS powered down during exit
+Mon Aug  4 14:23:01 2025 : cli_Sag.c : exec_command : Timing chain was not powered ON this session, skipping shutdown
+Mon Aug  4 14:23:01 2025 : cli_Sag.c : exec_command : Backend computer was not powered ON this session, skipping shutdown
+Mon Aug  4 14:23:01 2025 : cli_Sag.c : exec_command : Heater box was not powered ON this session, skipping shutdown
+Mon Aug  4 14:23:01 2025 : cli_Sag.c : exec_command : Position sensor box was not powered ON this session, skipping shutdown
+Mon Aug  4 14:23:01 2025 : cli_Sag.c : exec_command : Comprehensive BCP shutdown completed successfully

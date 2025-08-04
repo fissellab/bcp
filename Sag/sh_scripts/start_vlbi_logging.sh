@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration for VLBI data logging
-HOSTNAME="172.20.3.12"     # RFSoC IP address
+HOSTNAME="172.20.4.172"     # RFSoC IP address
 INTERFACE="enp1s0f0np0"    # Network interface for 100 GbE
 ADC_CHAN=0                 # ADC channel to use
 NUMPKT=256                 # Number of packets per batch

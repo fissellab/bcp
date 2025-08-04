@@ -16,6 +16,9 @@
 #include "gps.h"
 #include "pr59_interface.h"
 #include "position_sensors.h"
+#include "heaters.h"
+#include "vlbi_client.h"
+#include "system_monitor.h"
 
 // Global variables
 struct sockaddr_in tel_client_addr;
@@ -192,6 +195,69 @@ void telemetry_send_metric(int sockfd, char* id) {
         }
     } else if (strcmp(id, "gps_logging") == 0) {
         telemetry_sendInt(sockfd, gps_is_logging() ? 1 : 0);
+    } else if (strcmp(id, "gps_speed") == 0) {
+        gps_data_t gps_data;
+        if (gps_get_data(&gps_data) && gps_data.valid_speed) {
+            telemetry_sendDouble(sockfd, gps_data.speed_ms);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "gps_sats") == 0) {
+        gps_data_t gps_data;
+        if (gps_get_data(&gps_data) && gps_data.valid_satellites) {
+            telemetry_sendInt(sockfd, gps_data.num_satellites);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "GET_GPS") == 0) {
+        // Handle GET_GPS command for compatibility with existing clients
+        gps_data_t gps_data;
+        if (gps_get_data(&gps_data)) {
+            char gps_response[512];  // Increased buffer size for additional parameters
+            
+            // Build response with all GPS parameters
+            char lat_str[32], lon_str[32], alt_str[32], head_str[32], speed_str[32], sats_str[16];
+            
+            // Format position data
+            if (gps_data.valid_position) {
+                snprintf(lat_str, sizeof(lat_str), "%.6f", gps_data.latitude);
+                snprintf(lon_str, sizeof(lon_str), "%.6f", gps_data.longitude);
+                snprintf(alt_str, sizeof(alt_str), "%.1f", gps_data.altitude);
+            } else {
+                strcpy(lat_str, "N/A");
+                strcpy(lon_str, "N/A");
+                strcpy(alt_str, "N/A");
+            }
+            
+            // Format heading data
+            if (gps_data.valid_heading) {
+                snprintf(head_str, sizeof(head_str), "%.2f", gps_data.heading);
+            } else {
+                strcpy(head_str, "N/A");
+            }
+            
+            // Format speed data
+            if (gps_data.valid_speed) {
+                snprintf(speed_str, sizeof(speed_str), "%.3f", gps_data.speed_ms);
+            } else {
+                strcpy(speed_str, "N/A");
+            }
+            
+            // Format satellite data
+            if (gps_data.valid_satellites) {
+                snprintf(sats_str, sizeof(sats_str), "%d", gps_data.num_satellites);
+            } else {
+                strcpy(sats_str, "N/A");
+            }
+            
+            snprintf(gps_response, sizeof(gps_response), 
+                    "gps_lat:%s,gps_lon:%s,gps_alt:%s,gps_head:%s,gps_speed:%s,gps_sats:%s",
+                    lat_str, lon_str, alt_str, head_str, speed_str, sats_str);
+            
+            telemetry_sendString(sockfd, gps_response);
+        } else {
+            telemetry_sendString(sockfd, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:N/A,gps_speed:N/A,gps_sats:N/A");
+        }
     }
     
     // PR59 TEC controller telemetry channels
@@ -425,6 +491,262 @@ void telemetry_send_metric(int sockfd, char* id) {
     } else if (strcmp(id, "timestamp") == 0) {
         telemetry_sendDouble(sockfd, (double)time(NULL));
     }
+    
+    // Heater telemetry channels
+    else if (strcmp(id, "heater_running") == 0) {
+        telemetry_sendInt(sockfd, heaters_running);
+    } else if (strcmp(id, "heater_starcam_temp") == 0) {
+        if (heaters_running && heaters[0].temp_valid) {
+            telemetry_sendFloat(sockfd, heaters[0].current_temp);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_starcam_current") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[0].current);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_starcam_state") == 0) {
+        if (heaters_running) {
+            telemetry_sendInt(sockfd, heaters[0].state ? 1 : 0);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_motor_temp") == 0) {
+        if (heaters_running && heaters[1].temp_valid) {
+            telemetry_sendFloat(sockfd, heaters[1].current_temp);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_motor_current") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[1].current);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_motor_state") == 0) {
+        if (heaters_running) {
+            telemetry_sendInt(sockfd, heaters[1].state ? 1 : 0);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_ethernet_temp") == 0) {
+        if (heaters_running && heaters[2].temp_valid) {
+            telemetry_sendFloat(sockfd, heaters[2].current_temp);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_ethernet_current") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[2].current);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_ethernet_state") == 0) {
+        if (heaters_running) {
+            telemetry_sendInt(sockfd, heaters[2].state ? 1 : 0);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_lockpin_temp") == 0) {
+        if (heaters_running && heaters[3].temp_valid) {
+            telemetry_sendFloat(sockfd, heaters[3].current_temp);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_lockpin_current") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[3].current);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_lockpin_state") == 0) {
+        if (heaters_running) {
+            telemetry_sendInt(sockfd, heaters[3].state ? 1 : 0);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_spare_temp") == 0) {
+        if (heaters_running && heaters[4].temp_valid) {
+            telemetry_sendFloat(sockfd, heaters[4].current_temp);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_spare_current") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[4].current);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_spare_state") == 0) {
+        if (heaters_running) {
+            telemetry_sendInt(sockfd, heaters[4].state ? 1 : 0);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_total_current") == 0) {
+        if (heaters_running) {
+            float total_current = 0.0;
+            for (int i = 0; i < NUM_HEATERS; i++) {
+                total_current += heaters[i].current;
+            }
+            telemetry_sendFloat(sockfd, total_current);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    }
+    
+    // VLBI telemetry channels
+    else if (strcmp(id, "vlbi_running") == 0) {
+        if (vlbi_status_valid && vlbi_client_is_enabled()) {
+            telemetry_sendInt(sockfd, global_vlbi_status.is_running ? 1 : 0);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "vlbi_stage") == 0) {
+        if (vlbi_status_valid && vlbi_client_is_enabled()) {
+            telemetry_sendString(sockfd, global_vlbi_status.stage[0] ? global_vlbi_status.stage : "unknown");
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "vlbi_packets") == 0) {
+        if (vlbi_status_valid && vlbi_client_is_enabled()) {
+            telemetry_sendInt(sockfd, global_vlbi_status.packets_captured);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "vlbi_data_mb") == 0) {
+        if (vlbi_status_valid && vlbi_client_is_enabled()) {
+            telemetry_sendDouble(sockfd, global_vlbi_status.data_size_mb);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "vlbi_connection") == 0) {
+        if (vlbi_status_valid && vlbi_client_is_enabled()) {
+            telemetry_sendString(sockfd, global_vlbi_status.connection_status[0] ? global_vlbi_status.connection_status : "unknown");
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "vlbi_errors") == 0) {
+        if (vlbi_status_valid && vlbi_client_is_enabled()) {
+            telemetry_sendInt(sockfd, global_vlbi_status.error_count);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "vlbi_pid") == 0) {
+        if (vlbi_status_valid && vlbi_client_is_enabled() && global_vlbi_status.is_running) {
+            telemetry_sendInt(sockfd, global_vlbi_status.pid);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "vlbi_last_update") == 0) {
+        if (vlbi_status_valid && vlbi_client_is_enabled()) {
+            telemetry_sendString(sockfd, global_vlbi_status.last_update[0] ? global_vlbi_status.last_update : global_vlbi_status.timestamp);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "GET_VLBI") == 0) {
+        // Handle GET_VLBI command for comprehensive VLBI status
+        if (vlbi_status_valid && vlbi_client_is_enabled()) {
+            char vlbi_response[512];
+            snprintf(vlbi_response, sizeof(vlbi_response), 
+                    "vlbi_running:%d,vlbi_stage:%s,vlbi_packets:%d,vlbi_data_mb:%.2f,vlbi_connection:%s,vlbi_errors:%d",
+                    global_vlbi_status.is_running ? 1 : 0,
+                    global_vlbi_status.stage[0] ? global_vlbi_status.stage : "unknown",
+                    global_vlbi_status.packets_captured,
+                    global_vlbi_status.data_size_mb,
+                    global_vlbi_status.connection_status[0] ? global_vlbi_status.connection_status : "unknown",
+                    global_vlbi_status.error_count);
+            telemetry_sendString(sockfd, vlbi_response);
+        } else {
+            telemetry_sendString(sockfd, "vlbi_running:N/A,vlbi_stage:N/A,vlbi_packets:N/A,vlbi_data_mb:N/A,vlbi_connection:N/A,vlbi_errors:N/A");
+        }
+    }
+    
+    // System Monitor telemetry channels
+    else if (strcmp(id, "sag_sys_cpu_temp") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendFloat(sockfd, sys_monitor.cpu_temp_celsius);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_cpu_usage") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendFloat(sockfd, sys_monitor.cpu_usage_percent);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_mem_used") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendFloat(sockfd, sys_monitor.memory_used_gb);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_mem_total") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendFloat(sockfd, sys_monitor.memory_total_gb);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_mem_used_str") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendString(sockfd, sys_monitor.memory_used_str);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_mem_total_str") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendString(sockfd, sys_monitor.memory_total_str);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_ssd_mounted") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendInt(sockfd, sys_monitor.ssd_mounted);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_ssd_used") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendString(sockfd, sys_monitor.ssd_used);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_ssd_total") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendString(sockfd, sys_monitor.ssd_total);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "sag_sys_ssd_path") == 0) {
+        if (system_monitor_running) {
+            pthread_mutex_lock(&sys_monitor.data_mutex);
+            telemetry_sendString(sockfd, sys_monitor.ssd_mount_path);
+            pthread_mutex_unlock(&sys_monitor.data_mutex);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    }
+    
     // Future telemetry channels can be added here
     // Examples:
     // else if (strcmp(id, "system_temp") == 0) { /* Add system temperature */ }

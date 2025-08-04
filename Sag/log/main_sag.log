@@ -1,14 +1,22 @@
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : Started logfile
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : Starting command log
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : GPS initialized - awaiting gps_start command
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : Spectrometer server initialized
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : PBoB client initialized successfully
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : VLBI client initialized successfully
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : RFSoC daemon client initialized successfully
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : TICC client initialized successfully
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : Heaters initialized
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : Telemetry server initialized
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : Telemetry server started on 0.0.0.0:8082
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : PR59 telemetry interface initialized
-Mon Jul 21 21:19:14 2025 : main_Sag.c : main : Position sensors initialized successfully
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : Started logfile
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : Starting command log
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : GPS initialized - awaiting gps_start command
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : Spectrometer server initialized
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : Spectrometer UDP server started on port 8081
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : PBoB client initialized successfully
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : VLBI client initialized successfully
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : RFSoC daemon client initialized successfully
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : TICC client disabled in configuration
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : Heaters disabled in configuration
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : Telemetry server initialized
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : Telemetry server started on 0.0.0.0:8082
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : PR59 telemetry interface initialized
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : Position sensors disabled in configuration
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : System monitor initialized
+Mon Aug  4 12:37:54 2025 : main_Sag.c : main : System monitor thread started
+Mon Aug  4 14:23:02 2025 : main_Sag.c : main : Spectrometer UDP server stopped during cleanup
+Mon Aug  4 14:23:02 2025 : main_Sag.c : main : PBoB client cleaned up
+Mon Aug  4 14:23:02 2025 : main_Sag.c : main : VLBI client cleaned up
+Mon Aug  4 14:23:02 2025 : main_Sag.c : main : RFSoC daemon client cleaned up
+Mon Aug  4 14:23:02 2025 : main_Sag.c : main : Telemetry server stopped during cleanup
+Mon Aug  4 14:23:07 2025 : main_Sag.c : main : System monitor stopped during cleanup

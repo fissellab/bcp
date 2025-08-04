@@ -4,8 +4,7 @@
 #include <string.h>  
 #include <unistd.h> 
 #include <signal.h>  
-#include <math.h>
-#include <errno.h> 
+#include <math.h> 
 #include <libconfig.h>
 #include <stdbool.h>
 #include <time.h> 
@@ -24,7 +23,7 @@
 HeaterInfo heaters[NUM_HEATERS];
 FILE* heaters_log_file;
 pthread_t heaters_server_thread;
-pthread_t main_heaters_thread;  // Main heater control thread
+pthread_t main_heaters_thread;  // Definition of the main heaters thread
 extern struct conf_params config;
 struct sockaddr_in cliaddr_heaters;
 static int heaters_sockfd = -1;
@@ -39,12 +38,10 @@ int stop_heaters_server = 0;
  */
 
 void initialize_heaters(HeaterInfo heaters[]) {
-    // All fields are explicitly set below, so zeroing is not necessary
-
     // Relay 0 ← AIN2
     heaters[0].eio_dir      = EIO0_DIR;
     heaters[0].eio_state    = EIO0_STATE;
-    heaters[0].ain_channel  = "AIN2";
+    heaters[0].ain_channel  = "AIN0";
     heaters[0].state        = false;
     heaters[0].current_temp = 0.0;
     heaters[0].temp_valid   = false;
@@ -53,70 +50,80 @@ void initialize_heaters(HeaterInfo heaters[]) {
     heaters[0].id = 5;
     heaters[0].current_offset = 0.0;
     heaters[0].toggle = false;
-    heaters[0].manual_override_time = 0;
+    heaters[0].temp_low = config.heaters.temp_low_starcam;
+    heaters[0].temp_high = config.heaters.temp_high_starcam;
+    heaters[0].temp_diff = 0.0;
 
     // Relay 1 ← AIN1
     heaters[1].eio_dir      = EIO1_DIR;
     heaters[1].eio_state    = EIO1_STATE;
-    heaters[1].ain_channel  = "AIN1";
+    heaters[1].ain_channel  = "AIN2";
     heaters[1].state        = false;
     heaters[1].current_temp = 0.0;
     heaters[1].temp_valid   = false;
     heaters[1].enabled = true;
     heaters[1].current = 0.0;
-    heaters[1].id = 8;
+    heaters[1].id = 7;
     heaters[1].current_offset = 0.0;
     heaters[1].toggle = false;
-    heaters[1].manual_override_time = 0;
+    heaters[1].temp_low = config.heaters.temp_low_motor;
+    heaters[1].temp_high = config.heaters.temp_high_motor;
+    heaters[1].temp_diff = 0.0;
 
     // Relay 2 ← AIN4
     heaters[2].eio_dir      = EIO2_DIR;
     heaters[2].eio_state    = EIO2_STATE;
-    heaters[2].ain_channel  = "AIN4";
+    heaters[2].ain_channel  = "AIN11";
     heaters[2].state        = false;
     heaters[2].current_temp = 0.0;
     heaters[2].temp_valid   = false;
     heaters[2].enabled = true;
     heaters[2].current = 0.0;
-    heaters[2].id = 7;
+    heaters[2].id = 9;
     heaters[2].current_offset = 0.0;
     heaters[2].toggle = false;
-    heaters[2].manual_override_time = 0;
+    heaters[2].temp_low = config.heaters.temp_low_ethernet;
+    heaters[2].temp_high = config.heaters.temp_high_ethernet;
+    heaters[2].temp_diff = 0.0;
 
     // Relay 3 ← AIN3
     heaters[3].eio_dir      = EIO3_DIR;
     heaters[3].eio_state    = EIO3_STATE;
-    heaters[3].ain_channel  = "AIN3";
+    heaters[3].ain_channel  = "AIN1";
     heaters[3].state        = false;
     heaters[3].current_temp = 0.0;
     heaters[3].temp_valid   = false;
     heaters[3].enabled = true;
     heaters[3].current = 0.0;
-    heaters[3].id = 6;
+    heaters[3].id = 10;
     heaters[3].current_offset = 0.0;
     heaters[3].toggle = false;
-    heaters[3].manual_override_time = 0;
+    heaters[3].temp_low = config.heaters.temp_low_lockpin;
+    heaters[3].temp_high = config.heaters.temp_high_lockpin;
+    heaters[3].temp_diff = 0.0;
 
-    // Relay 4 ← AIN0
+    // Relay 4 ← AIN0 (Manual-only heater - no automatic temperature control)
     heaters[4].eio_dir      = EIO4_DIR;
     heaters[4].eio_state    = EIO4_STATE;
     heaters[4].ain_channel  = "AIN0";
     heaters[4].state        = false;
     heaters[4].current_temp = 0.0;
     heaters[4].temp_valid   = false;
-    heaters[4].enabled = true;
+    heaters[4].enabled = false;  // Start disabled for manual-only heater
     heaters[4].current = 0.0;
-    heaters[4].id = 9;
+    heaters[4].id = 12;
     heaters[4].current_offset = 0.0;
     heaters[4].toggle = false;
-    heaters[4].manual_override_time = 0;
+    heaters[4].temp_low = 0.0;    // No temperature thresholds for manual heater
+    heaters[4].temp_high = 0.0;
+    heaters[4].temp_diff = 0.0;
 }
 
 /**
  * @brief Open connection to LabJack T7 by IP address
  * @param ip IP address of the LabJack
- * @return LabJack handle on success, -1 on failure
- * @note This function no longer exits the program on failure
+ * @return LabJack handle on success
+ * @note This function will exit the program if the connection fails.
  */
 int open_labjack(const char* ip) {
     int handle = 0;
@@ -137,7 +144,7 @@ int open_labjack(const char* ip) {
         snprintf(log_msg, sizeof(log_msg), "Error opening LabJack: %s", err_string);
         write_to_log(heaters_log_file, "heaters.c", "open_labjack", log_msg);
         fflush(heaters_log_file);
-        return -1; // Return error instead of exiting
+        exit(1); // Exit as in Python
     }
 
     // Get and print handle info
@@ -152,18 +159,15 @@ int open_labjack(const char* ip) {
 
     if (err == LJME_NOERROR) {
         printf("Connected to LabJack T7 (IP: %s, Serial: %d)\n", ip, serial_number);
-        return handle;
     } else {
         LJM_ErrorToString(err, err_string);
         char log_msg[512];
         snprintf(log_msg, sizeof(log_msg), "Could not get LabJack handle info: %s", err_string);
         write_to_log(heaters_log_file, "heaters.c", "open_labjack", log_msg);
         fflush(heaters_log_file);
-        
-        // Close the handle since we can't get proper info
-        LJM_Close(handle);
-        return -1;
     }
+
+    return handle;
 }
 
 /**
@@ -454,8 +458,7 @@ static void sock_listen_heaters(int sockfd, char* buffer) {
 		buffer[n] = '\0';
 	}else{
 		buffer[0] = '\0';
-		// Don't log timeout errors - they're normal when no data is received
-		if(n < 0 && errno != EAGAIN && errno != EWOULDBLOCK){
+		if(n < 0){
 			write_to_log(heaters_log_file,"heaters.c","sock_listen_heater","Error receiving data");
 		}
 	}
@@ -491,11 +494,6 @@ static void *do_server_heaters() {
         while(!stop_heaters_server){
             sock_listen_heaters(heaters_sockfd, buffer);
             
-            // Skip processing if no data received (timeout or empty)
-            if (strlen(buffer) == 0) {
-                continue;
-            }
-            
             int relay_id = -1;
 
             if (strcmp(buffer, "toggle_lockpin") == 0) {
@@ -509,25 +507,29 @@ static void *do_server_heaters() {
             } else if(strcmp(buffer, "toggle_ethernet") == 0) {
                 relay_id = 4;
             } else{
-                char log_msg[256];
-                snprintf(log_msg, sizeof(log_msg), "Unknown command received: '%s'", buffer);
-                write_to_log(heaters_log_file, "heaters.c", "do_server_heaters", log_msg);
-                sendInt_heaters(heaters_sockfd, 0); // send failure response
-                continue;
+                write_to_log(heaters_log_file, "heaters.c", "do_server_heaters", "Malformed input: missing relay id");
             }
             
             if (relay_id < 0 || relay_id >= NUM_HEATERS) {
                 write_to_log(heaters_log_file, "heaters.c", "do_server_heaters", "Invalid relay id received");
                 sendInt_heaters(heaters_sockfd, 0); // send failure response
             } else {
-                // Set toggle flag for the specified heater
-                if (set_toggle(relay_id)) {
-                    char log_msg[256];
-                    snprintf(log_msg, sizeof(log_msg), "Toggle command received for heater %d (%s)", relay_id, buffer);
-                    write_to_log(heaters_log_file, "heaters.c", "do_server_heaters", log_msg);
-                    sendInt_heaters(heaters_sockfd, 1); // Send success response
+                // For heaters 0-3: toggle enabled/disabled for auto control
+                // For heater 4: directly toggle the heater state (manual-only)
+                if (relay_id < 4) {
+                    // Automatic heaters: toggle enabled state for auto control
+                    if (heaters[relay_id].state == true) {
+                        heaters[relay_id].enabled = 0;
+                    } else if (heaters[relay_id].state == false) {
+                        heaters[relay_id].enabled = 1;
+                    }
                 } else {
-                    sendInt_heaters(heaters_sockfd, 0); // Send failure response
+                    // Manual-only heater 4: toggle state directly
+                    heaters[relay_id].enabled = !heaters[relay_id].enabled;
+                }
+                
+                if (set_toggle(relay_id)) {
+                    sendInt_heaters(heaters_sockfd, 1); // Send success response
                 }
             }
         }
@@ -544,6 +546,22 @@ static void *do_server_heaters() {
     return NULL;
 }
 
+void bubbleSort(int* position_difference) {
+  // Loop to access each array element
+  for (int step = 0; step < NUM_HEATERS - 1; ++step) {
+    // Loop to compare array elements
+    for (int i = 0; i < NUM_HEATERS - step - 1; ++i) {
+      // Compare based on indices in position_difference
+      if (heaters[position_difference[i]].temp_diff < heaters[position_difference[i + 1]].temp_diff) {
+        // Swap to get descending order (largest difference first)
+        int temp = position_difference[i];
+        position_difference[i] = position_difference[i + 1];
+        position_difference[i + 1] = temp;
+      }
+    }
+  }
+}
+
 /**
  * @brief Thread function to run the heaters control logic.
  * It initializes the LabJack, sets up the heaters, and enters the main control loop.
@@ -555,24 +573,14 @@ void* run_heaters_thread(void* arg) {
     struct timeval tv_now;
     char path[256];
 
-    // Create directory if it doesn't exist
-    char mkdir_cmd[512];
-    snprintf(mkdir_cmd, sizeof(mkdir_cmd), "mkdir -p %s", config.heaters.workdir);
-    int mkdir_result = system(mkdir_cmd);
-    if (mkdir_result != 0) {
-        fprintf(stderr, "Warning: Failed to create heaters directory: %s\n", config.heaters.workdir);
-    }
-
     // Initialize log file
     snprintf(path, sizeof(path), "%s/heaters_log_%ld.txt", config.heaters.workdir, time(NULL));
     heaters_log_file = fopen(path, "w");
     if (!heaters_log_file) {
-        fprintf(stderr, "Failed to open heaters log file: %s\n", path);
+        fprintf(stderr, "Failed to open heaters log file\n");
         heaters_running = 0;
         return NULL;
     }
-
-    printf("Heaters log file opened: %s\n", path);
 
     gettimeofday(&tv_now, NULL);
     t_prev = tv_now.tv_sec;
@@ -586,61 +594,49 @@ void* run_heaters_thread(void* arg) {
     }
 
     const char* labjack_ip = config.heaters.heater_ip;
-    snprintf(message, sizeof(message), "Attempting to connect to LabJack T7 at %s", labjack_ip);
-    write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-    
     int handle = open_labjack(labjack_ip);
-    bool labjack_connected = (handle > 0);
-    
-    if (!labjack_connected) {
-        snprintf(message, sizeof(message), "WARNING: Failed to connect to LabJack T7 at %s. Running UDP server only (no heater control).", labjack_ip);
-        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-        printf("WARNING: Cannot connect to LabJack T7 at %s - UDP server will run but heater control disabled!\n", labjack_ip);
-        handle = -1; // Ensure it's clearly invalid
+    if (handle <= 0) {
+        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", "Failed to open LabJack connection");
+        goto cleanup;
     }
 
     // Initialize heaters
     initialize_heaters(heaters);
 
-    if (labjack_connected) {
-        // Configure EIO pins
-        char err_string[LJM_MAX_NAME_SIZE];
-        int err;
-        for (int i = 0; i < NUM_HEATERS; i++) {
-            err = LJM_eWriteAddress(handle, heaters[i].eio_dir, DIR_TYPE, 1.0);
-            if (err != LJME_NOERROR) {
-                LJM_ErrorToString(err, err_string);
-                snprintf(message, sizeof(message), "Error setting EIO%d direction: %s", i, err_string);
-                write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-                goto cleanup;
-            }
+    // Configure EIO pins
+    char err_string[LJM_MAX_NAME_SIZE];
+    int err;
+    for (int i = 0; i < NUM_HEATERS; i++) {
+        err = LJM_eWriteAddress(handle, heaters[i].eio_dir, DIR_TYPE, 1.0);
+        if (err != LJME_NOERROR) {
+            LJM_ErrorToString(err, err_string);
+            snprintf(message, sizeof(message), "Error setting EIO%d direction: %s", i, err_string);
+            write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+            goto cleanup;
         }
-
-        usleep(50000);
-
-        // Ensure all relays start OFF
-        for (int i = 0; i < NUM_HEATERS; i++) {
-            err = LJM_eWriteAddress(handle, heaters[i].eio_state, STATE_TYPE, 1.0);
-            if (err != LJME_NOERROR) {
-                LJM_ErrorToString(err, err_string);
-                snprintf(message, sizeof(message), "Error setting initial EIO%d state: %s", i, err_string);
-                write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-                goto cleanup;
-            }
-        }
-
-        calibrate_current(handle, heaters);
-        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", "LabJack initialization complete - heater control active");
-    } else {
-        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", "LabJack not connected - heater control disabled, UDP server only");
     }
-    
+
+    usleep(50000);
+
+    // Ensure all relays start OFF
+    for (int i = 0; i < NUM_HEATERS; i++) {
+        err = LJM_eWriteAddress(handle, heaters[i].eio_state, STATE_TYPE, 1.0);
+        if (err != LJME_NOERROR) {
+            LJM_ErrorToString(err, err_string);
+            snprintf(message, sizeof(message), "Error setting initial EIO%d state: %s", i, err_string);
+            write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+            goto cleanup;
+        }
+    }
+
+    calibrate_current(handle, heaters);
     heaters_running = 1;
 
     // Main control loop - now with integrated UDP server functionality
     while (!shutdown_heaters) {
         gettimeofday(&tv_now, NULL);
         float time = tv_now.tv_sec + tv_now.tv_usec / 1e6;
+        int* position_difference = (int*) malloc(sizeof(int) * NUM_HEATERS);
         
         // Log file rotation
         if (tv_now.tv_sec - t_prev > 600) {
@@ -648,241 +644,104 @@ void* run_heaters_thread(void* arg) {
             start_new_files();
         }
 
-        float total_current = 0.0;
+        float sum = 0.0;
 
-        // Read all temperatures and current for each heater (only if LabJack connected)
-        if (labjack_connected) {
-            for (int i = 0; i < NUM_HEATERS; i++) {
-                double temp;
-                int temp_read_error = read_temperature(handle, heaters[i].ain_channel, &temp);
-                read_relay_current(handle, &heaters[i]);
+        // Read all temperatures and current for each heater
+        for (int i = 0; i < NUM_HEATERS; i++) {
+            double temp;
+            int temp_read_error = read_temperature(handle, heaters[i].ain_channel, &temp);
+            read_relay_current(handle, &heaters[i]);
+            
+            if (temp_read_error == LJME_NOERROR) {
+                heaters[i].current_temp = temp;
+                heaters[i].temp_valid = true;
                 
-                if (temp_read_error == LJME_NOERROR) {
-                    heaters[i].current_temp = temp;
-                    heaters[i].temp_valid = true;
+                // Calculate temperature difference for priority sorting
+                // Only for heaters 0-3 (automatic control), exclude heater 4 (manual-only)
+                if (i < 4 && heaters[i].current_temp < heaters[i].temp_low) {
+                    heaters[i].temp_diff = heaters[i].temp_low - heaters[i].current_temp;
                 } else {
-                    heaters[i].temp_valid = false;
+                    heaters[i].temp_diff = 0.0;  // No heating needed or manual-only heater
                 }
-                
-                // Sum up actual current from all heaters
-                if (heaters[i].state && heaters[i].current > 0) {
-                    total_current += heaters[i].current;
-                }
-            }
-        } else {
-            // No LabJack - set dummy values and process UDP commands only
-            for (int i = 0; i < NUM_HEATERS; i++) {
-                heaters[i].current_temp = 20.0; // Dummy temperature
+            } else {
                 heaters[i].temp_valid = false;
-                heaters[i].current = 0.0;
+                heaters[i].temp_diff = 0.0;  // Can't determine priority without valid temperature
+            }
+            
+            sum += heaters[i].current;
+            position_difference[i] = i;
+        }
+
+        bubbleSort(position_difference);
+
+        // Process manual toggles for all heaters first
+        for (int i = 0; i < NUM_HEATERS; i++) {
+            if (heaters[i].toggle) {
+                heaters[i].toggle = false; // Reset toggle flag
+                
+                if (i == 4) {
+                    // Heater 4 is manual-only: toggle state directly
+                    heaters[i].state = !heaters[i].state;
+                    set_relay_state(handle, i, heaters[i].state);
+                    snprintf(message, sizeof(message), "Manual heater %d (EIO%d) turned %s", 
+                            i, i, heaters[i].state ? "ON" : "OFF");
+                    write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+                    fflush(heaters_log_file);
+                } else {
+                    // Heaters 0-3: toggle enabled state for auto control override
+                    heaters[i].enabled = !heaters[i].enabled;
+                    snprintf(message, sizeof(message), "Heater %d auto control %s", 
+                            i, heaters[i].enabled ? "ENABLED" : "DISABLED");
+                    write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+                    fflush(heaters_log_file);
+                }
             }
         }
 
-        // ======== IMPROVED TEMPERATURE-BASED PRIORITY CONTROL LOGIC ========
-        
-        // Step 1: Handle manual toggle commands and emergency shutoffs for heaters 0-3
-        for (int i = 0; i < 4; i++) {  // Only heaters 0-3 for temperature control
-            if (heaters[i].toggle) {
-                // Manual toggle overrides temperature control
-                bool new_state = !heaters[i].state;
-                heaters[i].state = new_state;
-                heaters[i].toggle = false;
-                heaters[i].manual_override_time = tv_now.tv_sec; // Set override timestamp
-                
-                if (labjack_connected) {
-                    set_relay_state(handle, i, new_state);
-                    snprintf(message, sizeof(message), "Heater %d MANUALLY toggled %s at %.1f°C (auto-control disabled for 30s)", 
-                            i, new_state ? "ON" : "OFF", heaters[i].current_temp);
-                } else {
-                    snprintf(message, sizeof(message), "Heater %d MANUALLY toggled %s (SIMULATED) at %.1f°C (auto-control disabled for 30s)", 
-                            i, new_state ? "ON" : "OFF", heaters[i].current_temp);
+        // Control logic for automatic heaters only (0-3), heater 4 is manual-only
+        for (int i = 0; i < NUM_HEATERS - 1; i++) {  // Only process heaters 0-3
+            if (heaters[position_difference[i]].temp_valid && heaters[position_difference[i]].enabled) {
+                if (heaters[position_difference[i]].temp_diff > 0) {
+                    // Turn ON heater if temperature is below threshold
+                    // Estimate new total current if we turn on this heater (adding approx 0.8A)
+                    if (!heaters[position_difference[i]].state && (sum + 0.8) <= CURRENT_CAP) {
+                        heaters[position_difference[i]].state = true;
+                        set_relay_state(handle, position_difference[i], true);
+                        snprintf(message, sizeof(message), "Heater %d (EIO%d) turned ON at %.1f°C", position_difference[i], position_difference[i], heaters[position_difference[i]].current_temp);
+                        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+                        fflush(heaters_log_file);
+                        sum += 0.8; // Update sum with estimated new current
+                    }
+                } else if (heaters[position_difference[i]].current_temp > heaters[position_difference[i]].temp_high) {
+                    // Turn OFF heater if temperature is above threshold
+                    if (heaters[position_difference[i]].state) {
+                        heaters[position_difference[i]].state = false;
+                        set_relay_state(handle, position_difference[i], false);
+                        snprintf(message, sizeof(message), "Heater %d (EIO%d) turned OFF at %.1f°C", position_difference[i], position_difference[i], heaters[position_difference[i]].current_temp);
+                        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+                        fflush(heaters_log_file);
+                        sum -= heaters[position_difference[i]].current; // Reduce sum by the current that was being drawn
+                    }
                 }
-                write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-                
-            } else if (heaters[i].temp_valid && heaters[i].current_temp > TEMP_HIGH && heaters[i].state) {
-                // Emergency shutdown: turn off immediately if too hot
-                heaters[i].state = false;
-                if (labjack_connected) {
-                    set_relay_state(handle, i, false);
-                    snprintf(message, sizeof(message), "Heater %d turned OFF (too hot) at %.1f°C", 
-                            i, heaters[i].current_temp);
-                } else {
-                    snprintf(message, sizeof(message), "Heater %d turned OFF (too hot, SIMULATED) at %.1f°C", 
-                            i, heaters[i].current_temp);
-                }
-                write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+                // No action in the deadband zone (between TEMP_LOW and TEMP_HIGH)
             }
+            // If read failed, maintain current state
         }
-        
-        // Step 2: Handle heater 4 (manual control only)
-        if (heaters[4].toggle) {
-            bool new_state = !heaters[4].state;
-            heaters[4].state = new_state;
-            heaters[4].toggle = false;
-            
-            if (labjack_connected) {
-                set_relay_state(handle, 4, new_state);
-                snprintf(message, sizeof(message), "Heater 4 (manual) toggled %s", new_state ? "ON" : "OFF");
-            } else {
-                snprintf(message, sizeof(message), "Heater 4 (manual) toggled %s (SIMULATED)", new_state ? "ON" : "OFF");
-            }
-            write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-        }
-        
-        // Step 3: Create priority list for heaters 0-3 that need heating
-        typedef struct {
-            int heater_id;
-            double temp_deficit;  // How far below TEMP_LOW (higher = more urgent)
-            double current_temp;
-            bool currently_on;
-        } HeaterPriority;
-        
-        HeaterPriority priority_list[4];
-        int need_heating_count = 0;
-        
-        for (int i = 0; i < 4; i++) {
-            // Skip heaters under manual override (30 second protection)
-            bool under_manual_override = (heaters[i].manual_override_time > 0) && 
-                                        (tv_now.tv_sec - heaters[i].manual_override_time < 30);
-            
-            if (heaters[i].enabled && heaters[i].temp_valid && heaters[i].current_temp < TEMP_LOW && !under_manual_override) {
-                priority_list[need_heating_count].heater_id = i;
-                priority_list[need_heating_count].temp_deficit = TEMP_LOW - heaters[i].current_temp;
-                priority_list[need_heating_count].current_temp = heaters[i].current_temp;
-                priority_list[need_heating_count].currently_on = heaters[i].state;
-                need_heating_count++;
-            }
-        }
-        
-        // Step 4: Sort by temperature deficit (most urgent first)
-        for (int i = 0; i < need_heating_count - 1; i++) {
-            for (int j = i + 1; j < need_heating_count; j++) {
-                if (priority_list[j].temp_deficit > priority_list[i].temp_deficit) {
-                    HeaterPriority temp = priority_list[i];
-                    priority_list[i] = priority_list[j];
-                    priority_list[j] = temp;
-                }
-            }
-        }
-        
-        // Step 5: Calculate available current budget
-        float current_budget = (float)config.heaters.current_cap;
-        float estimated_heater_current = 0.6; // Estimated current per heater
-        
-        // Account for heater 4 if it's on (manual heater)
-        if (heaters[4].state) {
-            current_budget -= estimated_heater_current;
-        }
-        
-        // Step 6: Smart heater allocation based on priority and current budget
-        bool heater_should_be_on[4] = {false, false, false, false};
-        float budget_used = 0.0;
-        int heaters_allocated = 0;
-        
-        // First pass: allocate to highest priority heaters within budget
-        for (int p = 0; p < need_heating_count; p++) {
-            int heater_id = priority_list[p].heater_id;
-            
-            if (budget_used + estimated_heater_current <= current_budget) {
-                heater_should_be_on[heater_id] = true;
-                budget_used += estimated_heater_current;
-                heaters_allocated++;
-                
-                static time_t last_priority_log = 0;
-                if (tv_now.tv_sec - last_priority_log >= 30) {  // Log every 30 seconds
-                    snprintf(message, sizeof(message), "Priority %d: Heater %d at %.1f°C (deficit: %.1f°C) - ALLOCATED", 
-                            p+1, heater_id, priority_list[p].current_temp, priority_list[p].temp_deficit);
-                    write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-                    if (p == need_heating_count - 1) last_priority_log = tv_now.tv_sec;
-                }
-            } else {
-                static time_t last_denied_log = 0;
-                if (tv_now.tv_sec - last_denied_log >= 60) {  // Log every 60 seconds
-                    snprintf(message, sizeof(message), "Priority %d: Heater %d at %.1f°C (deficit: %.1f°C) - DENIED (budget exceeded)", 
-                            p+1, heater_id, priority_list[p].current_temp, priority_list[p].temp_deficit);
-                    write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-                    last_denied_log = tv_now.tv_sec;
-                }
-            }
-        }
-        
-        // Step 7: Apply the calculated heater states
-        for (int i = 0; i < 4; i++) {
-            bool should_be_on = heater_should_be_on[i];
-            bool currently_on = heaters[i].state;
-            
-            if (should_be_on && !currently_on) {
-                // Turn ON heater
-                heaters[i].state = true;
-                if (labjack_connected) {
-                    set_relay_state(handle, i, true);
-                    snprintf(message, sizeof(message), "Heater %d turned ON (priority) at %.1f°C (deficit: %.1f°C)", 
-                            i, heaters[i].current_temp, TEMP_LOW - heaters[i].current_temp);
-                } else {
-                    snprintf(message, sizeof(message), "Heater %d turned ON (priority, SIMULATED) at %.1f°C", 
-                            i, heaters[i].current_temp);
-                }
-                write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-                
-            } else if (!should_be_on && currently_on && heaters[i].temp_valid && heaters[i].current_temp < TEMP_LOW) {
-                // Turn OFF heater (due to current budget, not temperature)
-                heaters[i].state = false;
-                if (labjack_connected) {
-                    set_relay_state(handle, i, false);
-                    snprintf(message, sizeof(message), "Heater %d turned OFF (budget reallocation) at %.1f°C", 
-                            i, heaters[i].current_temp);
-                } else {
-                    snprintf(message, sizeof(message), "Heater %d turned OFF (budget reallocation, SIMULATED) at %.1f°C", 
-                            i, heaters[i].current_temp);
-                }
-                write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-            }
-        }
-        
-        // Log periodic status (every 10 seconds)
-        static time_t last_status_log = 0;
-        if (tv_now.tv_sec - last_status_log >= 10) {
-            last_status_log = tv_now.tv_sec;
-            
-            // Check for manual overrides
-            char override_info[256] = "";
-            for (int i = 0; i < 4; i++) {
-                bool under_manual_override = (heaters[i].manual_override_time > 0) && 
-                                            (tv_now.tv_sec - heaters[i].manual_override_time < 30);
-                if (under_manual_override) {
-                    char temp_str[64];
-                    int remaining = 30 - (tv_now.tv_sec - heaters[i].manual_override_time);
-                    snprintf(temp_str, sizeof(temp_str), " H%d:MANUAL(%ds)", i, remaining);
-                    strncat(override_info, temp_str, sizeof(override_info) - strlen(override_info) - 1);
-                }
-            }
-            
-            snprintf(message, sizeof(message), "Status: %s | Total current %.2fA/%.1fA | Active heaters: %s %s %s %s %s%s", 
-                    labjack_connected ? "LabJack OK" : "LabJack OFFLINE",
-                    total_current, (float)config.heaters.current_cap,
-                    heaters[0].state ? "H0" : "--",
-                    heaters[1].state ? "H1" : "--", 
-                    heaters[2].state ? "H2" : "--",
-                    heaters[3].state ? "H3" : "--",
-                    heaters[4].state ? "H4" : "--",
-                    strlen(override_info) > 0 ? override_info : "");
-            write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-        }
-        
-        usleep(500000); // 0.5 seconds
+
+        free(position_difference);
+
+        // Small delay to prevent excessive CPU usage
+        usleep(1000000); // 1 second
     }
 
 cleanup:
     // Turn off all heaters
-    if (labjack_connected && handle > 0) {
+    if (handle > 0) {
         for (int i = 0; i < NUM_HEATERS; i++) {
             LJM_eWriteAddress(handle, heaters[i].eio_state, STATE_TYPE, 1.0);
         }
         close_labjack(handle);
-        snprintf(message, sizeof(message), "LabJack connection closed and all heaters turned off");
-        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-    } else {
-        snprintf(message, sizeof(message), "No LabJack connection to close");
+        snprintf(message, sizeof(message), "LabJack connection closed");
         write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
     }
 

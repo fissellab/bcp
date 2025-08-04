@@ -29,6 +29,7 @@ add_executable(
         src/pr59_interface.c
         src/heaters.c
         src/position_sensors.c
+        src/system_monitor.c
 )
 
 target_include_directories(main PRIVATE 

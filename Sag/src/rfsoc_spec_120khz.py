@@ -564,7 +564,7 @@ if __name__ == "__main__":
         bitstream = opts.fpgfile
     else:
         if mode == 'cx':
-            fpg_prebuilt = 'rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg'
+            fpg_prebuilt = './rfsoc4x2_tut_spec_cx/outputs/rfsoc4x2_tut_spec_cx_14pt_fft_2025-05-19_1245.fpg'
         else:
             logging.error('Real mode is not supported for 120kHz resolution')
             exit()

@@ -239,6 +239,16 @@ static void parse_gprmc_sentence(const char *sentence) {
                 }
             }
             
+            // Parse speed (field 7, in knots) and convert to m/s
+            if (token_count >= 8 && strlen(tokens[7]) > 0) {
+                double speed_knots = atof(tokens[7]);
+                // Convert knots to m/s: 1 knot = 0.514444 m/s
+                current_gps_data.speed_ms = speed_knots * 0.514444;
+                current_gps_data.valid_speed = true;
+            } else {
+                current_gps_data.valid_speed = false;
+            }
+            
             // Parse date (DDMMYY)
             if (strlen(tokens[9]) == 6) {
                 char date_str[3];
@@ -258,6 +268,7 @@ static void parse_gprmc_sentence(const char *sentence) {
             // Invalid fix
             pthread_mutex_lock(&current_gps_data.mutex);
             current_gps_data.valid_position = false;
+            current_gps_data.valid_speed = false;
             pthread_mutex_unlock(&current_gps_data.mutex);
         }
     }
@@ -284,13 +295,28 @@ static void parse_gpgga_sentence(const char *sentence) {
     if (token_count >= 10 && strcmp(tokens[0], "$GPGGA") == 0) {
         // Check if we have a fix (quality > 0)
         if (token_count >= 6 && tokens[6][0] != '0' && strlen(tokens[6]) > 0) {
+            pthread_mutex_lock(&current_gps_data.mutex);
+            
+            // Parse number of satellites (field 7, index 7)
+            if (token_count >= 8 && strlen(tokens[7]) > 0) {
+                current_gps_data.num_satellites = atoi(tokens[7]);
+                current_gps_data.valid_satellites = true;
+            } else {
+                current_gps_data.valid_satellites = false;
+            }
+            
             // Parse altitude (field 9, index 9)
             if (strlen(tokens[9]) > 0) {
-                pthread_mutex_lock(&current_gps_data.mutex);
                 current_gps_data.altitude = atof(tokens[9]);
-                current_gps_data.last_update = time(NULL);
-                pthread_mutex_unlock(&current_gps_data.mutex);
             }
+            
+            current_gps_data.last_update = time(NULL);
+            pthread_mutex_unlock(&current_gps_data.mutex);
+        } else {
+            // No fix - invalidate satellite data
+            pthread_mutex_lock(&current_gps_data.mutex);
+            current_gps_data.valid_satellites = false;
+            pthread_mutex_unlock(&current_gps_data.mutex);
         }
     }
     
@@ -449,6 +475,8 @@ int gps_init(const gps_config_t *config) {
     pthread_mutex_init(&current_gps_data.mutex, NULL);
     current_gps_data.valid_position = false;
     current_gps_data.valid_heading = false;
+    current_gps_data.valid_speed = false;
+    current_gps_data.valid_satellites = false;
 
     create_session_folder();
     printf("GPS initialized via gpsd connection\n");
@@ -865,26 +893,47 @@ static void format_gps_response(char *buffer, size_t buffer_size) {
     gps_data_t gps_data;
     
     if (gps_get_data(&gps_data)) {
-        // Format response with current GPS data
+        // Build response with all GPS parameters
+        char lat_str[32], lon_str[32], alt_str[32], head_str[32], speed_str[32], sats_str[16];
+        
+        // Format position data
         if (gps_data.valid_position) {
-            if (gps_data.valid_heading) {
-                snprintf(buffer, buffer_size, "gps_lat:%.6f,gps_lon:%.6f,gps_alt:%.1f,gps_head:%.2f",
-                        gps_data.latitude, gps_data.longitude, gps_data.altitude, gps_data.heading);
-            } else {
-                snprintf(buffer, buffer_size, "gps_lat:%.6f,gps_lon:%.6f,gps_alt:%.1f,gps_head:N/A",
-                        gps_data.latitude, gps_data.longitude, gps_data.altitude);
-            }
+            snprintf(lat_str, sizeof(lat_str), "%.6f", gps_data.latitude);
+            snprintf(lon_str, sizeof(lon_str), "%.6f", gps_data.longitude);
+            snprintf(alt_str, sizeof(alt_str), "%.1f", gps_data.altitude);
         } else {
-            if (gps_data.valid_heading) {
-                snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:%.2f",
-                        gps_data.heading);
-            } else {
-                snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:N/A");
-            }
+            strcpy(lat_str, "N/A");
+            strcpy(lon_str, "N/A");
+            strcpy(alt_str, "N/A");
         }
+        
+        // Format heading data
+        if (gps_data.valid_heading) {
+            snprintf(head_str, sizeof(head_str), "%.2f", gps_data.heading);
+        } else {
+            strcpy(head_str, "N/A");
+        }
+        
+        // Format speed data
+        if (gps_data.valid_speed) {
+            snprintf(speed_str, sizeof(speed_str), "%.3f", gps_data.speed_ms);
+        } else {
+            strcpy(speed_str, "N/A");
+        }
+        
+        // Format satellite data
+        if (gps_data.valid_satellites) {
+            snprintf(sats_str, sizeof(sats_str), "%d", gps_data.num_satellites);
+        } else {
+            strcpy(sats_str, "N/A");
+        }
+        
+        snprintf(buffer, buffer_size, 
+                "gps_lat:%s,gps_lon:%s,gps_alt:%s,gps_head:%s,gps_speed:%s,gps_sats:%s",
+                lat_str, lon_str, alt_str, head_str, speed_str, sats_str);
     } else {
         // No GPS data available
-        snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:N/A");
+        snprintf(buffer, buffer_size, "gps_lat:N/A,gps_lon:N/A,gps_alt:N/A,gps_head:N/A,gps_speed:N/A,gps_sats:N/A");
     }
 }
 

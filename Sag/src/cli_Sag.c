@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <math.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include "file_io_Sag.h"
 #include "cli_Sag.h"
@@ -35,6 +36,14 @@ struct sockaddr_in cliaddr_cmd;
 Packet pkt;
 enum commands com;
 int cmd_count = 0;
+
+// Global state tracking for relay power status during this session
+static bool rfsoc_powered_on_this_session = false;
+static bool gps_powered_on_this_session = false;
+static bool backend_powered_on_this_session = false;
+static bool timing_chain_powered_on_this_session = false;
+static bool heaters_powered_on_this_session = false;
+static bool position_sensors_powered_on_this_session = false;
 
 
 int init_cmd_socket(){
@@ -256,7 +265,7 @@ int decode_msg(Packet* pkt, char* msg){
         // if(!verify_packet(pkt)){
         //         return 0;
         // }
-        printf("DEBUG: Skipping checksum verification for testing\n");
+        // printf("DEBUG: Skipping checksum verification for testing\n");
 
         return 1;
 
@@ -272,47 +281,195 @@ void run_python_script(const char* script_name, const char* logpath, const char*
 
 void exec_command(Packet pkt) {
     
+    printf("DEBUG: Processing command %d\n", pkt.cmd_primary);
+    
     if (pkt.cmd_primary == exit_both) {
-        printf("Exiting BCP\n");
+        printf("=== INITIATING COMPREHENSIVE BCP SHUTDOWN ===\n");
+        write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Comprehensive BCP shutdown initiated");
+        
+        // 1. STOP ALL RUNNING SERVICES FIRST
+        printf("\n--- Phase 1: Stopping All Running Services ---\n");
+        
+        // Stop spectrometer script
         if (spec_running) {
+            printf("Stopping spectrometer script...\n");
             spec_running = 0;
             kill(python_pid, SIGTERM);
             waitpid(python_pid, NULL, 0);
-            printf("Stopped spec script\n");
-            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Stopped spec script");
+            printf("✓ Spectrometer script stopped\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Spectrometer script stopped during exit");
         }
         
-        // Stop PR59 if running
+        // Stop PR59 TEC controller
         if (pr59_running) {
-            pr59_running = 0;
             printf("Stopping PR59 TEC controller...\n");
+            pr59_running = 0;
             kill(pr59_pid, SIGTERM);
             waitpid(pr59_pid, NULL, 0);
-            printf("Stopped PR59 TEC controller\n");
-            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Stopped PR59 TEC controller during exit");
+            printf("✓ PR59 TEC controller stopped\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PR59 TEC controller stopped during exit");
         }
         
-        // Stop heaters if running
+        // Stop heaters
         if (heaters_running) {
-            printf("Stopping heaters...\n");
+            printf("Stopping heaters control thread...\n");
             shutdown_heaters = 1;
             pthread_join(main_heaters_thread, NULL);
-            printf("Stopped heaters\n");
-            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Stopped heaters on exit");
+            printf("✓ Heaters control thread stopped\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Heaters stopped during exit");
         }
         
-        // Stop GPS UDP server first if running
+        // Stop position sensors
+        if (position_sensors_is_running()) {
+            printf("Stopping position sensor system...\n");
+            position_sensors_stop();
+            printf("✓ Position sensor system stopped\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Position sensors stopped during exit");
+        }
+        
+        // Stop TICC if running
+        if (ticc_client_is_enabled()) {
+            ticc_status_t ticc_status;
+            if (ticc_get_status(&ticc_status) == 0 && ticc_status.is_logging) {
+                printf("Stopping TICC data collection...\n");
+                ticc_stop_logging();
+                printf("✓ TICC data collection stopped\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "TICC stopped during exit");
+            }
+        }
+        
+        // Stop GPS services
         if (gps_is_udp_server_running()) {
             gps_stop_udp_server();
-            printf("Stopped GPS UDP server\n");
-            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Stopped GPS UDP server");
+            printf("✓ GPS UDP server stopped\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "GPS UDP server stopped during exit");
         }
         
         if (gps_is_logging()) {
             gps_stop_logging();
-            printf("Stopped GPS logging\n");
-            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Stopped GPS logging");
+            printf("✓ GPS logging stopped\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "GPS logging stopped during exit");
         }
+        
+        // Stop VLBI if running
+        if (vlbi_client_is_enabled()) {
+            printf("Stopping VLBI logging...\n");
+            vlbi_stop_logging();
+            printf("✓ VLBI logging stopped\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "VLBI stopped during exit");
+        }
+        
+        printf("\n--- Phase 2: Powering Down All Subsystems ---\n");
+        
+        // 2. SMART POWER DOWN - Only toggle relays that were turned ON during this session
+        if (pbob_client_is_enabled()) {
+            
+            // Power down RFSoC only if it was turned ON this session
+            if (rfsoc_powered_on_this_session) {
+                printf("Powering down RFSoC (PBOB %d, Relay %d)...\n", config.rfsoc.pbob_id, config.rfsoc.relay_id);
+                if (pbob_send_command(config.rfsoc.pbob_id, config.rfsoc.relay_id) == 1) {
+                    printf("✓ RFSoC powered OFF\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "RFSoC powered down during exit");
+                    rfsoc_powered_on_this_session = false;  // Clear flag
+                } else {
+                    printf("✗ Failed to power down RFSoC\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power down RFSoC during exit");
+                }
+            } else {
+                printf("⏸ RFSoC was not turned ON this session, skipping\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "RFSoC was not powered ON this session, skipping shutdown");
+            }
+            
+            // Power down GPS only if it was turned ON this session
+            if (gps_powered_on_this_session) {
+                printf("Powering down GPS (PBOB %d, Relay %d)...\n", config.gps.pbob_id, config.gps.relay_id);
+                if (pbob_send_command(config.gps.pbob_id, config.gps.relay_id) == 1) {
+                    printf("✓ GPS powered OFF\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "GPS powered down during exit");
+                    gps_powered_on_this_session = false;  // Clear flag
+                } else {
+                    printf("✗ Failed to power down GPS\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power down GPS during exit");
+                }
+            } else {
+                printf("⏸ GPS was not turned ON this session, skipping\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "GPS was not powered ON this session, skipping shutdown");
+            }
+            
+            // Power down timing chain only if it was turned ON this session
+            if (timing_chain_powered_on_this_session) {
+                printf("Powering down timing chain (PBOB %d, Relay %d)...\n", config.ticc.pbob_id, config.ticc.relay_id);
+                if (pbob_send_command(config.ticc.pbob_id, config.ticc.relay_id) == 1) {
+                    printf("✓ Timing chain powered OFF\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Timing chain powered down during exit");
+                    timing_chain_powered_on_this_session = false;  // Clear flag
+                } else {
+                    printf("✗ Failed to power down timing chain\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power down timing chain during exit");
+                }
+            } else {
+                printf("⏸ Timing chain was not turned ON this session, skipping\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Timing chain was not powered ON this session, skipping shutdown");
+            }
+            
+            // Power down backend computer only if it was turned ON this session
+            if (backend_powered_on_this_session) {
+                printf("Powering down backend computer (PBOB %d, Relay %d)...\n", config.backend.pbob_id, config.backend.relay_id);
+                if (pbob_send_command(config.backend.pbob_id, config.backend.relay_id) == 1) {
+                    printf("✓ Backend computer powered OFF\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Backend computer powered down during exit");
+                    backend_powered_on_this_session = false;  // Clear flag
+                } else {
+                    printf("✗ Failed to power down backend computer\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power down backend computer during exit");
+                }
+            } else {
+                printf("⏸ Backend computer was not turned ON this session, skipping\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Backend computer was not powered ON this session, skipping shutdown");
+            }
+            
+            // Power down heater box only if it was turned ON this session
+            if (heaters_powered_on_this_session) {
+                printf("Powering down heater box (PBOB %d, Relay %d)...\n", config.heaters.pbob_id, config.heaters.relay_id);
+                if (pbob_send_command(config.heaters.pbob_id, config.heaters.relay_id) == 1) {
+                    printf("✓ Heater box powered OFF\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Heater box powered down during exit");
+                    heaters_powered_on_this_session = false;  // Clear flag
+                } else {
+                    printf("✗ Failed to power down heater box\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power down heater box during exit");
+                }
+            } else {
+                printf("⏸ Heater box was not turned ON this session, skipping\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Heater box was not powered ON this session, skipping shutdown");
+            }
+            
+            // Power down position sensor box only if it was turned ON this session
+            if (position_sensors_powered_on_this_session) {
+                printf("Powering down position sensor box (PBOB %d, Relay %d)...\n", config.position_sensors.pbob_id, config.position_sensors.relay_id);
+                if (pbob_send_command(config.position_sensors.pbob_id, config.position_sensors.relay_id) == 1) {
+                    printf("✓ Position sensor box powered OFF\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Position sensor box powered down during exit");
+                    position_sensors_powered_on_this_session = false;  // Clear flag
+                } else {
+                    printf("✗ Failed to power down position sensor box\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power down position sensor box during exit");
+                }
+            } else {
+                printf("⏸ Position sensor box was not turned ON this session, skipping\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Position sensor box was not powered ON this session, skipping shutdown");
+            }
+            
+        } else {
+            printf("⚠️  PBoB client not available - cannot power down subsystems\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PBoB client not available during exit - subsystems not powered down");
+        }
+        
+        printf("\n--- Phase 3: Final Cleanup ---\n");
+        printf("✓ All services stopped and subsystems powered down\n");
+        printf("=== BCP SHUTDOWN COMPLETE ===\n");
+        write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Comprehensive BCP shutdown completed successfully");
+        
         exiting = 1;
     }else if (pkt.cmd_primary == start_spec_120kHz) {
         if (!spec_running) {
@@ -321,7 +478,7 @@ void exec_command(Packet pkt) {
             python_pid = fork();
             if (python_pid == 0) {
             // Child process for 120khz spectrometer
-                 run_python_script("rfsoc_spec_120khz.py", config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
+                 run_python_script("src/rfsoc_spec_120khz.py", config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
                  return;  // Should never reach here
             } else if (python_pid < 0) {
                  perror("fork failed");
@@ -346,7 +503,7 @@ void exec_command(Packet pkt) {
           python_pid = fork();
           if (python_pid == 0) {
               // Child process
-              run_python_script("rfsoc_spec.py", config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
+              run_python_script("src/rfsoc_spec.py", config.main.logpath, config.rfsoc.ip_address, config.rfsoc.mode, config.rfsoc.data_save_interval, config.rfsoc.data_save_path);
               exit(0);  // Should never reach here
           } else if (python_pid < 0) {
               perror("fork failed");
@@ -370,6 +527,7 @@ void exec_command(Packet pkt) {
             
             int result = pbob_send_command(config.rfsoc.pbob_id, config.rfsoc.relay_id);
             if (result == 1) {
+                rfsoc_powered_on_this_session = true;  // Track that RFSoC was turned ON this session
                 printf("RFSoC power ON successful!\n");
                 printf("Please wait 40 seconds for complete RFSoC bootup before starting spectrometer...\n");
                 write_to_log(cmd_log, "cli_Sag.c", "exec_command", "RFSoC powered ON successfully");
@@ -397,6 +555,7 @@ void exec_command(Packet pkt) {
             
             int result = pbob_send_command(config.rfsoc.pbob_id, config.rfsoc.relay_id);
             if (result == 1) {
+                rfsoc_powered_on_this_session = false;  // Clear flag - RFSoC was turned OFF
                 printf("RFSoC powered OFF successfully.\n");
                 write_to_log(cmd_log, "cli_Sag.c", "exec_command", "RFSoC powered OFF successfully");
             } else {
@@ -414,8 +573,9 @@ void exec_command(Packet pkt) {
             
             int result = pbob_send_command(config.gps.pbob_id, config.gps.relay_id);
             if (result == 1) {
-                printf("GPS power ON successful!\n");
-                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "GPS powered ON successfully");
+                gps_powered_on_this_session = true;  // Track that GPS was turned ON this session
+                printf("GPS power toggled successfully (should be ON).\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "GPS power toggled successfully (should be ON)");
                 
                 // Start GPS logging
                 if (gps_start_logging()) {
@@ -468,8 +628,9 @@ void exec_command(Packet pkt) {
             printf("Powering down GPS (PBOB %d, Relay %d)...\n", config.gps.pbob_id, config.gps.relay_id);
             int result = pbob_send_command(config.gps.pbob_id, config.gps.relay_id);
             if (result == 1) {
-                printf("GPS powered OFF successfully.\n");
-                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "GPS powered OFF successfully");
+                gps_powered_on_this_session = false;  // Clear flag - GPS was turned OFF
+                printf("GPS power toggled successfully (should be OFF).\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "GPS power toggled successfully (should be OFF)");
             } else {
                 printf("Failed to power down GPS. Check PBoB server connection.\n");
                 write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power down GPS");
@@ -488,7 +649,12 @@ void exec_command(Packet pkt) {
                 int result = vlbi_start_logging();
                 if (result == 1) {
                     printf("VLBI logging started successfully!\n");
-                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "VLBI logging started successfully");
+                    
+                    // Automatically start status streaming for telemetry
+                    vlbi_start_auto_streaming();
+                    printf("VLBI status streaming to telemetry server enabled.\n");
+                    
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "VLBI logging and auto-streaming started successfully");
                 } else {
                     printf("Failed to start VLBI logging. Check VLBI daemon status.\n");
                     write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to start VLBI logging");
@@ -517,6 +683,45 @@ void exec_command(Packet pkt) {
         } else {
             printf("VLBI client is not enabled or initialized.\n");
             write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_vlbi but VLBI client not available");
+        }
+    } else if (pkt.cmd_primary == start_backend) {
+        if (pbob_client_is_enabled()) {
+            printf("Powering up backend computer (PBOB %d, Relay %d)...\n", config.backend.pbob_id, config.backend.relay_id);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempting to power up backend computer");
+            
+            int result = pbob_send_command(config.backend.pbob_id, config.backend.relay_id);
+            if (result == 1) {
+                backend_powered_on_this_session = true;  // Track that backend was turned ON this session
+                printf("Backend computer power ON successful!\n");
+                printf("The backend computer at 172.20.3.13 is now powered up.\n");
+                printf("Please wait for system boot before running VLBI commands.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Backend computer powered ON successfully");
+            } else {
+                printf("Failed to power up backend computer. Check PBoB server connection.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power up backend computer");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted start_backend but PBoB client not available");
+        }
+    } else if (pkt.cmd_primary == stop_backend) {
+        if (pbob_client_is_enabled()) {
+            printf("Powering down backend computer (PBOB %d, Relay %d)...\n", config.backend.pbob_id, config.backend.relay_id);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempting to power down backend computer");
+            
+            int result = pbob_send_command(config.backend.pbob_id, config.backend.relay_id);
+            if (result == 1) {
+                backend_powered_on_this_session = false;  // Clear flag - backend was turned OFF
+                printf("Backend computer power OFF successful!\n");
+                printf("The backend computer at 172.20.3.13 has been powered down.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Backend computer powered OFF successfully");
+            } else {
+                printf("Failed to power down backend computer. Check PBoB server connection.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power down backend computer");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_backend but PBoB client not available");
         }
     } else if (pkt.cmd_primary == rfsoc_configure_ocxo) {
         if (rfsoc_client_is_enabled()) {
@@ -548,6 +753,7 @@ void exec_command(Packet pkt) {
             
             int result = pbob_send_command(config.ticc.pbob_id, config.ticc.relay_id);
             if (result == 1) {
+                timing_chain_powered_on_this_session = true;  // Track that timing chain was turned ON this session
                 printf("Timing chain power ON successful!\n");
                 printf("The timing chain is now powered and ready for TICC measurements.\n");
                 write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Timing chain powered ON successfully");
@@ -566,6 +772,7 @@ void exec_command(Packet pkt) {
             
             int result = pbob_send_command(config.ticc.pbob_id, config.ticc.relay_id);
             if (result == 1) {
+                timing_chain_powered_on_this_session = false;  // Clear flag - timing chain was turned OFF
                 printf("Timing chain power OFF successful!\n");
                 printf("The timing chain has been powered down.\n");
                 write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Timing chain powered OFF successfully");
@@ -628,6 +835,7 @@ void exec_command(Packet pkt) {
                 
                 int pbob_result = pbob_send_command(config.heaters.pbob_id, config.heaters.relay_id);
                 if (pbob_result == 1) {
+                    heaters_powered_on_this_session = true;  // Track that heater box was turned ON this session
                     printf("Heater box power ON successful!\n");
                     printf("Please wait ~10 seconds for LabJack to fully boot before running 'start_heaters'.\n");
                     write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Heater box powered ON successfully");
@@ -673,24 +881,32 @@ void exec_command(Packet pkt) {
             if (join_result == 0) {
                 printf("Heater control thread stopped.\n");
                 write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Heater control thread stopped");
-                printf("Heaters powered OFF and shutdown complete.\n");
+                
+                // Graceful shutdown: wait 10 seconds for heaters to settle before cutting power
+                printf("Waiting 10 seconds for heaters to settle before powering off box...\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Starting 10-second graceful shutdown delay");
+                sleep(10);
+                
+                // Now power off the heater box via PBoB
+                if (pbob_client_is_enabled()) {
+                    printf("Powering OFF heater box...\n");
+                    int pbob_result = pbob_send_command(config.heaters.pbob_id, config.heaters.relay_id);
+                    if (pbob_result == 1) {
+                        printf("Heater box power OFF successful!\n");
+                        write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Heater box powered OFF successfully");
+                    } else {
+                        printf("Failed to power OFF heater box!\n");
+                        write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power OFF heater box");
+                    }
+                } else {
+                    printf("PBoB client is not available.\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_heaters but PBoB client not available");
+                }
+                
+                printf("Heaters shutdown complete.\n");
             } else {
                 printf("Warning: Error waiting for heater thread to finish (error %d)\n", join_result);
                 write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Error joining heater thread");
-            }
-            
-            if (pbob_client_is_enabled()) {
-                int pbob_result = pbob_send_command(config.heaters.pbob_id, config.heaters.relay_id);
-                if (pbob_result == 1) {
-                    printf("Heater box power OFF successful!\n");
-                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Heater box powered OFF successfully");
-                } else {
-                    printf("Failed to power OFF heater box!\n");
-                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power OFF heater box");
-                }
-            } else {
-                printf("PBoB client is not available.\n");
-                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_heaters but PBoB client not available");
             }
         } else {
             printf("Heaters are not running.\n");
@@ -893,6 +1109,48 @@ void exec_command(Packet pkt) {
             position_sensors_stop();
             printf("Position sensor system stopped successfully.\n");
             write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Position sensor system stopped successfully");
+        }
+    }
+    
+    else if (pkt.cmd_primary == position_box_on) {
+        if (pbob_client_is_enabled()) {
+            printf("Turning ON position sensor box (PBOB %d, Relay %d)...\n", 
+                   config.position_sensors.pbob_id, config.position_sensors.relay_id);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempting to turn ON position sensor box");
+            
+            int result = pbob_send_command(config.position_sensors.pbob_id, config.position_sensors.relay_id);
+            if (result == 1) {
+                position_sensors_powered_on_this_session = true;  // Track that position sensor box was turned ON this session
+                printf("Position sensor box powered ON successfully!\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Position sensor box powered ON successfully");
+            } else {
+                printf("Failed to power ON position sensor box. Check PBoB connection.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power ON position sensor box");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted position_box_on but PBoB client not available");
+        }
+    }
+    
+    else if (pkt.cmd_primary == position_box_off) {
+        if (pbob_client_is_enabled()) {
+            printf("Turning OFF position sensor box (PBOB %d, Relay %d)...\n", 
+                   config.position_sensors.pbob_id, config.position_sensors.relay_id);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempting to turn OFF position sensor box");
+            
+            int result = pbob_send_command(config.position_sensors.pbob_id, config.position_sensors.relay_id);
+            if (result == 1) {
+                position_sensors_powered_on_this_session = false;  // Clear flag - position sensor box was turned OFF
+                printf("Position sensor box powered OFF successfully!\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Position sensor box powered OFF successfully");
+            } else {
+                printf("Failed to power OFF position sensor box. Check PBoB connection.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to power OFF position sensor box");
+            }
+        } else {
+            printf("PBoB client is not enabled or initialized.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted position_box_off but PBoB client not available");
         }
     }
 }

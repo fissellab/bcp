@@ -29,9 +29,17 @@ typedef struct {
     // Heading information
     double heading;
     
+    // Speed information (converted from knots to m/s)
+    double speed_ms;
+    
+    // Satellite information
+    int num_satellites;
+    
     // Status flags
     bool valid_position;
     bool valid_heading;
+    bool valid_speed;
+    bool valid_satellites;
     
     // Mutex for thread-safe access
     pthread_mutex_t mutex;

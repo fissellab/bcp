@@ -2,7 +2,7 @@
 
 # ===== CONFIGURATION =====
 PI_USER="bvex"
-PI_HOST="192.168.0.23"
+PI_HOST="172.20.4.209"
 PI_TX_PATH="/home/bvex/pos_sensor_tx"
 PI_SSH_KEY="$HOME/.ssh/pi_sensor_key"
 LOCAL_RX_EXECUTABLE="./build/pos_sensors_rx"

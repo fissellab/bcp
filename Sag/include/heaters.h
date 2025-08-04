@@ -3,7 +3,6 @@
 
 #include <pthread.h>
 #include <stdbool.h>
-#include <time.h>
 
 // Number of heaters
 #define NUM_HEATERS 5
@@ -45,7 +44,9 @@ typedef struct {
     double current;
     double current_offset;
     bool toggle;
-    time_t manual_override_time; // Time when manual command was issued (0 = no override)
+    double temp_low;
+    double temp_high;
+    double temp_diff;
 } HeaterInfo;
 
 // Function prototypes
@@ -56,7 +57,6 @@ int read_temperature(int handle, const char* channel, double* temperature_c);
 void set_relay_state(int handle, int relay_num, bool state);
 void initialize_heaters(HeaterInfo heaters[]);
 void print_all_heater_statuses(HeaterInfo heaters[]);
-bool heaters_start(void);  // Fixed function name
 void* run_heaters_thread(void* arg);
 int set_toggle(int relay_id);
 

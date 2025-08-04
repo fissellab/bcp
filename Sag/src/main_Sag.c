@@ -20,10 +20,16 @@
 #include "pr59_interface.h"
 #include "heaters.h"
 #include "position_sensors.h"
+#include "system_monitor.h"
 
 // External variables from cli_Sag.c
 extern int pr59_running;
 extern pid_t pr59_pid;
+
+// External variables from heaters.c
+extern int heaters_running;
+extern int shutdown_heaters;
+extern pthread_t main_heaters_thread;
 
 FILE* cmd_log;
 FILE* main_log;
@@ -94,6 +100,9 @@ void print_config() {
     printf("  Data Save Path: %s\n", config.ticc.data_save_path);
     printf("  File Rotation Interval: %d seconds\n", config.ticc.file_rotation_interval);
     printf("  Power Control: PBOB %d, Relay %d\n", config.ticc.pbob_id, config.ticc.relay_id);
+    printf("\nBackend Power Control settings:\n");
+    printf("  Enabled: %s\n", config.backend.enabled ? "Yes" : "No");
+    printf("  Power Control: PBOB %d, Relay %d\n", config.backend.pbob_id, config.backend.relay_id);
     printf("\nHeaters settings:\n");
     printf("  Enabled: %s\n", config.heaters.enabled ? "Yes" : "No");
     printf("  Heater IP: %s\n", config.heaters.heater_ip);
@@ -104,6 +113,11 @@ void print_config() {
     printf("  Current Cap: %d amps\n", config.heaters.current_cap);
     printf("  Timeout: %d us\n", config.heaters.timeout);
     printf("  Power Control: PBOB %d, Relay %d\n", config.heaters.pbob_id, config.heaters.relay_id);
+    printf("  Temperature Thresholds:\n");
+    printf("    Star Camera: %.1f°C - %.1f°C\n", config.heaters.temp_low_starcam, config.heaters.temp_high_starcam);
+    printf("    Motor: %.1f°C - %.1f°C\n", config.heaters.temp_low_motor, config.heaters.temp_high_motor);
+    printf("    Ethernet: %.1f°C - %.1f°C\n", config.heaters.temp_low_ethernet, config.heaters.temp_high_ethernet);
+    printf("    Lock Pin: %.1f°C - %.1f°C\n", config.heaters.temp_low_lockpin, config.heaters.temp_high_lockpin);
     printf("\nPR59 TEC Controller settings:\n");
     printf("  Enabled: %s\n", config.pr59.enabled ? "Yes" : "No");
     printf("  Serial Port: %s\n", config.pr59.port);
@@ -120,6 +134,7 @@ void print_config() {
     printf("  Retry Attempts: %d\n", config.position_sensors.retry_attempts);
     printf("  Script Path: %s\n", config.position_sensors.script_path);
     printf("  Telemetry Rate: %d Hz\n", config.position_sensors.telemetry_rate_hz);
+    printf("  Power Control: PBOB %d, Relay %d\n", config.position_sensors.pbob_id, config.position_sensors.relay_id);
 }
 
 int main(int argc, char* argv[]) {
@@ -413,6 +428,28 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "Position sensors disabled in configuration");
     }
 
+    // Initialize and start System Monitor if enabled
+    if (config.system_monitor.enabled) {
+        if (init_system_monitor() == 0) {
+            printf("System monitor initialized\n");
+            write_to_log(main_log, "main_Sag.c", "main", "System monitor initialized");
+            
+            // Start system monitor thread
+            if (pthread_create(&system_monitor_thread, NULL, run_system_monitor_thread, NULL) == 0) {
+                printf("System monitor thread started\n");
+                write_to_log(main_log, "main_Sag.c", "main", "System monitor thread started");
+            } else {
+                printf("Failed to start system monitor thread\n");
+                write_to_log(main_log, "main_Sag.c", "main", "Failed to start system monitor thread");
+            }
+        } else {
+            printf("Failed to initialize system monitor\n");
+            write_to_log(main_log, "main_Sag.c", "main", "Failed to initialize system monitor");
+        }
+    } else {
+        write_to_log(main_log, "main_Sag.c", "main", "System monitor disabled in configuration");
+    }
+
     // Start the command system
     do_commands();
 
@@ -501,6 +538,13 @@ int main(int argc, char* argv[]) {
             write_to_log(main_log, "main_Sag.c", "main", "Telemetry server stopped during cleanup");
         }
         telemetry_server_cleanup();
+    }
+
+    // Cleanup System Monitor
+    if (config.system_monitor.enabled) {
+        shutdown_system_monitor();
+        printf("System monitor stopped during cleanup\n");
+        write_to_log(main_log, "main_Sag.c", "main", "System monitor stopped during cleanup");
     }
 
     // Cleanup PR59 telemetry interface

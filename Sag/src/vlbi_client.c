@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <time.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #include "vlbi_client.h"
 #include "file_io_Sag.h"
@@ -18,6 +19,15 @@
 // Global configuration
 static vlbi_client_config_t client_config;
 static bool client_initialized = false;
+
+// Global VLBI status for telemetry access
+vlbi_status_t global_vlbi_status;
+bool vlbi_status_valid = false;
+
+// Auto-streaming control
+static pthread_t streaming_thread;
+static bool streaming_active = false;
+static bool stop_streaming = false;
 
 /**
  * Simple JSON value extraction (for our specific use case)
@@ -60,6 +70,19 @@ static int extract_json_int(const char* json, const char* key) {
     while (*pos && isspace(*pos)) pos++;
     
     return atoi(pos);
+}
+
+static double extract_json_double(const char* json, const char* key) {
+    char search_key[64];
+    snprintf(search_key, sizeof(search_key), "\"%s\":", key);
+    
+    char* pos = strstr(json, search_key);
+    if (!pos) return -1.0;
+    
+    pos += strlen(search_key);
+    while (*pos && isspace(*pos)) pos++;
+    
+    return atof(pos);
 }
 
 /**
@@ -278,7 +301,7 @@ int vlbi_get_status(vlbi_status_t *status) {
     // Initialize status structure
     memset(status, 0, sizeof(vlbi_status_t));
     
-    if (send_vlbi_command("status", response, sizeof(response)) == 0) {
+    if (send_vlbi_command("get_vlbi_status", response, sizeof(response)) == 0) {
         char* resp_status = extract_json_string(response, "status");
         
         if (resp_status && strcmp(resp_status, "success") == 0) {
@@ -294,6 +317,34 @@ int vlbi_get_status(vlbi_status_t *status) {
             if (timestamp) {
                 strncpy(status->timestamp, timestamp, sizeof(status->timestamp) - 1);
                 free(timestamp);
+            }
+            
+            // Parse detailed status from "detailed_status" object
+            // Look for the detailed_status section
+            char* detailed_start = strstr(response, "\"detailed_status\":");
+            if (detailed_start) {
+                // Extract detailed fields
+                char* stage = extract_json_string(detailed_start, "stage");
+                if (stage) {
+                    strncpy(status->stage, stage, sizeof(status->stage) - 1);
+                    free(stage);
+                }
+                
+                status->packets_captured = extract_json_int(detailed_start, "packets_captured");
+                status->data_size_mb = extract_json_double(detailed_start, "data_size_mb");
+                status->error_count = extract_json_int(detailed_start, "error_count");
+                
+                char* conn_status = extract_json_string(detailed_start, "connection_status");
+                if (conn_status) {
+                    strncpy(status->connection_status, conn_status, sizeof(status->connection_status) - 1);
+                    free(conn_status);
+                }
+                
+                char* last_update = extract_json_string(detailed_start, "last_update");
+                if (last_update) {
+                    strncpy(status->last_update, last_update, sizeof(status->last_update) - 1);
+                    free(last_update);
+                }
             }
             
             if (resp_status) free(resp_status);
@@ -315,9 +366,59 @@ int vlbi_get_status(vlbi_status_t *status) {
 }
 
 /**
+ * Background thread for auto-streaming VLBI status
+ */
+static void* vlbi_streaming_thread(void* arg) {
+    (void)arg; // Suppress unused parameter warning
+    
+    while (!stop_streaming) {
+        if (vlbi_get_status(&global_vlbi_status) == 1) {
+            vlbi_status_valid = true;
+        } else {
+            vlbi_status_valid = false;
+        }
+        
+        // Update every 5 seconds
+        sleep(5);
+    }
+    
+    streaming_active = false;
+    return NULL;
+}
+
+/**
+ * Start automatic VLBI status streaming to global variables
+ */
+int vlbi_start_auto_streaming(void) {
+    if (streaming_active) {
+        return 1; // Already running
+    }
+    
+    stop_streaming = false;
+    
+    if (pthread_create(&streaming_thread, NULL, vlbi_streaming_thread, NULL) != 0) {
+        printf("Failed to start VLBI status streaming thread\n");
+        return 0;
+    }
+    
+    streaming_active = true;
+    printf("VLBI status auto-streaming started (updating every 5 seconds)\n");
+    return 1;
+}
+
+/**
  * Cleanup VLBI client resources
  */
 void vlbi_client_cleanup(void) {
+    // Stop streaming thread if running
+    if (streaming_active) {
+        stop_streaming = true;
+        pthread_join(streaming_thread, NULL);
+        streaming_active = false;
+    }
+    
     client_initialized = false;
+    vlbi_status_valid = false;
     memset(&client_config, 0, sizeof(client_config));
+    memset(&global_vlbi_status, 0, sizeof(global_vlbi_status));
 } 
