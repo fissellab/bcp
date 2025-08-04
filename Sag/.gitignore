@@ -11,3 +11,8 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Log files
+*.log
+log/*.log
+log/*.txt
