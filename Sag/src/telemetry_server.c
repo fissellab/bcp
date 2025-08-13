@@ -19,6 +19,7 @@
 #include "heaters.h"
 #include "vlbi_client.h"
 #include "system_monitor.h"
+#include "ticc_client.h"
 
 // Global variables
 struct sockaddr_in tel_client_addr;
@@ -744,6 +745,110 @@ void telemetry_send_metric(int sockfd, char* id) {
             pthread_mutex_unlock(&sys_monitor.data_mutex);
         } else {
             telemetry_sendString(sockfd, "N/A");
+        }
+    }
+    
+    // TICC telemetry channels
+    else if (strcmp(id, "ticc_timestamp") == 0) {
+        if (ticc_client_is_enabled()) {
+            ticc_status_t ticc_status;
+            if (ticc_get_status(&ticc_status) == 0 && ticc_status.is_logging && ticc_status.last_measurement_timestamp > 0) {
+                telemetry_sendDouble(sockfd, ticc_status.last_measurement_timestamp);
+            } else {
+                telemetry_sendString(sockfd, "N/A");
+            }
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "ticc_interval") == 0) {
+        if (ticc_client_is_enabled()) {
+            ticc_status_t ticc_status;
+            if (ticc_get_status(&ticc_status) == 0 && ticc_status.is_logging) {
+                telemetry_sendDouble(sockfd, ticc_status.last_measurement);
+            } else {
+                telemetry_sendString(sockfd, "N/A");
+            }
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "ticc_logging") == 0) {
+        if (ticc_client_is_enabled()) {
+            ticc_status_t ticc_status;
+            if (ticc_get_status(&ticc_status) == 0) {
+                telemetry_sendInt(sockfd, ticc_status.is_logging ? 1 : 0);
+            } else {
+                telemetry_sendString(sockfd, "N/A");
+            }
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "ticc_measurement_count") == 0) {
+        if (ticc_client_is_enabled()) {
+            ticc_status_t ticc_status;
+            if (ticc_get_status(&ticc_status) == 0) {
+                telemetry_sendInt(sockfd, ticc_status.measurement_count);
+            } else {
+                telemetry_sendString(sockfd, "N/A");
+            }
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "ticc_current_file") == 0) {
+        if (ticc_client_is_enabled()) {
+            ticc_status_t ticc_status;
+            if (ticc_get_status(&ticc_status) == 0 && ticc_status.is_logging) {
+                telemetry_sendString(sockfd, ticc_status.current_file[0] ? ticc_status.current_file : "N/A");
+            } else {
+                telemetry_sendString(sockfd, "N/A");
+            }
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "ticc_status") == 0) {
+        if (ticc_client_is_enabled()) {
+            ticc_status_t ticc_status;
+            if (ticc_get_status(&ticc_status) == 0) {
+                char status_str[128];
+                snprintf(status_str, sizeof(status_str), "logging:%s,configured:%s,measurements:%d",
+                        ticc_status.is_logging ? "yes" : "no",
+                        ticc_status.is_configured ? "yes" : "no",
+                        ticc_status.measurement_count);
+                telemetry_sendString(sockfd, status_str);
+            } else {
+                telemetry_sendString(sockfd, "error");
+            }
+        } else {
+            telemetry_sendString(sockfd, "disabled");
+        }
+    } else if (strcmp(id, "GET_TICC") == 0) {
+        // Handle GET_TICC command for comprehensive TICC status
+        if (ticc_client_is_enabled()) {
+            ticc_status_t ticc_status;
+            if (ticc_get_status(&ticc_status) == 0) {
+                char ticc_response[512];
+                
+                // Format timestamp and interval
+                char timestamp_str[32], interval_str[32];
+                if (ticc_status.is_logging && ticc_status.last_measurement_timestamp > 0) {
+                    snprintf(timestamp_str, sizeof(timestamp_str), "%.3f", ticc_status.last_measurement_timestamp);
+                    snprintf(interval_str, sizeof(interval_str), "%.11f", ticc_status.last_measurement);
+                } else {
+                    strcpy(timestamp_str, "N/A");
+                    strcpy(interval_str, "N/A");
+                }
+                
+                snprintf(ticc_response, sizeof(ticc_response), 
+                        "ticc_timestamp:%s,ticc_interval:%s,ticc_logging:%d,ticc_measurement_count:%d",
+                        timestamp_str, interval_str,
+                        ticc_status.is_logging ? 1 : 0,
+                        ticc_status.measurement_count);
+                
+                telemetry_sendString(sockfd, ticc_response);
+            } else {
+                telemetry_sendString(sockfd, "ticc_timestamp:N/A,ticc_interval:N/A,ticc_logging:N/A,ticc_measurement_count:N/A");
+            }
+        } else {
+            telemetry_sendString(sockfd, "ticc_timestamp:N/A,ticc_interval:N/A,ticc_logging:N/A,ticc_measurement_count:N/A");
         }
     }
     

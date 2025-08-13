@@ -52,21 +52,22 @@ target_link_libraries(main
 )
 
 # Add PR59 TEC controller executable
-add_executable(
-    tec_control_3
-        PR59/tec_control_3.c
-        src/pr59_interface.c
-)
-
-target_include_directories(tec_control_3 PRIVATE 
-    include
-)
-
-target_link_libraries(tec_control_3
-    config
-    m
-    pthread
-)
+# NOTE: tec_control_3.c source file not found - using pre-compiled executable in PR59/ directory
+# add_executable(
+#     tec_control_3
+#         PR59/tec_control_3.c
+#         src/pr59_interface.c
+# )
+# 
+# target_include_directories(tec_control_3 PRIVATE 
+#     include
+# )
+# 
+# target_link_libraries(tec_control_3
+#     config
+#     m
+#     pthread
+# )
 
 # Add position sensor receiver executable
 add_executable(

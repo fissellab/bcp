@@ -22,6 +22,7 @@ typedef struct {
     char current_file[512];
     char last_error[256];
     double last_measurement;
+    double last_measurement_timestamp;
     time_t start_time;
     int measurement_count;
 } ticc_status_t;

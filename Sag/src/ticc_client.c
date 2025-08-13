@@ -27,6 +27,7 @@ static pthread_mutex_t ticc_mutex = PTHREAD_MUTEX_INITIALIZER;
 static time_t logging_start_time = 0;
 static int total_measurements = 0;
 static double last_measurement_value = 0.0;
+static double last_measurement_timestamp = 0.0;
 static char last_error_msg[256] = {0};
 
 /**
@@ -224,6 +225,7 @@ static void* ticc_logging_thread(void* arg) {
                             
                             // Update statistics
                             last_measurement_value = time_interval;
+                            last_measurement_timestamp = timestamp;
                             total_measurements++;
                             
                             pthread_mutex_unlock(&ticc_mutex);
@@ -407,6 +409,7 @@ int ticc_get_status(ticc_status_t *status) {
     status->start_time = logging_start_time;
     status->measurement_count = total_measurements;
     status->last_measurement = last_measurement_value;
+    status->last_measurement_timestamp = last_measurement_timestamp;
     
     strncpy(status->current_file, current_data_file, sizeof(status->current_file) - 1);
     status->current_file[sizeof(status->current_file) - 1] = '\0';
