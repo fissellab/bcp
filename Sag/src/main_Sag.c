@@ -151,22 +151,31 @@ int main(int argc, char* argv[]) {
     printf("Reading config parameters from: %s\n", argv[1]);
     print_config();
     
-    printf("Starting main log\n");
-    main_log = fopen(config.main.logpath, "w");
+    // Create timestamped log directory for this session
+    char *log_dir = create_timestamped_log_directory();
+    
+    // Create timestamped log file paths
+    char main_log_path[512];
+    char cmd_log_path[512];
+    snprintf(main_log_path, sizeof(main_log_path), "%s/main_sag.log", log_dir);
+    snprintf(cmd_log_path, sizeof(cmd_log_path), "%s/cmds_sag.log", log_dir);
+    
+    printf("Starting main log: %s\n", main_log_path);
+    main_log = fopen(main_log_path, "w");
 
     if (main_log == NULL) {
-        printf("Error opening logfile %s: %s\n", config.main.logpath, strerror(errno));
+        printf("Error opening logfile %s: %s\n", main_log_path, strerror(errno));
         return 1;
     }
 
-    write_to_log(main_log, "main_Sag.c", "main", "Started logfile");
+    write_to_log(main_log, "main_Sag.c", "main", "Started logfile in timestamped directory");
 
-    cmd_log = fopen(config.main.cmdlog, "w");
-    printf("Starting command log\n");
+    cmd_log = fopen(cmd_log_path, "w");
+    printf("Starting command log: %s\n", cmd_log_path);
     write_to_log(main_log, "main_Sag.c", "main", "Starting command log");
 
     if (cmd_log == NULL) {
-        printf("Error opening command log %s: %s\n", config.main.cmdlog, strerror(errno));
+        printf("Error opening command log %s: %s\n", cmd_log_path, strerror(errno));
         write_to_log(main_log, "main_Sag.c", "main", "Error opening command log");
         fclose(main_log);
         return 1;

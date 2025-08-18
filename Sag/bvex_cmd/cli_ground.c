@@ -804,7 +804,21 @@ void exec_command(char* input) {
     	
     }else if (strcmp(cmd, "start_vlbi") == 0) {
     	com = start_vlbi;
-        create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
+        
+        // Parse VLBI storage parameter (1 or 2, default to 1)
+        int vlbi_storage = 1; // Default to storage 1
+        if (scan == 2) { // Command has argument
+            vlbi_storage = atoi(arg);
+            if (vlbi_storage != 1 && vlbi_storage != 2) {
+                printf("Invalid VLBI storage parameter: %s. Use 1 or 2.\n", arg);
+                return;
+            }
+        }
+        
+        payload = (int16_t*)malloc(sizeof(int16_t));
+        payload[0] = (int16_t)vlbi_storage;
+        create_packet(&pkt, com, payload, 1, big_payload, 0, SAG);
+        free(payload);
     	
     } else if (strcmp(cmd, "stop_vlbi") == 0) {
     	com = stop_vlbi;
@@ -849,6 +863,12 @@ void exec_command(char* input) {
         create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
     }else if (strcmp(cmd,"stop_pr59") ==0){
         com = stop_pr59;
+        create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
+    }else if (strcmp(cmd,"start_pr59_fan") ==0){
+        com = start_pr59_fan;
+        create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
+    }else if (strcmp(cmd,"stop_pr59_fan") ==0){
+        com = stop_pr59_fan;
         create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
     }else if (strcmp(cmd,"start_position_box") ==0){
         com = start_position_box;

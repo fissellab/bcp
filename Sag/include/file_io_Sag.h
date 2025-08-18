@@ -7,6 +7,8 @@
 #define MAX_UDP_CLIENTS 10  // Maximum number of UDP clients supported
 
 void write_to_log(FILE* logfile, const char* file, const char* function, const char* message);
+char* create_timestamped_log_directory(void);
+void get_timestamped_log_path(const char* filename, char* full_path, size_t path_size);
 
 typedef struct conf_params {
     struct {

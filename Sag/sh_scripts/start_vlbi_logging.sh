@@ -7,6 +7,15 @@ ADC_CHAN=0                 # ADC channel to use
 NUMPKT=256                 # Number of packets per batch
 DELAY=15                   # Delay before starting catcher
 
+# SSD parameter handling
+SSD_ID="${1:-1}"           # First argument is SSD ID, default to 1
+if [[ "$SSD_ID" != "1" && "$SSD_ID" != "2" ]]; then
+    echo "Error: Invalid SSD ID '$SSD_ID'. Must be 1 or 2."
+    echo "Usage: $0 [SSD_ID]"
+    echo "  SSD_ID: 1 for /mnt/vlbi_data, 2 for /mnt/vlbi_data_2"
+    exit 1
+fi
+
 # Virtual environment path
 VENV_PATH="/home/aquila/casper/cfpga_venv"
 PYTHON_PATH="$VENV_PATH/bin/python3"
@@ -48,13 +57,21 @@ if ! ip link show "$INTERFACE" >/dev/null 2>&1; then
     exit 1
 fi
 
+# Set VLBI data directory based on SSD ID
+if [[ "$SSD_ID" == "1" ]]; then
+    VLBI_DATA_DIR="/mnt/vlbi_data"
+else
+    VLBI_DATA_DIR="/mnt/vlbi_data_2"
+fi
+
 # Create VLBI data directory if needed
-VLBI_DATA_DIR="/mnt/vlbi_data"
 if [ ! -d "$VLBI_DATA_DIR" ]; then
     echo "Creating VLBI data directory at $VLBI_DATA_DIR"
     mkdir -p "$VLBI_DATA_DIR"
     chmod 777 "$VLBI_DATA_DIR"
 fi
+
+echo "Using VLBI data directory: $VLBI_DATA_DIR (SSD $SSD_ID)"
 
 echo "Using Python from: $PYTHON_PATH"
 
@@ -63,7 +80,7 @@ trap cleanup SIGINT SIGTERM
 
 echo "Starting VLBI data logging listener..."
 cd "$SCRIPT_DIR"
-$PYTHON_PATH "$SCRIPT_DIR/vlbi_data_logging_listener.py" $HOSTNAME -n $NUMPKT -a $ADC_CHAN &
+$PYTHON_PATH "$SCRIPT_DIR/vlbi_data_logging_listener.py" $HOSTNAME -n $NUMPKT -a $ADC_CHAN -d $VLBI_DATA_DIR &
 LISTENER_PID=$!
 
 # Check if listener started successfully

@@ -20,6 +20,7 @@
 #include "vlbi_client.h"
 #include "system_monitor.h"
 #include "ticc_client.h"
+#include "aquila_status.h"
 
 // Global variables
 struct sockaddr_in tel_client_addr;
@@ -138,10 +139,8 @@ void telemetry_send_metric(int sockfd, char* id) {
     char client_ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &tel_client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
     
-    // Log request for debugging (optional)
-    char log_msg[256];
-    snprintf(log_msg, sizeof(log_msg), "Processing request '%s' from client: %s", id, client_ip);
-    write_to_log(telemetry_server_log, "telemetry_server.c", "telemetry_send_metric", log_msg);
+    // Note: Normal requests are no longer logged to reduce verbosity
+    // Only errors and unknown requests will be logged
 
     // GPS telemetry channels
     if (strcmp(id, "gps_lat") == 0) {
@@ -852,6 +851,110 @@ void telemetry_send_metric(int sockfd, char* id) {
         }
     }
     
+    // Aquila Backend System telemetry channels
+    else if (strcmp(id, "aquila_ssd1_mounted") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendInt(sockfd, aquila_status.ssd1_mounted ? 1 : 0);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_ssd1_used_gb") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendFloat(sockfd, aquila_status.ssd1_used_gb);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_ssd1_total_gb") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendFloat(sockfd, aquila_status.ssd1_total_gb);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_ssd1_percent") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendFloat(sockfd, aquila_status.ssd1_percent_used);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_ssd2_mounted") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendInt(sockfd, aquila_status.ssd2_mounted ? 1 : 0);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_ssd2_used_gb") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendFloat(sockfd, aquila_status.ssd2_used_gb);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_ssd2_total_gb") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendFloat(sockfd, aquila_status.ssd2_total_gb);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_ssd2_percent") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendFloat(sockfd, aquila_status.ssd2_percent_used);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_cpu_temp") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendFloat(sockfd, aquila_status.cpu_temp_celsius);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_memory_percent") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            telemetry_sendFloat(sockfd, aquila_status.memory_percent_used);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "aquila_status") == 0) {
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            char status_str[256];
+            snprintf(status_str, sizeof(status_str), 
+                    "ssd1:%s(%.1f%%), ssd2:%s(%.1f%%), cpu:%.1f°C, mem:%.1f%%",
+                    aquila_status.ssd1_mounted ? "mounted" : "unmounted", aquila_status.ssd1_percent_used,
+                    aquila_status.ssd2_mounted ? "mounted" : "unmounted", aquila_status.ssd2_percent_used,
+                    aquila_status.cpu_temp_celsius, aquila_status.memory_percent_used);
+            telemetry_sendString(sockfd, status_str);
+        } else {
+            telemetry_sendString(sockfd, "no_data");
+        }
+    } else if (strcmp(id, "GET_AQUILA") == 0) {
+        // Handle GET_AQUILA command for comprehensive aquila status
+        aquila_status_t aquila_status;
+        if (aquila_status_get_data(&aquila_status) == 0) {
+            char aquila_response[512];
+            snprintf(aquila_response, sizeof(aquila_response), 
+                    "aquila_ssd1_mounted:%d,aquila_ssd1_percent:%.1f,aquila_ssd1_used_gb:%.1f,aquila_ssd1_total_gb:%.1f,"
+                    "aquila_ssd2_mounted:%d,aquila_ssd2_percent:%.1f,aquila_ssd2_used_gb:%.1f,aquila_ssd2_total_gb:%.1f,"
+                    "aquila_cpu_temp:%.1f,aquila_memory_percent:%.1f",
+                    aquila_status.ssd1_mounted, aquila_status.ssd1_percent_used, aquila_status.ssd1_used_gb, aquila_status.ssd1_total_gb,
+                    aquila_status.ssd2_mounted, aquila_status.ssd2_percent_used, aquila_status.ssd2_used_gb, aquila_status.ssd2_total_gb,
+                    aquila_status.cpu_temp_celsius, aquila_status.memory_percent_used);
+            telemetry_sendString(sockfd, aquila_response);
+        } else {
+            telemetry_sendString(sockfd, "aquila_ssd1_mounted:N/A,aquila_ssd1_percent:N/A,aquila_ssd1_used_gb:N/A,aquila_ssd1_total_gb:N/A,"
+                                        "aquila_ssd2_mounted:N/A,aquila_ssd2_percent:N/A,aquila_ssd2_used_gb:N/A,aquila_ssd2_total_gb:N/A,"
+                                        "aquila_cpu_temp:N/A,aquila_memory_percent:N/A");
+        }
+    }
+    
     // Future telemetry channels can be added here
     // Examples:
     // else if (strcmp(id, "system_temp") == 0) { /* Add system temperature */ }
@@ -879,7 +982,14 @@ void* telemetry_server_thread(void* arg) {
         while (!stop_telemetry_server) {
             telemetry_sock_listen(sockfd, buffer);
             if (strlen(buffer) > 0) {
-                telemetry_send_metric(sockfd, buffer);
+                // Check if this is JSON data from aquila (starts with '{')
+                if (buffer[0] == '{' && strstr(buffer, "aquila_system_status") != NULL) {
+                    // Process aquila status update
+                    aquila_status_update_from_json(buffer);
+                } else {
+                    // Process normal telemetry request
+                    telemetry_send_metric(sockfd, buffer);
+                }
             }
         }
         
@@ -903,12 +1013,18 @@ int telemetry_server_init(const telemetry_server_config_t *config) {
     // Copy configuration
     memcpy(&server_config, config, sizeof(telemetry_server_config_t));
     
-    // Open log file
+    // Open log file in timestamped directory
     char log_path[512];
-    snprintf(log_path, sizeof(log_path), "/home/mayukh/bcp/Sag/log/telemetry_server.log");
+    get_timestamped_log_path("telemetry_server.log", log_path, sizeof(log_path));
     telemetry_server_log = fopen(log_path, "a");
     if (telemetry_server_log == NULL) {
         fprintf(stderr, "Warning: Could not open telemetry server log file: %s\n", strerror(errno));
+    }
+    
+    // Initialize aquila status module
+    if (aquila_status_init() != 0) {
+        write_to_log(telemetry_server_log, "telemetry_server.c", "telemetry_server_init", "Failed to initialize aquila status module");
+        return -1;
     }
     
     server_initialized = true;
@@ -955,6 +1071,9 @@ void telemetry_server_stop(void) {
 
 // Cleanup telemetry server resources
 void telemetry_server_cleanup(void) {
+    // Cleanup aquila status module
+    aquila_status_cleanup();
+    
     if (telemetry_server_log) {
         fclose(telemetry_server_log);
         telemetry_server_log = NULL;

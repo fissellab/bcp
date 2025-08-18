@@ -6,6 +6,8 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <math.h>
+#include <stdbool.h>
 
 #include "system_monitor.h"
 #include "file_io_Sag.h"
@@ -196,10 +198,10 @@ void get_ssd_info(char *status, char *used, char *total, char *mount_path, int *
 
 // System monitor thread function
 void* run_system_monitor_thread(void* arg) {
-    // Open log file
+    // Open log file in timestamped directory
     if (!system_monitor_log) {
         char log_path[512];
-        snprintf(log_path, sizeof(log_path), "/home/mayukh/bcp/Sag/log/system_monitor.log");
+        get_timestamped_log_path("system_monitor.log", log_path, sizeof(log_path));
         system_monitor_log = fopen(log_path, "a");
         if (system_monitor_log == NULL) {
             fprintf(stderr, "Warning: Could not open system monitor log file: %s\n", strerror(errno));
@@ -208,6 +210,15 @@ void* run_system_monitor_thread(void* arg) {
     
     write_to_log(system_monitor_log, "system_monitor.c", "run_system_monitor_thread", "System monitor thread started");
     system_monitor_running = 1;
+
+    // Variables for intelligent logging (only log significant changes or every 5 minutes)
+    static time_t last_log_time = 0;
+    static float last_cpu_temp = -999;
+    static int last_ssd_mounted = -1;
+    static float last_cpu_usage = -1;
+    const int LOG_INTERVAL_SEC = 300; // Log every 5 minutes regardless
+    const float TEMP_THRESHOLD = 2.0; // Log if temp changes by 2°C
+    const float CPU_THRESHOLD = 20.0; // Log if CPU usage changes by 20%
 
     while (!stop_system_monitor) {
         // Get system metrics
@@ -246,13 +257,39 @@ void* run_system_monitor_thread(void* arg) {
         
         pthread_mutex_unlock(&sys_monitor.data_mutex);
 
-        // Log the metrics
-        if (system_monitor_log) {
-            time_t now = time(NULL);
+        // Intelligent logging: only log on significant changes or time intervals
+        time_t now = time(NULL);
+        bool should_log = false;
+        
+        // Check if enough time has passed since last log
+        if (now - last_log_time >= LOG_INTERVAL_SEC) {
+            should_log = true;
+        }
+        // Check for significant temperature change
+        else if (fabs(cpu_temp - last_cpu_temp) >= TEMP_THRESHOLD) {
+            should_log = true;
+        }
+        // Check for significant CPU usage change
+        else if (fabs(cpu_usage - last_cpu_usage) >= CPU_THRESHOLD) {
+            should_log = true;
+        }
+        // Check for SSD mount/unmount events
+        else if (ssd_mounted != last_ssd_mounted) {
+            should_log = true;
+        }
+        
+        // Log if conditions are met
+        if (should_log && system_monitor_log) {
             fprintf(system_monitor_log, "[%ld] CPU_Temp=%.1f°C CPU_Usage=%.1f%% Memory=%s/%s SSD=%s:%s/%s\n",
                    now, cpu_temp, cpu_usage, mem_used_str, mem_total_str, 
                    ssd_mounted ? "mounted" : "unmounted", ssd_used, ssd_total);
             fflush(system_monitor_log);
+            
+            // Update last logged values
+            last_log_time = now;
+            last_cpu_temp = cpu_temp;
+            last_cpu_usage = cpu_usage;
+            last_ssd_mounted = ssd_mounted;
         }
 
         // Sleep for configured interval

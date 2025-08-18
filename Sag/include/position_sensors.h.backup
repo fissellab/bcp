@@ -1,0 +1,33 @@
+#pragma once
+#include <stdint.h>
+#include <stddef.h>
+
+#define PACKET_MAGIC 0xDEADBEEF
+
+typedef struct {
+    uint32_t magic;         // offset 0
+    uint16_t sequence;      // offset 4
+    uint16_t sensor_mask;   // offset 6
+    uint32_t timestamp_sec; // offset 8
+    uint32_t timestamp_nsec;// offset 12
+} pos_packet_header_t;
+
+typedef struct { float x, y, z; } pos_accel_sample_t;
+typedef struct { float rate; } pos_gyro_spi_sample_t;
+typedef struct { float x, y, z, temperature; } pos_gyro_i2c_sample_t;
+
+typedef struct {
+    pos_packet_header_t header;
+    pos_accel_sample_t  accels[3];
+    pos_gyro_i2c_sample_t gyro_i2c;
+    pos_gyro_spi_sample_t gyro_spi;
+} pos_sensor_packet_t;
+
+// Compile-time layout guards (must match TX)
+_Static_assert(sizeof(pos_packet_header_t) == 16, "pos_packet_header_t size != 16");
+_Static_assert(offsetof(pos_packet_header_t, magic) == 0,  "magic offset mismatch");
+_Static_assert(offsetof(pos_packet_header_t, sequence) == 4,"sequence offset mismatch");
+_Static_assert(offsetof(pos_packet_header_t, sensor_mask) == 6,"sensor_mask offset mismatch");
+_Static_assert(offsetof(pos_packet_header_t, timestamp_sec) == 8,"timestamp_sec offset mismatch");
+_Static_assert(offsetof(pos_packet_header_t, timestamp_nsec) == 12,"timestamp_nsec offset mismatch");
+_Static_assert(sizeof(pos_sensor_packet_t) == 72, "pos_sensor_packet_t size mismatch");

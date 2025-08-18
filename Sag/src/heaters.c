@@ -38,10 +38,10 @@ int stop_heaters_server = 0;
  */
 
 void initialize_heaters(HeaterInfo heaters[]) {
-    // Relay 0 ← AIN2
+    // Relay 0 ← AIN2: Star Camera
     heaters[0].eio_dir      = EIO0_DIR;
     heaters[0].eio_state    = EIO0_STATE;
-    heaters[0].ain_channel  = "AIN0";
+    heaters[0].ain_channel  = "AIN2";
     heaters[0].state        = false;
     heaters[0].current_temp = 0.0;
     heaters[0].temp_valid   = false;
@@ -54,10 +54,10 @@ void initialize_heaters(HeaterInfo heaters[]) {
     heaters[0].temp_high = config.heaters.temp_high_starcam;
     heaters[0].temp_diff = 0.0;
 
-    // Relay 1 ← AIN1
+    // Relay 1 ← AIN0: Motor
     heaters[1].eio_dir      = EIO1_DIR;
     heaters[1].eio_state    = EIO1_STATE;
-    heaters[1].ain_channel  = "AIN2";
+    heaters[1].ain_channel  = "AIN0";
     heaters[1].state        = false;
     heaters[1].current_temp = 0.0;
     heaters[1].temp_valid   = false;
@@ -70,10 +70,10 @@ void initialize_heaters(HeaterInfo heaters[]) {
     heaters[1].temp_high = config.heaters.temp_high_motor;
     heaters[1].temp_diff = 0.0;
 
-    // Relay 2 ← AIN4
+    // Relay 2 ← AIN1: Ethernet Switch
     heaters[2].eio_dir      = EIO2_DIR;
     heaters[2].eio_state    = EIO2_STATE;
-    heaters[2].ain_channel  = "AIN11";
+    heaters[2].ain_channel  = "AIN1";
     heaters[2].state        = false;
     heaters[2].current_temp = 0.0;
     heaters[2].temp_valid   = false;
@@ -86,10 +86,10 @@ void initialize_heaters(HeaterInfo heaters[]) {
     heaters[2].temp_high = config.heaters.temp_high_ethernet;
     heaters[2].temp_diff = 0.0;
 
-    // Relay 3 ← AIN3
+    // Relay 3 ← AIN11: Lockpin
     heaters[3].eio_dir      = EIO3_DIR;
     heaters[3].eio_state    = EIO3_STATE;
-    heaters[3].ain_channel  = "AIN1";
+    heaters[3].ain_channel  = "AIN11";
     heaters[3].state        = false;
     heaters[3].current_temp = 0.0;
     heaters[3].temp_valid   = false;
@@ -102,10 +102,10 @@ void initialize_heaters(HeaterInfo heaters[]) {
     heaters[3].temp_high = config.heaters.temp_high_lockpin;
     heaters[3].temp_diff = 0.0;
 
-    // Relay 4 ← AIN0 (Manual-only heater - no automatic temperature control)
+    // Relay 4 ← AIN0 (Manual-only heater - no automatic temperature control): Pressure Vessel
     heaters[4].eio_dir      = EIO4_DIR;
     heaters[4].eio_state    = EIO4_STATE;
-    heaters[4].ain_channel  = "AIN0";
+    heaters[4].ain_channel  = "";
     heaters[4].state        = false;
     heaters[4].current_temp = 0.0;
     heaters[4].temp_valid   = false;

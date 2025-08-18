@@ -206,7 +206,7 @@ def get_vlbi_status():
     else:
         return "stopped"
 
-def start_vlbi():
+def start_vlbi(ssd_id=1):
     """Start VLBI logging script with real-time output capture"""
     global vlbi_process
     
@@ -218,11 +218,15 @@ def start_vlbi():
         if not os.path.exists(VLBI_SCRIPT_PATH):
             return {"status": "error", "message": f"VLBI script not found: {VLBI_SCRIPT_PATH}"}
         
-        logging.info("Starting VLBI logging script...")
+        # Validate SSD ID
+        if ssd_id not in [1, 2]:
+            return {"status": "error", "message": f"Invalid SSD ID: {ssd_id}. Must be 1 or 2."}
         
-        # Start process with real-time output capture
+        logging.info(f"Starting VLBI logging script with SSD {ssd_id}...")
+        
+        # Start process with real-time output capture, passing SSD parameter
         vlbi_process = subprocess.Popen(
-            ['sudo', VLBI_SCRIPT_PATH],
+            ['sudo', VLBI_SCRIPT_PATH, str(ssd_id)],  # Pass SSD ID as argument
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,  # Merge stderr into stdout
             universal_newlines=True,
@@ -233,13 +237,13 @@ def start_vlbi():
         time.sleep(2)
         
         if vlbi_process.poll() is None:
-            logging.info("VLBI logging script started successfully")
+            logging.info(f"VLBI logging script started successfully with SSD {ssd_id}")
             
             # Start output monitoring thread
             output_thread = threading.Thread(target=monitor_vlbi_output, daemon=True)
             output_thread.start()
             
-            return {"status": "success", "message": "VLBI logging started", "pid": vlbi_process.pid}
+            return {"status": "success", "message": f"VLBI logging started on SSD {ssd_id}", "pid": vlbi_process.pid}
         else:
             # Process exited immediately - get output
             stdout, _ = vlbi_process.communicate()
@@ -300,7 +304,11 @@ def handle_client(client_socket, client_address):
             
             # Process command
             if data == "start_vlbi":
-                response = start_vlbi()
+                response = start_vlbi()  # Default to SSD 1
+            elif data == "start_vlbi_1":
+                response = start_vlbi(1)  # Explicitly use SSD 1
+            elif data == "start_vlbi_2":
+                response = start_vlbi(2)  # Explicitly use SSD 2
             elif data == "start_vlbi_stream":
                 # Add client to streaming list
                 if client_socket not in connected_clients:
@@ -337,12 +345,23 @@ def handle_client(client_socket, client_address):
             
             # Send response
             response_json = json.dumps(response) + "\n"
-            client_socket.send(response_json.encode('utf-8'))
+            try:
+                client_socket.send(response_json.encode('utf-8'))
+                logging.info(f"Response sent successfully for command: {data}")
+            except BrokenPipeError:
+                logging.warning(f"Client disconnected before response could be sent for command: {data}")
+                break
+            except Exception as e:
+                logging.error(f"Error sending response for command {data}: {e}")
+                break
             
             # For streaming commands, keep connection open
             if data == "start_vlbi_stream":
                 # Keep connection alive for streaming
                 continue
+                
+            # For non-streaming commands, close connection after response
+            break
             
     except Exception as e:
         logging.error(f"Error handling client {client_address}: {str(e)}")

@@ -505,9 +505,9 @@ bool spec_server_start(void) {
         return false;
     }
     
-    // Open log file
+    // Open log file in timestamped directory
     char log_path[512];
-    snprintf(log_path, sizeof(log_path), "%s/spectrometer_udp_server.log", "/home/mayukh/bcp/Sag/log");
+    get_timestamped_log_path("spectrometer_udp_server.log", log_path, sizeof(log_path));
     spec_udp_log_file = fopen(log_path, "a");
     if (spec_udp_log_file == NULL) {
         fprintf(stderr, "Warning: Could not open spectrometer UDP log file: %s\n", strerror(errno));

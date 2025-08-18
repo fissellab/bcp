@@ -34,8 +34,8 @@ import json
 from datetime import datetime, timedelta
 from multiprocessing.connection import Listener
 
-# Updated constants based on analysis results
-VLBI_DATA_DIR = "/mnt/vlbi_data"
+# Updated constants based on analysis results  
+VLBI_DATA_DIR = "/mnt/vlbi_data"  # Default fallback (overridden by -d parameter)
 FILE_ROTATION_MINUTES = 10
 
 # Confirmed packet structure from timestamp_gen_simple analysis

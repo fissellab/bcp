@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
 #include <libconfig.h>
 #include "file_io_Sag.h"
 
@@ -14,6 +15,39 @@ void write_to_log(FILE* logfile, const char* file, const char* function, const c
     date[strlen(date) - 1] = '\0';
     fprintf(logfile, "%s : %s : %s : %s\n", date, file, function, message);
     fflush(logfile);
+}
+
+// Global variable to store the timestamped log directory path
+static char timestamped_log_dir[512] = {0};
+
+char* create_timestamped_log_directory(void) {
+    // If already created, return the existing path
+    if (timestamped_log_dir[0] != '\0') {
+        return timestamped_log_dir;
+    }
+    
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    
+    // Create timestamp in format YYYY-MM-DD_HH-MM-SS
+    char timestamp[32];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d_%H-%M-%S", t);
+    
+    // Create the timestamped directory path
+    snprintf(timestamped_log_dir, sizeof(timestamped_log_dir), 
+             "/home/mayukh/bcp/Sag/log/%s_session", timestamp);
+    
+    // Create the directory (and parent log directory if needed)
+    mkdir("/home/mayukh/bcp/Sag/log", 0755);
+    mkdir(timestamped_log_dir, 0755);
+    
+    printf("Created timestamped log directory: %s\n", timestamped_log_dir);
+    return timestamped_log_dir;
+}
+
+void get_timestamped_log_path(const char* filename, char* full_path, size_t path_size) {
+    char* log_dir = create_timestamped_log_directory();
+    snprintf(full_path, path_size, "%s/%s", log_dir, filename);
 }
 
 void read_in_config(const char* filepath) {

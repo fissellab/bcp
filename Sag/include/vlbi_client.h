@@ -44,6 +44,7 @@ int vlbi_client_init(const vlbi_client_config_t *config);
 bool vlbi_client_is_enabled(void);
 int vlbi_check_connectivity(void);
 int vlbi_start_logging(void);
+int vlbi_start_logging_with_ssd(int ssd_id);  // New: start VLBI with SSD parameter
 int vlbi_stop_logging(void);
 int vlbi_get_status(vlbi_status_t *status);
 int vlbi_start_auto_streaming(void);  // New: automatic background streaming

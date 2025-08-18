@@ -12,6 +12,7 @@
 #include <math.h>
 #include <time.h>
 #include <stdbool.h>
+#include <errno.h>
 
 #include "file_io_Sag.h"
 #include "cli_Sag.h"
@@ -641,20 +642,35 @@ void exec_command(Packet pkt) {
         }
     } else if (pkt.cmd_primary == start_vlbi) {
         if (vlbi_client_is_enabled()) {
-            printf("Starting VLBI logging on aquila (%s)...\n", config.vlbi.aquila_ip);
-            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempting to start VLBI logging");
+            // Extract SSD parameter from packet data (default to 1 if not provided)
+            int ssd_id = 1; // Default storage
+            if (pkt.num_data > 0) {
+                ssd_id = pkt.data[0];
+                // Validate parameter
+                if (ssd_id != 1 && ssd_id != 2) {
+                    printf("Invalid VLBI SSD parameter: %d. Using default (1).\n", ssd_id);
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Invalid VLBI SSD parameter, using default");
+                    ssd_id = 1;
+                }
+            }
+            
+            printf("Starting VLBI logging on aquila (%s) with SSD %d...\n", config.vlbi.aquila_ip, ssd_id);
+            char log_msg[128];
+            snprintf(log_msg, sizeof(log_msg), "Attempting to start VLBI logging with SSD %d", ssd_id);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
             
             // First check connectivity
             if (vlbi_check_connectivity()) {
-                int result = vlbi_start_logging();
+                int result = vlbi_start_logging_with_ssd(ssd_id);
                 if (result == 1) {
-                    printf("VLBI logging started successfully!\n");
+                    printf("VLBI logging started successfully on SSD %d!\n", ssd_id);
                     
                     // Automatically start status streaming for telemetry
                     vlbi_start_auto_streaming();
                     printf("VLBI status streaming to telemetry server enabled.\n");
                     
-                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "VLBI logging and auto-streaming started successfully");
+                    snprintf(log_msg, sizeof(log_msg), "VLBI logging and auto-streaming started successfully on SSD %d", ssd_id);
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
                 } else {
                     printf("Failed to start VLBI logging. Check VLBI daemon status.\n");
                     write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to start VLBI logging");
@@ -990,6 +1006,50 @@ void exec_command(Packet pkt) {
         } else {
             printf("PR59 is not enabled in configuration.\n");
             write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_pr59 but PR59 not enabled");
+        }
+    } else if (pkt.cmd_primary == start_pr59_fan) {
+        if (config.pr59.enabled) {
+            if (pr59_running) {
+                printf("Enabling PR59 fan...\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempting to enable PR59 fan");
+                
+                // Send SIGUSR1 signal to TEC controller for fan ON
+                if (kill(pr59_pid, SIGUSR1) == 0) {
+                    printf("PR59 fan enable signal sent successfully.\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PR59 fan enable signal sent");
+                } else {
+                    printf("Error sending fan enable signal to PR59: %s\n", strerror(errno));
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Error sending PR59 fan enable signal");
+                }
+            } else {
+                printf("PR59 TEC controller is not running. Start it first with 'start_pr59'.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted start_pr59_fan but PR59 not running");
+            }
+        } else {
+            printf("PR59 is not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted start_pr59_fan but PR59 not enabled");
+        }
+    } else if (pkt.cmd_primary == stop_pr59_fan) {
+        if (config.pr59.enabled) {
+            if (pr59_running) {
+                printf("Disabling PR59 fan...\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempting to disable PR59 fan");
+                
+                // Send SIGUSR2 signal to TEC controller for fan OFF
+                if (kill(pr59_pid, SIGUSR2) == 0) {
+                    printf("PR59 fan disable signal sent successfully.\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PR59 fan disable signal sent");
+                } else {
+                    printf("Error sending fan disable signal to PR59: %s\n", strerror(errno));
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Error sending PR59 fan disable signal");
+                }
+            } else {
+                printf("PR59 TEC controller is not running. Start it first with 'start_pr59'.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_pr59_fan but PR59 not running");
+            }
+        } else {
+            printf("PR59 is not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_pr59_fan but PR59 not enabled");
         }
     } else if (pkt.cmd_primary == stop_spec_120kHz) {
             if (spec_running) {

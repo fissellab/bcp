@@ -39,6 +39,13 @@ log_message() {
 cleanup() {
     log_message "Shutting down..."
     
+    # Stop RX
+    if [ -n "$RX_PID" ] && kill -0 "$RX_PID" 2>/dev/null; then
+        log_message "Stopping RX program..."
+        kill $RX_PID
+        wait $RX_PID 2>/dev/null
+    fi
+    
     # Stop TX on Pi
     log_message "Stopping TX program on Pi..."
     ssh $SSH_OPTIONS ${PI_USER}@${PI_HOST} "sudo killall pos_sensor_tx" 2>/dev/null || true
@@ -61,28 +68,45 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Wait briefly for TX startup
-log_message "Allowing TX startup time..."
-sleep 5
+# Wait for TX to be ready
+log_message "Waiting for TX to start listening on port 65432..."
+for i in {1..30}; do
+    if ssh $SSH_OPTIONS ${PI_USER}@${PI_HOST} "netstat -tuln 2>/dev/null | grep -q :65432" 2>/dev/null; then
+        log_message "TX is ready"
+        break
+    fi
+    
+    if [ $i -eq 30 ]; then
+        log_message "ERROR: Timeout waiting for TX to start"
+        exit 1
+    fi
+    
+    sleep 1
+done
 
-# Verify TX is running
-if ssh $SSH_OPTIONS ${PI_USER}@${PI_HOST} "pgrep pos_sensor_tx" 2>/dev/null >/dev/null; then
-    log_message "TX is running"
-else
-    log_message "ERROR: TX failed to start"
+# Additional stabilization delay
+log_message "System stabilization delay..."
+sleep 3
+
+# Start local RX
+log_message "Starting local RX program..."
+$LOCAL_RX_EXECUTABLE &
+RX_PID=$!
+
+if [ $? -ne 0 ]; then
+    log_message "ERROR: Failed to start local RX program"
     exit 1
 fi
 
-# Note: Local RX is now handled by BCP position_sensors.c
-log_message "Position sensor TX started on Pi"
-log_message "Data collection system is running (handled by BCP) - Press Ctrl+C to stop"
+log_message "RX program started with PID: $RX_PID"
+log_message "Data collection system is running - Press Ctrl+C to stop"
 
 # Monitor and display elapsed time
 start_time=$(date +%s)
 while true; do
-    # Check if Pi TX is still running
-    if ! ssh $SSH_OPTIONS ${PI_USER}@${PI_HOST} "pgrep pos_sensor_tx" 2>/dev/null >/dev/null; then
-        log_message "Pi TX program has stopped"
+    # Check if RX is still running
+    if ! kill -0 "$RX_PID" 2>/dev/null; then
+        log_message "RX program has stopped"
         break
     fi
     
@@ -92,7 +116,7 @@ while true; do
     printf "\rData collection time: %02d:%02d:%02d" \
         $((elapsed/3600)) $((elapsed%3600/60)) $((elapsed%60))
     
-    sleep 5
+    sleep 1
 done
 
 # Will trigger cleanup via trap

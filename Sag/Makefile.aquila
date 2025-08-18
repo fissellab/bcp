@@ -1,0 +1,80 @@
+# Makefile for Aquila System Monitor
+# Build the system monitor daemon for the aquila backend computer
+
+CC = gcc
+CFLAGS = -Wall -Wextra -O2 -std=c99 -D_GNU_SOURCE
+LDFLAGS = -lpthread
+
+# Paths
+SRC_DIR = src
+BUILD_DIR = build
+TARGET = aquila_system_monitor
+INSTALL_DIR = /usr/local/bin
+SERVICE_DIR = /etc/systemd/system
+
+# Source files
+SOURCES = $(SRC_DIR)/aquila_system_monitor.c
+OBJECTS = $(BUILD_DIR)/aquila_system_monitor.o
+
+# Default target
+all: $(BUILD_DIR)/$(TARGET)
+
+# Create build directory
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# Compile object files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Link executable
+$(BUILD_DIR)/$(TARGET): $(OBJECTS)
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+
+# Install to system
+install: $(BUILD_DIR)/$(TARGET)
+	@echo "Installing Aquila System Monitor..."
+	sudo cp $(BUILD_DIR)/$(TARGET) $(INSTALL_DIR)/$(TARGET)
+	sudo chmod +x $(INSTALL_DIR)/$(TARGET)
+	sudo cp aquila-system-monitor.service $(SERVICE_DIR)/
+	sudo systemctl daemon-reload
+	sudo systemctl enable aquila-system-monitor.service
+	@echo "Installation complete!"
+	@echo "To start the service: sudo systemctl start aquila-system-monitor"
+	@echo "To check status: sudo systemctl status aquila-system-monitor"
+
+# Uninstall from system
+uninstall:
+	@echo "Uninstalling Aquila System Monitor..."
+	sudo systemctl stop aquila-system-monitor.service || true
+	sudo systemctl disable aquila-system-monitor.service || true
+	sudo rm -f $(SERVICE_DIR)/aquila-system-monitor.service
+	sudo rm -f $(INSTALL_DIR)/$(TARGET)
+	sudo systemctl daemon-reload
+	@echo "Uninstall complete!"
+
+# Start the service
+start:
+	sudo systemctl start aquila-system-monitor.service
+
+# Stop the service
+stop:
+	sudo systemctl stop aquila-system-monitor.service
+
+# Check service status
+status:
+	sudo systemctl status aquila-system-monitor.service
+
+# View logs
+logs:
+	sudo journalctl -u aquila-system-monitor.service -f
+
+# Clean build files
+clean:
+	rm -rf $(BUILD_DIR)
+
+# Test build (compile only)
+test: $(BUILD_DIR)/$(TARGET)
+	@echo "Build test successful!"
+
+.PHONY: all install uninstall start stop status logs clean test

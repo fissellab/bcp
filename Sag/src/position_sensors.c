@@ -9,6 +9,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <time.h>
+#include <sys/time.h>   // ADD
+#include <sys/stat.h>   // ADD for mkdir
+#include <stdbool.h> 
 
 #include "position_sensors.h"
 #include "file_io_Sag.h"
@@ -24,6 +27,13 @@ static bool script_thread_running = false;
 static pid_t script_pid = -1;
 static FILE *pos_log_file = NULL;
 
+// Data logging files
+static FILE *accel_files[3] = {NULL, NULL, NULL};
+static FILE *spi_gyro_file = NULL;
+static FILE *i2c_gyro_file = NULL;
+static char data_base_path[512];
+static pthread_mutex_t file_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 // Forward declarations
 static void *script_management_thread(void *arg);
 static void *data_reception_thread(void *arg);
@@ -31,6 +41,10 @@ static void log_position_message(const char *message);
 static bool validate_packet(const pos_sensor_packet_t *packet);
 static void process_sensor_packet(const pos_sensor_packet_t *packet);
 static void update_telemetry_data(const pos_sensor_packet_t *packet);
+static int create_data_directories(void);
+static int open_data_files(void);
+static void close_data_files(void);
+static void write_sensor_data(const pos_sensor_packet_t *packet);
 
 // Logging function
 static void log_position_message(const char *message) {
@@ -100,6 +114,17 @@ bool position_sensors_start(void) {
     
     log_position_message("Starting position sensor system...");
     
+    // Create data directories and open files
+    if (create_data_directories() < 0) {
+        log_position_message("Failed to create data directories");
+        return false;
+    }
+    
+    if (open_data_files() < 0) {
+        log_position_message("Failed to open data files");
+        return false;
+    }
+    
     // Start script management thread
     script_thread_running = true;
     if (pthread_create(&script_thread, NULL, script_management_thread, NULL) != 0) {
@@ -115,6 +140,7 @@ bool position_sensors_start(void) {
         data_thread_running = false;
         script_thread_running = false;
         pthread_cancel(script_thread);
+        pthread_join(script_thread, NULL); // ADD: ensure cleanup
         return false;
     }
     
@@ -127,14 +153,31 @@ void position_sensors_stop(void) {
     if (!script_thread_running && !data_thread_running) {
         return;
     }
-    
     log_position_message("Stopping position sensor system...");
-    
+
     // Stop threads
     script_thread_running = false;
     data_thread_running = false;
-    
-    // Wait for threads to finish
+
+    // First terminate script process so script thread can exit waitpid()
+    if (script_pid > 0) {
+        log_position_message("Terminating position sensor script...");
+        kill(script_pid, SIGTERM);
+        int status;
+        for (int i = 0; i < 10; i++) {
+            pid_t result = waitpid(script_pid, &status, WNOHANG);
+            if (result == script_pid || result == -1) break;
+            sleep(1);
+        }
+        if (waitpid(script_pid, &status, WNOHANG) == 0) {
+            log_position_message("Force killing position sensor script...");
+            kill(script_pid, SIGKILL);
+            waitpid(script_pid, NULL, 0);
+        }
+        script_pid = -1;
+    }
+
+    // Now join threads
     if (data_thread_running) {
         pthread_join(data_thread, NULL);
     }
@@ -142,30 +185,8 @@ void position_sensors_stop(void) {
         pthread_join(script_thread, NULL);
     }
     
-    // Kill script if running
-    if (script_pid > 0) {
-        log_position_message("Terminating position sensor script...");
-        kill(script_pid, SIGTERM);
-        
-        // Wait for script to terminate gracefully
-        int status;
-        for (int i = 0; i < 10; i++) {
-            pid_t result = waitpid(script_pid, &status, WNOHANG);
-            if (result == script_pid || result == -1) {
-                break;
-            }
-            sleep(1);
-        }
-        
-        // Force kill if still running
-        if (waitpid(script_pid, &status, WNOHANG) == 0) {
-            log_position_message("Force killing position sensor script...");
-            kill(script_pid, SIGKILL);
-            waitpid(script_pid, NULL, 0);
-        }
-        
-        script_pid = -1;
-    }
+    // Close data files
+    close_data_files();
     
     // Update status
     sensor_status.connected = false;
@@ -312,10 +333,10 @@ static void *data_reception_thread(void *arg) {
     
     int sockfd = -1;
     struct sockaddr_in server_addr;
-    char buffer[4096];
-    
+    uint8_t rbuf[sizeof(pos_sensor_packet_t) * 128];
+    size_t rlen = 0;
+
     while (data_thread_running) {
-        // Try to connect to Pi if not connected
         if (sockfd < 0) {
             sockfd = socket(AF_INET, SOCK_STREAM, 0);
             if (sockfd < 0) {
@@ -323,18 +344,15 @@ static void *data_reception_thread(void *arg) {
                 sleep(5);
                 continue;
             }
-            
-            // Set socket timeout
-            struct timeval timeout;
+
+            struct timeval timeout = {0};
             timeout.tv_sec = client_config.connection_timeout;
             timeout.tv_usec = 0;
             setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-            
-            // Setup server address
+
             memset(&server_addr, 0, sizeof(server_addr));
             server_addr.sin_family = AF_INET;
             server_addr.sin_port = htons(client_config.pi_port);
-            
             if (inet_pton(AF_INET, client_config.pi_ip, &server_addr.sin_addr) <= 0) {
                 strcpy(sensor_status.last_error, "Invalid Pi IP address");
                 close(sockfd);
@@ -342,8 +360,7 @@ static void *data_reception_thread(void *arg) {
                 sleep(5);
                 continue;
             }
-            
-            // Connect to Pi
+
             if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
                 char msg[256];
                 snprintf(msg, sizeof(msg), "Connection to Pi failed: %s", strerror(errno));
@@ -354,43 +371,68 @@ static void *data_reception_thread(void *arg) {
                 sleep(5);
                 continue;
             }
-            
+
             sensor_status.connected = true;
             strcpy(sensor_status.last_error, "Connected to Pi");
             log_position_message("Connected to position sensor Pi");
+            rlen = 0; // reset buffer on new connection
         }
-        
-        // Receive data
-        ssize_t bytes_received = recv(sockfd, buffer, sizeof(buffer), 0);
-        
-        if (bytes_received > 0) {
+
+        // Read into tail of buffer
+        ssize_t n = recv(sockfd, rbuf + rlen, sizeof(rbuf) - rlen, 0);
+        if (n > 0) {
+            rlen += (size_t)n;
             sensor_status.data_active = true;
-            
-            // Process received data (expecting complete packets)
-            if (bytes_received >= (ssize_t)sizeof(pos_sensor_packet_t)) {
-                pos_sensor_packet_t *packet = (pos_sensor_packet_t*)buffer;
-                
-                if (validate_packet(packet)) {
-                    process_sensor_packet(packet);
-                    update_telemetry_data(packet);
-                    sensor_status.packets_received++;
-                    sensor_status.last_packet_time = time(NULL);
-                } else {
-                    log_position_message("Received invalid packet");
+
+            // Consume complete packets
+            const size_t PSZ = sizeof(pos_sensor_packet_t);
+            size_t off = 0;
+            while (rlen - off >= PSZ) {
+                const pos_sensor_packet_t *packet = (const pos_sensor_packet_t *)(rbuf + off);
+
+                if (!validate_packet(packet)) {
+                    // Resync by searching for magic
+                    size_t shift = 1;
+                    for (; off + shift + sizeof(uint32_t) <= rlen; ++shift) {
+                        uint32_t m;
+                        memcpy(&m, rbuf + off + shift, sizeof(uint32_t));
+                        if (m == 0xDEADBEEF) break;
+                    }
+                    off += shift;
+                    continue;
                 }
+
+                // Packet received successfully
+
+                process_sensor_packet(packet);
+                update_telemetry_data(packet);
+                sensor_status.packets_received++;
+                sensor_status.last_packet_time = time(NULL);
+                off += PSZ;
             }
-        } else if (bytes_received == 0) {
-            // Connection closed
+
+            // Move remainder to start
+            if (off > 0) {
+                size_t rem = rlen - off;
+                memmove(rbuf, rbuf + off, rem);
+                rlen = rem;
+            }
+
+            // Prevent pathological overflow if producer outruns consumer
+            if (rlen == sizeof(rbuf)) {
+                log_position_message("Warning: receiver buffer overflow, dropping bytes");
+                rlen = 0;
+            }
+        } else if (n == 0) {
             log_position_message("Pi closed connection");
             close(sockfd);
             sockfd = -1;
             sensor_status.connected = false;
             sensor_status.data_active = false;
             strcpy(sensor_status.last_error, "Connection closed by Pi");
+            rlen = 0;
         } else {
-            // Error receiving data
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                // Timeout - continue
                 continue;
             } else {
                 char msg[256];
@@ -400,14 +442,12 @@ static void *data_reception_thread(void *arg) {
                 sockfd = -1;
                 sensor_status.connected = false;
                 sensor_status.data_active = false;
+                rlen = 0;
             }
         }
     }
-    
-    if (sockfd >= 0) {
-        close(sockfd);
-    }
-    
+
+    if (sockfd >= 0) close(sockfd);
     log_position_message("Data reception thread stopped");
     return NULL;
 }
@@ -417,14 +457,16 @@ static bool validate_packet(const pos_sensor_packet_t *packet) {
     return (packet->header.magic == 0xDEADBEEF);
 }
 
-// Process sensor packet (data logging handled by pos_sensor_rx)
+// Process sensor packet - includes data logging
 static void process_sensor_packet(const pos_sensor_packet_t *packet) {
-    // Log packet statistics periodically
+    // Write sensor data to files
+    write_sensor_data(packet);
+    
+    // Log packet statistics periodically (reduced frequency)
     static uint32_t last_log_count = 0;
-    if (sensor_status.packets_received - last_log_count >= 10000) {
+    if (sensor_status.packets_received - last_log_count >= 100000) {
         char msg[256];
-        snprintf(msg, sizeof(msg), "Received %u packets, seq=%u", 
-                sensor_status.packets_received, packet->header.sequence);
+        snprintf(msg, sizeof(msg), "Received %u packets", sensor_status.packets_received);
         log_position_message(msg);
         last_log_count = sensor_status.packets_received;
     }
@@ -496,4 +538,188 @@ void position_sensors_cleanup(void) {
     
     client_initialized = false;
     log_position_message("Position sensor client cleaned up");
-} 
+}
+
+// Create data directories for sensor data logging
+static int create_data_directories(void) {
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    
+    // Create base directory with timestamp
+    snprintf(data_base_path, sizeof(data_base_path), "%s/%04d-%02d-%02d_%02d-%02d-%02d",
+             client_config.data_save_path, 
+             t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+             t->tm_hour, t->tm_min, t->tm_sec);
+    
+    // Create base directory
+    if (mkdir(data_base_path, 0755) < 0 && errno != EEXIST) {
+        char msg[256];
+        snprintf(msg, sizeof(msg), "Failed to create base directory %s: %s", 
+                data_base_path, strerror(errno));
+        log_position_message(msg);
+        return -1;
+    }
+    
+    // Create subdirectories for each sensor type
+    char subdir[512];
+    for (int i = 0; i < 3; i++) {
+        snprintf(subdir, sizeof(subdir), "%s/accelerometer_%d", data_base_path, i + 1);
+        if (mkdir(subdir, 0755) < 0 && errno != EEXIST) {
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Failed to create accel directory %s: %s", 
+                    subdir, strerror(errno));
+            log_position_message(msg);
+            return -1;
+        }
+    }
+    
+    snprintf(subdir, sizeof(subdir), "%s/spi_gyroscope", data_base_path);
+    if (mkdir(subdir, 0755) < 0 && errno != EEXIST) {
+        char msg[256];
+        snprintf(msg, sizeof(msg), "Failed to create SPI gyro directory %s: %s", 
+                subdir, strerror(errno));
+        log_position_message(msg);
+        return -1;
+    }
+    
+    snprintf(subdir, sizeof(subdir), "%s/i2c_gyroscope", data_base_path);
+    if (mkdir(subdir, 0755) < 0 && errno != EEXIST) {
+        char msg[256];
+        snprintf(msg, sizeof(msg), "Failed to create I2C gyro directory %s: %s", 
+                subdir, strerror(errno));
+        log_position_message(msg);
+        return -1;
+    }
+    
+    char msg[256];
+    snprintf(msg, sizeof(msg), "Created data directories in %s", data_base_path);
+    log_position_message(msg);
+    return 0;
+}
+
+// Open data files for writing
+static int open_data_files(void) {
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    char filename[512];
+    
+    // Open accelerometer files
+    for (int i = 0; i < 3; i++) {
+        snprintf(filename, sizeof(filename), "%s/accelerometer_%d/accel_%d_%04d%02d%02d_%02d%02d%02d.bin",
+                data_base_path, i + 1, i + 1,
+                t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+                t->tm_hour, t->tm_min, t->tm_sec);
+        
+        accel_files[i] = fopen(filename, "wb");
+        if (accel_files[i] == NULL) {
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Failed to open accel file %s: %s", 
+                    filename, strerror(errno));
+            log_position_message(msg);
+            return -1;
+        }
+    }
+    
+    // Open SPI gyroscope file
+    snprintf(filename, sizeof(filename), "%s/spi_gyroscope/spi_gyro_%04d%02d%02d_%02d%02d%02d.bin",
+            data_base_path,
+            t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+            t->tm_hour, t->tm_min, t->tm_sec);
+    
+    spi_gyro_file = fopen(filename, "wb");
+    if (spi_gyro_file == NULL) {
+        char msg[256];
+        snprintf(msg, sizeof(msg), "Failed to open SPI gyro file %s: %s", 
+                filename, strerror(errno));
+        log_position_message(msg);
+        return -1;
+    }
+    
+    // Open I2C gyroscope file
+    snprintf(filename, sizeof(filename), "%s/i2c_gyroscope/i2c_gyro_%04d%02d%02d_%02d%02d%02d.bin",
+            data_base_path,
+            t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+            t->tm_hour, t->tm_min, t->tm_sec);
+    
+    i2c_gyro_file = fopen(filename, "wb");
+    if (i2c_gyro_file == NULL) {
+        char msg[256];
+        snprintf(msg, sizeof(msg), "Failed to open I2C gyro file %s: %s", 
+                filename, strerror(errno));
+        log_position_message(msg);
+        return -1;
+    }
+    
+    // After successfully opening each file, enable large buffered I/O
+    for (int i = 0; i < 3; i++) {
+        if (accel_files[i]) setvbuf(accel_files[i], NULL, _IOFBF, 1 << 20); // 1 MiB
+    }
+    if (spi_gyro_file) setvbuf(spi_gyro_file, NULL, _IOFBF, 1 << 20);
+    if (i2c_gyro_file) setvbuf(i2c_gyro_file, NULL, _IOFBF, 1 << 20);
+    log_position_message("Data files opened successfully");
+    return 0;
+}
+
+// Close data files
+static void close_data_files(void) {
+    pthread_mutex_lock(&file_mutex);
+    
+    for (int i = 0; i < 3; i++) {
+        if (accel_files[i] != NULL) {
+            fclose(accel_files[i]);
+            accel_files[i] = NULL;
+        }
+    }
+    
+    if (spi_gyro_file != NULL) {
+        fclose(spi_gyro_file);
+        spi_gyro_file = NULL;
+    }
+    
+    if (i2c_gyro_file != NULL) {
+        fclose(i2c_gyro_file);
+        i2c_gyro_file = NULL;
+    }
+    
+    pthread_mutex_unlock(&file_mutex);
+    log_position_message("Data files closed");
+}
+
+// Write sensor data to files
+static void write_sensor_data(const pos_sensor_packet_t *packet) {
+    pthread_mutex_lock(&file_mutex);
+    static uint32_t flush_counter = 0;
+    double timestamp = packet->header.timestamp_sec + packet->header.timestamp_nsec / 1000000000.0;
+
+    for (int i = 0; i < 3; i++) {
+        if (accel_files[i] != NULL) {
+            fwrite(&timestamp, sizeof(double), 1, accel_files[i]);
+            fwrite(&packet->accels[i].x, sizeof(float), 1, accel_files[i]);
+            fwrite(&packet->accels[i].y, sizeof(float), 1, accel_files[i]);
+            fwrite(&packet->accels[i].z, sizeof(float), 1, accel_files[i]);
+        }
+    }
+
+    if (i2c_gyro_file != NULL) {
+        fwrite(&timestamp, sizeof(double), 1, i2c_gyro_file);
+        fwrite(&packet->gyro_i2c.x, sizeof(float), 1, i2c_gyro_file);
+        fwrite(&packet->gyro_i2c.y, sizeof(float), 1, i2c_gyro_file);
+        fwrite(&packet->gyro_i2c.z, sizeof(float), 1, i2c_gyro_file);
+        // rename field is fine (layout-compatible)
+        fwrite(&packet->gyro_i2c.temperature, sizeof(float), 1, i2c_gyro_file);
+    }
+
+    if ((packet->header.sensor_mask & 0x10) && spi_gyro_file != NULL) {
+        fwrite(&timestamp, sizeof(double), 1, spi_gyro_file);
+        fwrite(&packet->gyro_spi.rate, sizeof(float), 1, spi_gyro_file);
+    }
+
+    // Periodic flush (e.g., every 1000 packets)
+    if ((++flush_counter % 1000) == 0) {
+        for (int i = 0; i < 3; i++) if (accel_files[i]) fflush(accel_files[i]);
+        if (i2c_gyro_file) fflush(i2c_gyro_file);
+        if (spi_gyro_file) fflush(spi_gyro_file);
+    }
+
+    pthread_mutex_unlock(&file_mutex);
+}

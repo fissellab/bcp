@@ -664,8 +664,17 @@ static int open_nmea_device(void) {
     }
     
     // Set baud rate
-    cfsetospeed(&tty, B19200);
-    cfsetispeed(&tty, B19200);
+    speed_t baud_speed;
+    switch (current_config.baud_rate) {
+        case 115200: baud_speed = B115200; break;
+        case 57600:  baud_speed = B57600; break;
+        case 38400:  baud_speed = B38400; break;
+        case 19200:  baud_speed = B19200; break;
+        case 9600:   baud_speed = B9600; break;
+        default:     baud_speed = B115200; break;  // Default to 115200 for GPS
+    }
+    cfsetospeed(&tty, baud_speed);
+    cfsetispeed(&tty, baud_speed);
     
     // Configure for raw input
     tty.c_cflag &= ~PARENB;        // No parity
@@ -704,8 +713,8 @@ static int open_nmea_device(void) {
 // Thread to read raw NMEA data for heading information
 static void *nmea_reading_thread(void *arg) {
     (void)arg;
-    char buffer[1024];
-    char line_buffer[2048] = {0};
+    char buffer[4096];      // Increased from 1024 for 115200 baud rate
+    char line_buffer[8192] = {0};  // Increased from 2048 for 115200 baud rate
     int line_buffer_pos = 0;
     
     while (logging && nmea_fd >= 0) {

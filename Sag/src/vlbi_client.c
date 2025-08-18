@@ -219,16 +219,27 @@ int vlbi_check_connectivity(void) {
  * Start VLBI logging
  */
 int vlbi_start_logging(void) {
+    return vlbi_start_logging_with_ssd(1); // Default to SSD 1
+}
+
+/**
+ * Start VLBI logging with SSD parameter
+ */
+int vlbi_start_logging_with_ssd(int ssd_id) {
     char response[1024];
+    char command[32];
     
-    printf("Sending start command to VLBI daemon...\n");
+    // Create parameterized command
+    snprintf(command, sizeof(command), "start_vlbi_%d", ssd_id);
     
-    if (send_vlbi_command("start_vlbi", response, sizeof(response)) == 0) {
+    printf("Sending start command to VLBI daemon with SSD %d...\n", ssd_id);
+    
+    if (send_vlbi_command(command, response, sizeof(response)) == 0) {
         char* status = extract_json_string(response, "status");
         char* message = extract_json_string(response, "message");
         
         if (status && strcmp(status, "success") == 0) {
-            printf("VLBI logging started successfully");
+            printf("VLBI logging started successfully on SSD %d", ssd_id);
             int pid = extract_json_int(response, "pid");
             if (pid > 0) {
                 printf(" (PID: %d)", pid);
@@ -241,7 +252,7 @@ int vlbi_start_logging(void) {
             if (message) free(message);
             return 1;
         } else {
-            printf("Failed to start VLBI logging\n");
+            printf("Failed to start VLBI logging on SSD %d\n", ssd_id);
             if (message) {
                 printf("Error: %s\n", message);
             }

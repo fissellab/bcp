@@ -38,6 +38,8 @@ enum commands {
     bvexcam_save_start,
     bvexcam_set_exp,
     focus_bvexcam,
+    bvexcam_set_focus_inf,
+    bvexcam_set_focus,
     bvexcam_start,
     bvexcam_stop,
     gotoenc,
@@ -73,10 +75,16 @@ enum commands {
     stop_heaters,
     start_pr59,
     stop_pr59,
+    start_pr59_fan,
+    stop_pr59_fan,
     start_position_box,
     stop_position_box,
     position_box_on,
     position_box_off,
+    housekeeping_on,
+    housekeeping_off,
+    start_housekeeping,
+    stop_housekeeping,
     exit_both
 
 };

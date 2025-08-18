@@ -62,6 +62,8 @@ enum commands {
     stop_heaters,
     start_pr59,
     stop_pr59,
+    start_pr59_fan,
+    stop_pr59_fan,
     start_position_box,
     stop_position_box,
     position_box_on,
