@@ -52,6 +52,8 @@ int pr59_interface_init(void) {
     shared_pr59_data->is_running = false;
     shared_pr59_data->timestamp = time(NULL);
     shared_pr59_data->last_update = 0;
+    shared_pr59_data->fan_status = FAN_AUTO;
+    shared_pr59_data->pid_update_pending = false;
     pthread_mutex_unlock(&shared_pr59_data->mutex);
     
     return 0;
@@ -131,6 +133,9 @@ bool pr59_get_data(pr59_data_t *data) {
     data->is_running = shared_pr59_data->is_running;
     data->is_heating = shared_pr59_data->is_heating;
     data->is_at_setpoint = shared_pr59_data->is_at_setpoint;
+    data->fan_status = shared_pr59_data->fan_status;
+    data->pid_update_pending = shared_pr59_data->pid_update_pending;
+    data->pid_update = shared_pr59_data->pid_update;
     data->last_update = shared_pr59_data->last_update;
     
     bool is_running = shared_pr59_data->is_running;
@@ -183,5 +188,80 @@ void pr59_interface_cleanup(void) {
         close(shm_fd);
         shm_unlink(PR59_SHM_NAME);
         shm_fd = -1;
+    }
+}
+
+// Update fan status (called by TEC controller)
+void pr59_update_fan_status(pr59_fan_status_t status) {
+    if (shared_pr59_data == NULL) {
+        return; // Interface not initialized
+    }
+    
+    pthread_mutex_lock(&shared_pr59_data->mutex);
+    shared_pr59_data->fan_status = status;
+    pthread_mutex_unlock(&shared_pr59_data->mutex);
+}
+
+// Set PID parameter update (called by main process)
+void pr59_set_pid_update(float kp, float ki, float kd, bool update_kp, bool update_ki, bool update_kd) {
+    if (shared_pr59_data == NULL) {
+        return; // Interface not initialized
+    }
+    
+    pthread_mutex_lock(&shared_pr59_data->mutex);
+    
+    // Set the update flags and new values
+    shared_pr59_data->pid_update.update_kp = update_kp;
+    shared_pr59_data->pid_update.update_ki = update_ki;
+    shared_pr59_data->pid_update.update_kd = update_kd;
+    
+    if (update_kp) shared_pr59_data->pid_update.new_kp = kp;
+    if (update_ki) shared_pr59_data->pid_update.new_ki = ki;
+    if (update_kd) shared_pr59_data->pid_update.new_kd = kd;
+    
+    // Mark update as pending
+    shared_pr59_data->pid_update_pending = true;
+    
+    pthread_mutex_unlock(&shared_pr59_data->mutex);
+}
+
+// Get pending PID updates (called by TEC controller)
+bool pr59_get_pid_update(pr59_pid_update_t *update) {
+    if (shared_pr59_data == NULL || update == NULL) {
+        return false;
+    }
+    
+    pthread_mutex_lock(&shared_pr59_data->mutex);
+    
+    bool pending = shared_pr59_data->pid_update_pending;
+    if (pending) {
+        *update = shared_pr59_data->pid_update;
+    }
+    
+    pthread_mutex_unlock(&shared_pr59_data->mutex);
+    
+    return pending;
+}
+
+// Clear pending PID updates (called by TEC controller after processing)
+void pr59_clear_pid_update(void) {
+    if (shared_pr59_data == NULL) {
+        return;
+    }
+    
+    pthread_mutex_lock(&shared_pr59_data->mutex);
+    shared_pr59_data->pid_update_pending = false;
+    memset(&shared_pr59_data->pid_update, 0, sizeof(pr59_pid_update_t));
+    pthread_mutex_unlock(&shared_pr59_data->mutex);
+}
+
+// Get fan status string for telemetry
+const char* pr59_get_fan_status_string(pr59_fan_status_t status) {
+    switch (status) {
+        case FAN_AUTO: return "automatic";
+        case FAN_FORCED_ON: return "forced_on";
+        case FAN_FORCED_OFF: return "forced_off";
+        case FAN_ERROR: return "error";
+        default: return "unknown";
     }
 } 

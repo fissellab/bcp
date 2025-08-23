@@ -39,12 +39,14 @@ int serial_port = -1;
 FILE* log_file = NULL;
 volatile sig_atomic_t keep_running = 1;
 volatile sig_atomic_t fan_override_enable = 0;  // 0=automatic, 1=force ON, -1=force OFF
+
 PR59_Config config;
 
 // Function prototypes
 void signal_handler(int signum);
 void fan_enable_handler(int signum);
 void fan_disable_handler(int signum);
+
 void cleanup(void);
 int open_serial_port(const char *port);
 void configure_serial_port(int fd);
@@ -54,6 +56,8 @@ float read_fet_temperature(int fd);
 float read_voltage(int fd);
 float read_current(int fd);
 int load_bcp_config(const char* config_file_path, PR59_Config* pr59_config);
+int load_runtime_config(PR59_Config* pr59_config);
+int save_runtime_config(const PR59_Config* pr59_config);
 void clear_line(void);
 void set_fan_mode(int fd, int mode, char *response);
 void set_regulation_mode(int fd, int mode, char *response);
@@ -62,6 +66,9 @@ void set_output_limit(int fd, float limit, char *response);
 int initialize_with_register_clear_and_soft_start(int fd, PR59_Config* config);
 int clear_all_registers(int fd);
 void apply_fan_override(int fd);
+void update_pid_parameters(int fd, const pr59_pid_update_t* update);
+pr59_fan_status_t read_fan_status(int fd);
+void process_pid_updates(int fd);
 
 // Signal handler for graceful shutdown
 void signal_handler(int signum) {
@@ -87,6 +94,8 @@ void fan_disable_handler(int signum) {
         fflush(log_file);
     }
 }
+
+
 
 // Cleanup function
 void cleanup(void) {
@@ -387,6 +396,69 @@ int load_bcp_config(const char* config_file_path, PR59_Config* pr59_config) {
     return 0;
 }
 
+// Load runtime configuration overrides (if they exist)
+int load_runtime_config(PR59_Config* pr59_config) {
+    config_t cfg;
+    config_init(&cfg);
+    
+    const char* runtime_config_path = "pr59_runtime.config";
+    
+    // Check if runtime config file exists
+    if (access(runtime_config_path, F_OK) != 0) {
+        printf("No runtime config file found. Using default values.\n");
+        return 0; // No runtime config is fine
+    }
+
+    if (!config_read_file(&cfg, runtime_config_path)) {
+        fprintf(stderr, "TEC Controller: Runtime config file error %s:%d - %s\n", 
+                config_error_file(&cfg), config_error_line(&cfg), config_error_text(&cfg));
+        config_destroy(&cfg);
+        return -1;
+    }
+
+    printf("Loading runtime PID parameter overrides...\n");
+    
+    // Override PID parameters if they exist in runtime config
+    double temp_double;
+    if (config_lookup_float(&cfg, "kp", &temp_double)) {
+        pr59_config->kp = (float)temp_double;
+        printf("Runtime override: Kp = %.3f\n", pr59_config->kp);
+    }
+    
+    if (config_lookup_float(&cfg, "ki", &temp_double)) {
+        pr59_config->ki = (float)temp_double;
+        printf("Runtime override: Ki = %.3f\n", pr59_config->ki);
+    }
+    
+    if (config_lookup_float(&cfg, "kd", &temp_double)) {
+        pr59_config->kd = (float)temp_double;
+        printf("Runtime override: Kd = %.3f\n", pr59_config->kd);
+    }
+
+    config_destroy(&cfg);
+    return 0;
+}
+
+// Save runtime configuration
+int save_runtime_config(const PR59_Config* pr59_config) {
+    FILE* file = fopen("pr59_runtime.config", "w");
+    if (file == NULL) {
+        fprintf(stderr, "Error: Could not create runtime config file\n");
+        return -1;
+    }
+    
+    fprintf(file, "# PR59 Runtime Configuration\n");
+    fprintf(file, "# This file contains runtime overrides for PID parameters\n");
+    fprintf(file, "# Generated automatically by TEC controller\n\n");
+    fprintf(file, "kp = %.6f;\n", pr59_config->kp);
+    fprintf(file, "ki = %.6f;\n", pr59_config->ki);
+    fprintf(file, "kd = %.6f;\n", pr59_config->kd);
+    
+    fclose(file);
+    printf("Runtime configuration saved to pr59_runtime.config\n");
+    return 0;
+}
+
 // Clear the current line for updating display
 void clear_line(void) {
     printf("\r\033[K"); // Carriage return and clear line
@@ -513,6 +585,102 @@ void apply_fan_override(int fd) {
     // If fan_override_enable == 0, we keep the automatic mode (mode 2) that was set during initialization
 }
 
+// Read current fan status from TEC controller registers
+pr59_fan_status_t read_fan_status(int fd) {
+    char response[BUFFER_SIZE];
+    float fan1_mode = -1, fan2_mode = -1;
+    
+    // Read Fan1 mode (register 16)
+    if (send_command(fd, "$R16?", response) > 0) {
+        sscanf(response, "$R16?\r\n%f", &fan1_mode);
+    }
+    
+    // Read Fan2 mode (register 23) - if present
+    if (send_command(fd, "$R23?", response) > 0) {
+        sscanf(response, "$R23?\r\n%f", &fan2_mode);
+    }
+    
+    // Determine status based on fan modes
+    // Mode 0 = OFF, Mode 1 = ON, Mode 2 = AUTOMATIC
+    if (fan1_mode < 0) {
+        return FAN_ERROR; // Could not read status
+    }
+    
+    if (fan1_mode == 0) {
+        return FAN_FORCED_OFF;
+    } else if (fan1_mode == 1) {
+        return FAN_FORCED_ON;
+    } else if (fan1_mode == 2) {
+        return FAN_AUTO;
+    } else {
+        return FAN_ERROR; // Unknown mode
+    }
+}
+
+// Update PID parameters in the TEC controller
+void update_pid_parameters(int fd, const pr59_pid_update_t* update) {
+    char cmd[50];
+    char response[BUFFER_SIZE];
+    
+    printf("=== Updating PID Parameters ===\n");
+    
+    // Stop regulation temporarily
+    send_command(fd, "$Q", response);
+    usleep(100000); // 100ms delay
+    
+    if (update->update_kp) {
+        snprintf(cmd, sizeof(cmd), "$R1=%.6f", update->new_kp);
+        send_command(fd, cmd, response);
+        config.kp = update->new_kp;
+        printf("Updated Kp = %.6f\n", update->new_kp);
+        if (log_file != NULL) {
+            fprintf(log_file, "# PID Update: Kp = %.6f\n", update->new_kp);
+        }
+    }
+    
+    if (update->update_ki) {
+        snprintf(cmd, sizeof(cmd), "$R2=%.6f", update->new_ki);
+        send_command(fd, cmd, response);
+        config.ki = update->new_ki;
+        printf("Updated Ki = %.6f\n", update->new_ki);
+        if (log_file != NULL) {
+            fprintf(log_file, "# PID Update: Ki = %.6f\n", update->new_ki);
+        }
+    }
+    
+    if (update->update_kd) {
+        snprintf(cmd, sizeof(cmd), "$R3=%.6f", update->new_kd);
+        send_command(fd, cmd, response);
+        config.kd = update->new_kd;
+        printf("Updated Kd = %.6f\n", update->new_kd);
+        if (log_file != NULL) {
+            fprintf(log_file, "# PID Update: Kd = %.6f\n", update->new_kd);
+        }
+    }
+    
+    // Save to EEPROM
+    send_command(fd, "$RW", response);
+    usleep(500000); // 500ms delay for EEPROM write
+    
+    // Restart regulation
+    send_command(fd, "$W", response);
+    
+    // Save runtime configuration for persistence
+    save_runtime_config(&config);
+    
+    printf("PID parameters updated and saved successfully!\n");
+}
+
+// Process pending PID updates from shared memory
+void process_pid_updates(int fd) {
+    pr59_pid_update_t update;
+    
+    if (pr59_get_pid_update(&update)) {
+        update_pid_parameters(fd, &update);
+        pr59_clear_pid_update();
+    }
+}
+
 int main(int argc, char *argv[]) {
     // Initialize shared memory interface first
     if (pr59_interface_init() != 0) {
@@ -532,11 +700,17 @@ int main(int argc, char *argv[]) {
         pr59_interface_cleanup();
         return 1;
     }
+    
+    // Load runtime configuration overrides (if they exist)
+    if (load_runtime_config(&config) != 0) {
+        printf("WARNING: Failed to load runtime configuration\n");
+    }
 
     signal(SIGINT, signal_handler);
     signal(SIGTERM, signal_handler);
     signal(SIGUSR1, fan_enable_handler);   // Fan enable signal from BCP
     signal(SIGUSR2, fan_disable_handler);  // Fan disable signal from BCP
+
     atexit(cleanup);
 
     serial_port = open_serial_port(config.port);
@@ -596,8 +770,15 @@ int main(int argc, char *argv[]) {
         float voltage = read_voltage(serial_port);
         float power = current * voltage;
 
+        // Check for pending PID updates from shared memory
+        process_pid_updates(serial_port);
+
         // Apply any fan override commands from ground station
         apply_fan_override(serial_port);
+        
+        // Read current fan status from hardware
+        pr59_fan_status_t fan_status = read_fan_status(serial_port);
+        pr59_update_fan_status(fan_status);
 
         // Update shared memory for BCP telemetry
         pr59_update_data(temp, fet_temp, current, voltage, 

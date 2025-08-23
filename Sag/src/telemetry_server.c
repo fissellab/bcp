@@ -338,6 +338,14 @@ void telemetry_send_metric(int sockfd, char* id) {
         } else {
             telemetry_sendString(sockfd, "not_running");
         }
+    } else if (strcmp(id, "pr59_fan_status") == 0) {
+        pr59_data_t pr59_data;
+        if (pr59_get_data(&pr59_data)) {
+            const char* fan_status_str = pr59_get_fan_status_string(pr59_data.fan_status);
+            telemetry_sendString(sockfd, fan_status_str);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
     }
     
     // Position sensor telemetry channels
@@ -560,6 +568,56 @@ void telemetry_send_metric(int sockfd, char* id) {
                 total_current += heaters[i].current;
             }
             telemetry_sendFloat(sockfd, total_current);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    
+    // Heater temperature range telemetry channels
+    } else if (strcmp(id, "heater_starcam_temp_low") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[0].temp_low);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_starcam_temp_high") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[0].temp_high);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_motor_temp_low") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[1].temp_low);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_motor_temp_high") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[1].temp_high);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_ethernet_temp_low") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[2].temp_low);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_ethernet_temp_high") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[2].temp_high);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_lockpin_temp_low") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[3].temp_low);
+        } else {
+            telemetry_sendString(sockfd, "N/A");
+        }
+    } else if (strcmp(id, "heater_lockpin_temp_high") == 0) {
+        if (heaters_running) {
+            telemetry_sendFloat(sockfd, heaters[3].temp_high);
         } else {
             telemetry_sendString(sockfd, "N/A");
         }

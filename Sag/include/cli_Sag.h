@@ -83,10 +83,17 @@ enum commands {
     eth_heater_off,
     lock_heater_on,
     lock_heater_off,
+    set_sc_temp,
+    set_lock_temp,
+    set_motor_temp,
+    set_eth_temp,
     start_pr59,
     stop_pr59,
     start_pr59_fan,
     stop_pr59_fan,
+    set_pr59_P,
+    set_pr59_I,
+    set_pr59_D,
     start_position_box,
     stop_position_box,
     position_box_on,
@@ -98,6 +105,7 @@ enum commands {
     exit_both
 
 };
+
 typedef struct __attribute__((packed)) {
     uint8_t start;
     uint8_t num_data;

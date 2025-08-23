@@ -62,6 +62,7 @@ int set_toggle(int relay_id);
 int set_heater_auto_mode(int heater_id, bool enabled);
 float get_total_heater_current(void);
 int set_pv_heater_manual(bool turn_on);
+int set_heater_temp_range(int heater_id, double temp_low, double temp_high);
 
 extern HeaterInfo heaters[NUM_HEATERS];
 extern int shutdown_heaters;

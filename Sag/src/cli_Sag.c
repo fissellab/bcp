@@ -16,6 +16,7 @@
 
 #include "file_io_Sag.h"
 #include "cli_Sag.h"
+#include "pr59_interface.h"
 #include "gps.h"
 #include "spectrometer_server.h"
 #include "pbob_client.h"
@@ -1115,6 +1116,113 @@ void exec_command(Packet pkt) {
             }
         }
     
+    // =================== HEATER TEMPERATURE SETPOINT COMMANDS ===================
+    
+    } else if (pkt.cmd_primary == set_sc_temp) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_sc_temp but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_sc_temp but heaters not running");
+        } else if (pkt.num_bigpack < 2) {
+            printf("Invalid set_sc_temp command: requires 2 temperature values (low, high).\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Invalid set_sc_temp command: insufficient parameters");
+        } else {
+            double temp_low = pkt.bigpack[0];
+            double temp_high = pkt.bigpack[1];
+            printf("Setting star camera heater temperature range: %.1f°C - %.1f°C\n", temp_low, temp_high);
+            char log_msg[256];
+            snprintf(log_msg, sizeof(log_msg), "Setting star camera heater temperature range: %.1f°C - %.1f°C", temp_low, temp_high);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
+            
+            if (set_heater_temp_range(0, temp_low, temp_high) == 1) {
+                printf("Star camera heater temperature range updated successfully.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Star camera heater temperature range updated successfully");
+            } else {
+                printf("Failed to update star camera heater temperature range.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to update star camera heater temperature range");
+            }
+        }
+    } else if (pkt.cmd_primary == set_lock_temp) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_lock_temp but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_lock_temp but heaters not running");
+        } else if (pkt.num_bigpack < 2) {
+            printf("Invalid set_lock_temp command: requires 2 temperature values (low, high).\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Invalid set_lock_temp command: insufficient parameters");
+        } else {
+            double temp_low = pkt.bigpack[0];
+            double temp_high = pkt.bigpack[1];
+            printf("Setting lockpin heater temperature range: %.1f°C - %.1f°C\n", temp_low, temp_high);
+            char log_msg[256];
+            snprintf(log_msg, sizeof(log_msg), "Setting lockpin heater temperature range: %.1f°C - %.1f°C", temp_low, temp_high);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
+            
+            if (set_heater_temp_range(3, temp_low, temp_high) == 1) {
+                printf("Lockpin heater temperature range updated successfully.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Lockpin heater temperature range updated successfully");
+            } else {
+                printf("Failed to update lockpin heater temperature range.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to update lockpin heater temperature range");
+            }
+        }
+    } else if (pkt.cmd_primary == set_motor_temp) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_motor_temp but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_motor_temp but heaters not running");
+        } else if (pkt.num_bigpack < 2) {
+            printf("Invalid set_motor_temp command: requires 2 temperature values (low, high).\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Invalid set_motor_temp command: insufficient parameters");
+        } else {
+            double temp_low = pkt.bigpack[0];
+            double temp_high = pkt.bigpack[1];
+            printf("Setting motor heater temperature range: %.1f°C - %.1f°C\n", temp_low, temp_high);
+            char log_msg[256];
+            snprintf(log_msg, sizeof(log_msg), "Setting motor heater temperature range: %.1f°C - %.1f°C", temp_low, temp_high);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
+            
+            if (set_heater_temp_range(1, temp_low, temp_high) == 1) {
+                printf("Motor heater temperature range updated successfully.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Motor heater temperature range updated successfully");
+            } else {
+                printf("Failed to update motor heater temperature range.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to update motor heater temperature range");
+            }
+        }
+    } else if (pkt.cmd_primary == set_eth_temp) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_eth_temp but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_eth_temp but heaters not running");
+        } else if (pkt.num_bigpack < 2) {
+            printf("Invalid set_eth_temp command: requires 2 temperature values (low, high).\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Invalid set_eth_temp command: insufficient parameters");
+        } else {
+            double temp_low = pkt.bigpack[0];
+            double temp_high = pkt.bigpack[1];
+            printf("Setting ethernet switch heater temperature range: %.1f°C - %.1f°C\n", temp_low, temp_high);
+            char log_msg[256];
+            snprintf(log_msg, sizeof(log_msg), "Setting ethernet switch heater temperature range: %.1f°C - %.1f°C", temp_low, temp_high);
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
+            
+            if (set_heater_temp_range(2, temp_low, temp_high) == 1) {
+                printf("Ethernet switch heater temperature range updated successfully.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Ethernet switch heater temperature range updated successfully");
+            } else {
+                printf("Failed to update ethernet switch heater temperature range.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to update ethernet switch heater temperature range");
+            }
+        }
+    
     // =================== END INDIVIDUAL HEATER CONTROL COMMANDS ===================
     
     } else if (pkt.cmd_primary == start_pr59) {
@@ -1239,6 +1347,90 @@ void exec_command(Packet pkt) {
         } else {
             printf("PR59 is not enabled in configuration.\n");
             write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_pr59_fan but PR59 not enabled");
+        }
+    } else if (pkt.cmd_primary == set_pr59_P) {
+        if (config.pr59.enabled) {
+            if (pr59_running) {
+                if (pkt.num_bigpack < 1) {
+                    printf("Invalid set_pr59_P command: requires 1 double value (Kp).\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Invalid set_pr59_P command: insufficient parameters");
+                } else {
+                    double new_kp = pkt.bigpack[0];
+                    printf("Setting PR59 proportional gain (Kp) to: %.6f\n", new_kp);
+                    char log_msg[256];
+                    snprintf(log_msg, sizeof(log_msg), "Setting PR59 Kp to: %.6f", new_kp);
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
+                    
+                    // Update PID parameter in shared memory
+                    pr59_set_pid_update((float)new_kp, 0.0, 0.0, true, false, false);
+                    
+                    // PID update is now handled via shared memory flag
+                    printf("PR59 Kp update sent successfully via shared memory.\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PR59 Kp update sent via shared memory");
+                }
+            } else {
+                printf("PR59 TEC controller is not running. Start it first with 'start_pr59'.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_pr59_P but PR59 not running");
+            }
+        } else {
+            printf("PR59 is not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_pr59_P but PR59 not enabled");
+        }
+    } else if (pkt.cmd_primary == set_pr59_I) {
+        if (config.pr59.enabled) {
+            if (pr59_running) {
+                if (pkt.num_bigpack < 1) {
+                    printf("Invalid set_pr59_I command: requires 1 double value (Ki).\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Invalid set_pr59_I command: insufficient parameters");
+                } else {
+                    double new_ki = pkt.bigpack[0];
+                    printf("Setting PR59 integral gain (Ki) to: %.6f\n", new_ki);
+                    char log_msg[256];
+                    snprintf(log_msg, sizeof(log_msg), "Setting PR59 Ki to: %.6f", new_ki);
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
+                    
+                    // Update PID parameter in shared memory
+                    pr59_set_pid_update(0.0, (float)new_ki, 0.0, false, true, false);
+                    
+                    // PID update is now handled via shared memory flag
+                    printf("PR59 Ki update sent successfully via shared memory.\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PR59 Ki update sent via shared memory");
+                }
+            } else {
+                printf("PR59 TEC controller is not running. Start it first with 'start_pr59'.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_pr59_I but PR59 not running");
+            }
+        } else {
+            printf("PR59 is not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_pr59_I but PR59 not enabled");
+        }
+    } else if (pkt.cmd_primary == set_pr59_D) {
+        if (config.pr59.enabled) {
+            if (pr59_running) {
+                if (pkt.num_bigpack < 1) {
+                    printf("Invalid set_pr59_D command: requires 1 double value (Kd).\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Invalid set_pr59_D command: insufficient parameters");
+                } else {
+                    double new_kd = pkt.bigpack[0];
+                    printf("Setting PR59 derivative gain (Kd) to: %.6f\n", new_kd);
+                    char log_msg[256];
+                    snprintf(log_msg, sizeof(log_msg), "Setting PR59 Kd to: %.6f", new_kd);
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", log_msg);
+                    
+                    // Update PID parameter in shared memory
+                    pr59_set_pid_update(0.0, 0.0, (float)new_kd, false, false, true);
+                    
+                    // PID update is now handled via shared memory flag
+                    printf("PR59 Kd update sent successfully via shared memory.\n");
+                    write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PR59 Kd update sent via shared memory");
+                }
+            } else {
+                printf("PR59 TEC controller is not running. Start it first with 'start_pr59'.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_pr59_D but PR59 not running");
+            }
+        } else {
+            printf("PR59 is not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted set_pr59_D but PR59 not enabled");
         }
     } else if (pkt.cmd_primary == stop_spec_120kHz) {
             if (spec_running) {

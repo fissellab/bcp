@@ -99,6 +99,16 @@ heaters:
 | `start_heaters` | Start heater control system (enables auto heaters by default) |
 | `stop_heaters` | Stop heater system and power down box (graceful 10s delay) |
 
+#### Dynamic Temperature Range Commands (New!)
+| Command | Parameters | Behavior |
+|---------|------------|----------|
+| `set_sc_temp` | `low_temp,high_temp` | Set star camera temperature range (°C) |
+| `set_motor_temp` | `low_temp,high_temp` | Set motor temperature range (°C) |
+| `set_eth_temp` | `low_temp,high_temp` | Set ethernet switch temperature range (°C) |
+| `set_lock_temp` | `low_temp,high_temp` | Set lock pin temperature range (°C) |
+
+**Features**: Real-time effect, persistent across restarts, logged, telemetry available
+
 ### Control Logic
 
 #### Automatic Heaters (0-3)
@@ -149,6 +159,13 @@ For each heater (starcam, motor, ethernet, lockpin, spare):
 - `heater_[name]_current` - Current consumption (amps) 
 - `heater_[name]_state` - Heater state (1=ON, 0=OFF)
 
+#### Heater Temperature Range Configuration (New!)
+For automatic heaters (starcam, motor, ethernet, lockpin):
+- `heater_[name]_temp_low` - Lower temperature threshold (°C) - heater turns ON below this
+- `heater_[name]_temp_high` - Upper temperature threshold (°C) - heater turns OFF above this
+
+**Note**: These values reflect the current active temperature ranges, including any dynamic changes made via ground station commands.
+
 ### Telemetry Client Example (GUI Read-Only)
 ```python
 import socket
@@ -184,12 +201,24 @@ class HeaterTelemetryClient:
         
         # Note: Using correct telemetry channel names
         heaters = ['starcam', 'motor', 'ethernet', 'lockpin', 'spare']
+        auto_heaters = ['starcam', 'motor', 'ethernet', 'lockpin']  # Only these have temp ranges
+        
         for heater in heaters:
             status[heater] = {
                 'temp': self.get_telemetry(f'heater_{heater}_temp'),
                 'current': self.get_telemetry(f'heater_{heater}_current'), 
                 'state': self.get_telemetry(f'heater_{heater}_state')
             }
+            
+            # Add temperature range data for automatic heaters only
+            if heater in auto_heaters:
+                status[heater]['temp_low'] = self.get_telemetry(f'heater_{heater}_temp_low')
+                status[heater]['temp_high'] = self.get_telemetry(f'heater_{heater}_temp_high')
+            else:
+                # Spare/PV heater is manual-only, no temp ranges
+                status[heater]['temp_low'] = 'N/A'
+                status[heater]['temp_high'] = 'N/A'
+                
         return status
 
 # Usage for GUI display
@@ -197,11 +226,11 @@ telemetry = HeaterTelemetryClient()
 status = telemetry.get_heater_status()
 print(f"System running: {status['running']}")
 print(f"Total current: {status['total_current']} A")
-print(f"Star camera: {status['starcam']['temp']}°C, {status['starcam']['state']}")
-print(f"Motor: {status['motor']['temp']}°C, {status['motor']['state']}")
-print(f"Ethernet: {status['ethernet']['temp']}°C, {status['ethernet']['state']}")
-print(f"Lock pin: {status['lockpin']['temp']}°C, {status['lockpin']['state']}")
-print(f"PV: {status['spare']['temp']}°C, {status['spare']['state']}")
+print(f"Star camera: {status['starcam']['temp']}°C, {status['starcam']['state']}, Range: {status['starcam']['temp_low']}-{status['starcam']['temp_high']}°C")
+print(f"Motor: {status['motor']['temp']}°C, {status['motor']['state']}, Range: {status['motor']['temp_low']}-{status['motor']['temp_high']}°C")
+print(f"Ethernet: {status['ethernet']['temp']}°C, {status['ethernet']['state']}, Range: {status['ethernet']['temp_low']}-{status['ethernet']['temp_high']}°C")
+print(f"Lock pin: {status['lockpin']['temp']}°C, {status['lockpin']['state']}, Range: {status['lockpin']['temp_low']}-{status['lockpin']['temp_high']}°C")
+print(f"PV: {status['spare']['temp']}°C, {status['spare']['state']} (Manual-only)")
 ```
 
 ## System Commands (Ground Station Control)
@@ -244,12 +273,29 @@ send_bcp_command("pv_heater_on")     # Turn ON (if current budget allows)
 send_bcp_command("pv_heater_off")    # Turn OFF (always succeeds)
 ```
 
+#### Dynamic Temperature Range Commands (New!)
+```python
+# Set temperature ranges dynamically (format: low_temp,high_temp)
+send_bcp_command_with_data("set_sc_temp", [28.0, 30.0])      # Star camera: 28-30°C
+send_bcp_command_with_data("set_motor_temp", [25.0, 35.0])   # Motor: 25-35°C  
+send_bcp_command_with_data("set_eth_temp", [20.0, 25.0])     # Ethernet: 20-25°C
+send_bcp_command_with_data("set_lock_temp", [30.0, 35.0])    # Lock pin: 30-35°C
+
+# These commands:
+# - Take effect immediately (next control loop ~1 second)
+# - Persist across heater system restarts
+# - Are logged for audit trail
+# - Can be monitored via telemetry (heater_*_temp_low/high channels)
+```
+
 ### Command Usage Notes
 - **Individual control**: Each heater can be controlled independently
 - **Auto heaters (0-3)**: ON = rejoin auto loop, OFF = leave auto loop
 - **PV heater (4)**: ON = immediate turn ON (if ≤3A), OFF = immediate turn OFF
 - **Current safety**: All commands respect the 3A total current limit
 - **Immediate response**: Commands take effect within ~1 second
+- **Temperature ranges**: `set_*_temp` commands apply immediately and persist across restarts
+- **Range monitoring**: Use telemetry channels `heater_*_temp_low/high` to monitor current ranges
 
 ## Advanced Features
 
@@ -289,12 +335,20 @@ def test_heater_telemetry():
         "heater_total_current", 
         "heater_starcam_temp",
         "heater_starcam_state",
+        "heater_starcam_temp_low",      # New!
+        "heater_starcam_temp_high",     # New!
         "heater_motor_temp",
         "heater_motor_state",
+        "heater_motor_temp_low",        # New!
+        "heater_motor_temp_high",       # New!
         "heater_ethernet_temp", 
         "heater_ethernet_state",
+        "heater_ethernet_temp_low",     # New!
+        "heater_ethernet_temp_high",    # New!
         "heater_lockpin_temp",
         "heater_lockpin_state",
+        "heater_lockpin_temp_low",      # New!
+        "heater_lockpin_temp_high",     # New!
         "heater_spare_temp",
         "heater_spare_state"
     ]
@@ -337,7 +391,13 @@ def test_heater_display():
     
     for name, key in heaters:
         state = "ON" if status[key]['state'] == '1' else "OFF"
-        print(f"{name:15}: {status[key]['temp']:>6}°C | {state:>3} | {status[key]['current']:>6} A")
+        if key == "spare":
+            # PV heater is manual-only, no temp ranges
+            print(f"{name:15}: {status[key]['temp']:>6}°C | {state:>3} | {status[key]['current']:>6} A | Manual")
+        else:
+            # Auto heaters with temp ranges
+            temp_range = f"{status[key]['temp_low']}-{status[key]['temp_high']}°C"
+            print(f"{name:15}: {status[key]['temp']:>6}°C | {state:>3} | {status[key]['current']:>6} A | Range: {temp_range}")
     
     print("="*50)
 
@@ -378,6 +438,7 @@ if __name__ == "__main__":
 3. **"Command not recognized"**: Verify command name spelling (e.g., `sc_heater_on`)
 4. **"Telemetry timeout"**: Check telemetry server on port 8082
 5. **"Temperature reads N/A"**: Heater system may not be running or hardware issue
+6. **"Temperature range reads N/A"**: Normal when heater system is stopped - ranges show current config when running
 
 ### Debug Steps
 1. **Check system status**: Request `heater_running` telemetry channel

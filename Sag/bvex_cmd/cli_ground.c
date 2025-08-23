@@ -870,6 +870,54 @@ void exec_command(char* input) {
     }else if (strcmp(cmd,"stop_pr59_fan") ==0){
         com = stop_pr59_fan;
         create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);
+    }else if (strcmp(cmd,"set_pr59_P") ==0){
+        com = set_pr59_P;
+        
+        // Parse PID parameter value
+        if (scan == 2) { // Command has argument
+            double kp_value = atof(arg);
+            printf("Setting PR59 Kp to: %.6f\n", kp_value);
+            
+            big_payload = (double_t*)malloc(sizeof(double_t));
+            big_payload[0] = kp_value;
+            create_packet(&pkt, com, payload, 0, big_payload, 1, SAG);
+            free(big_payload);
+        } else {
+            printf("Error: set_pr59_P requires a double value. Usage: set_pr59_P <value>\n");
+            return;
+        }
+    }else if (strcmp(cmd,"set_pr59_I") ==0){
+        com = set_pr59_I;
+        
+        // Parse PID parameter value
+        if (scan == 2) { // Command has argument
+            double ki_value = atof(arg);
+            printf("Setting PR59 Ki to: %.6f\n", ki_value);
+            
+            big_payload = (double_t*)malloc(sizeof(double_t));
+            big_payload[0] = ki_value;
+            create_packet(&pkt, com, payload, 0, big_payload, 1, SAG);
+            free(big_payload);
+        } else {
+            printf("Error: set_pr59_I requires a double value. Usage: set_pr59_I <value>\n");
+            return;
+        }
+    }else if (strcmp(cmd,"set_pr59_D") ==0){
+        com = set_pr59_D;
+        
+        // Parse PID parameter value
+        if (scan == 2) { // Command has argument
+            double kd_value = atof(arg);
+            printf("Setting PR59 Kd to: %.6f\n", kd_value);
+            
+            big_payload = (double_t*)malloc(sizeof(double_t));
+            big_payload[0] = kd_value;
+            create_packet(&pkt, com, payload, 0, big_payload, 1, SAG);
+            free(big_payload);
+        } else {
+            printf("Error: set_pr59_D requires a double value. Usage: set_pr59_D <value>\n");
+            return;
+        }
     }else if (strcmp(cmd,"start_position_box") ==0){
         com = start_position_box;
         create_packet(&pkt, com, payload, 0, big_payload, 0, SAG);

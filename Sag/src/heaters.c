@@ -530,6 +530,137 @@ float get_total_heater_current(void) {
     return total;
 }
 
+// Forward declaration for persistence functions
+static void save_temp_ranges_to_file(void);
+static void load_temp_ranges_from_file(void);
+
+/**
+ * @brief Set temperature range for a specific heater (automatic heaters 0-3 only)
+ * @param heater_id Heater ID (0-3)
+ * @param temp_low Lower temperature threshold in Celsius
+ * @param temp_high Upper temperature threshold in Celsius
+ * @return 1 if successful, 0 if invalid heater ID
+ */
+int set_heater_temp_range(int heater_id, double temp_low, double temp_high) {
+    char message[256];
+    
+    // Validate heater ID (only auto heaters 0-3)
+    if (heater_id < 0 || heater_id >= 4) {
+        snprintf(message, sizeof(message), "Invalid heater ID %d for temperature range setting (valid: 0-3)", heater_id);
+        write_to_log(heaters_log_file, "heaters.c", "set_heater_temp_range", message);
+        return 0;
+    }
+    
+    // Store old values for logging
+    double old_temp_low = heaters[heater_id].temp_low;
+    double old_temp_high = heaters[heater_id].temp_high;
+    
+    // Set new temperature ranges
+    heaters[heater_id].temp_low = temp_low;
+    heaters[heater_id].temp_high = temp_high;
+    
+    // Log the temperature range change
+    snprintf(message, sizeof(message), "Heater %d temperature range updated: %.1f°C-%.1f°C → %.1f°C-%.1f°C", 
+             heater_id, old_temp_low, old_temp_high, temp_low, temp_high);
+    write_to_log(heaters_log_file, "heaters.c", "set_heater_temp_range", message);
+    
+    // Save the updated temperature ranges to persistence file
+    save_temp_ranges_to_file();
+    
+    return 1;
+}
+
+/**
+ * @brief Save current temperature ranges to persistence file
+ */
+static void save_temp_ranges_to_file(void) {
+    char filepath[512];
+    snprintf(filepath, sizeof(filepath), "%s/heater_temp_ranges.conf", config.heaters.workdir);
+    
+    FILE* temp_file = fopen(filepath, "w");
+    if (temp_file == NULL) {
+        char message[256];
+        snprintf(message, sizeof(message), "Failed to create temperature range persistence file: %s", filepath);
+        write_to_log(heaters_log_file, "heaters.c", "save_temp_ranges_to_file", message);
+        return;
+    }
+    
+    fprintf(temp_file, "# Heater temperature ranges - automatically generated\n");
+    fprintf(temp_file, "# Do not edit manually - will be overwritten\n");
+    fprintf(temp_file, "starcam_temp_low=%.2f\n", heaters[0].temp_low);
+    fprintf(temp_file, "starcam_temp_high=%.2f\n", heaters[0].temp_high);
+    fprintf(temp_file, "motor_temp_low=%.2f\n", heaters[1].temp_low);
+    fprintf(temp_file, "motor_temp_high=%.2f\n", heaters[1].temp_high);
+    fprintf(temp_file, "ethernet_temp_low=%.2f\n", heaters[2].temp_low);
+    fprintf(temp_file, "ethernet_temp_high=%.2f\n", heaters[2].temp_high);
+    fprintf(temp_file, "lockpin_temp_low=%.2f\n", heaters[3].temp_low);
+    fprintf(temp_file, "lockpin_temp_high=%.2f\n", heaters[3].temp_high);
+    
+    fclose(temp_file);
+    
+    char message[256];
+    snprintf(message, sizeof(message), "Temperature ranges saved to persistence file: %s", filepath);
+    write_to_log(heaters_log_file, "heaters.c", "save_temp_ranges_to_file", message);
+}
+
+/**
+ * @brief Load temperature ranges from persistence file (if it exists)
+ */
+static void load_temp_ranges_from_file(void) {
+    char filepath[512];
+    snprintf(filepath, sizeof(filepath), "%s/heater_temp_ranges.conf", config.heaters.workdir);
+    
+    FILE* temp_file = fopen(filepath, "r");
+    if (temp_file == NULL) {
+        // File doesn't exist - use config defaults (already loaded)
+        char message[256];
+        snprintf(message, sizeof(message), "No temperature range persistence file found, using config defaults: %s", filepath);
+        write_to_log(heaters_log_file, "heaters.c", "load_temp_ranges_from_file", message);
+        return;
+    }
+    
+    char line[256];
+    double temp_value;
+    int loaded_count = 0;
+    
+    while (fgets(line, sizeof(line), temp_file)) {
+        // Skip comments and empty lines
+        if (line[0] == '#' || line[0] == '\n') continue;
+        
+        if (sscanf(line, "starcam_temp_low=%lf", &temp_value) == 1) {
+            heaters[0].temp_low = temp_value;
+            loaded_count++;
+        } else if (sscanf(line, "starcam_temp_high=%lf", &temp_value) == 1) {
+            heaters[0].temp_high = temp_value;
+            loaded_count++;
+        } else if (sscanf(line, "motor_temp_low=%lf", &temp_value) == 1) {
+            heaters[1].temp_low = temp_value;
+            loaded_count++;
+        } else if (sscanf(line, "motor_temp_high=%lf", &temp_value) == 1) {
+            heaters[1].temp_high = temp_value;
+            loaded_count++;
+        } else if (sscanf(line, "ethernet_temp_low=%lf", &temp_value) == 1) {
+            heaters[2].temp_low = temp_value;
+            loaded_count++;
+        } else if (sscanf(line, "ethernet_temp_high=%lf", &temp_value) == 1) {
+            heaters[2].temp_high = temp_value;
+            loaded_count++;
+        } else if (sscanf(line, "lockpin_temp_low=%lf", &temp_value) == 1) {
+            heaters[3].temp_low = temp_value;
+            loaded_count++;
+        } else if (sscanf(line, "lockpin_temp_high=%lf", &temp_value) == 1) {
+            heaters[3].temp_high = temp_value;
+            loaded_count++;
+        }
+    }
+    
+    fclose(temp_file);
+    
+    char message[256];
+    snprintf(message, sizeof(message), "Loaded %d temperature range values from persistence file: %s", loaded_count, filepath);
+    write_to_log(heaters_log_file, "heaters.c", "load_temp_ranges_from_file", message);
+}
+
 /**
  * @brief Manually control PV heater (heater 4) with current budget check
  * @param turn_on true to turn ON, false to turn OFF
@@ -682,6 +813,9 @@ void* run_heaters_thread(void* arg) {
 
     // Initialize heaters
     initialize_heaters(heaters);
+    
+    // Load any persistent temperature ranges (overrides config defaults)
+    load_temp_ranges_from_file();
 
     // Configure EIO pins
     char err_string[LJM_MAX_NAME_SIZE];
