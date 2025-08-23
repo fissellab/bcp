@@ -349,38 +349,6 @@ void telemetry_send_metric(int sockfd, char* id) {
         } else {
             telemetry_sendString(sockfd, "N/A");
         }
-    } else if (strcmp(id, "pos_i2c_gyro_x") == 0) {
-        pos_gyro_i2c_sample_t i2c_data;
-        double timestamp;
-        if (position_sensors_get_i2c_gyro_data(&i2c_data, &timestamp)) {
-            telemetry_sendFloat(sockfd, i2c_data.x);
-        } else {
-            telemetry_sendString(sockfd, "N/A");
-        }
-    } else if (strcmp(id, "pos_i2c_gyro_y") == 0) {
-        pos_gyro_i2c_sample_t i2c_data;
-        double timestamp;
-        if (position_sensors_get_i2c_gyro_data(&i2c_data, &timestamp)) {
-            telemetry_sendFloat(sockfd, i2c_data.y);
-        } else {
-            telemetry_sendString(sockfd, "N/A");
-        }
-    } else if (strcmp(id, "pos_i2c_gyro_z") == 0) {
-        pos_gyro_i2c_sample_t i2c_data;
-        double timestamp;
-        if (position_sensors_get_i2c_gyro_data(&i2c_data, &timestamp)) {
-            telemetry_sendFloat(sockfd, i2c_data.z);
-        } else {
-            telemetry_sendString(sockfd, "N/A");
-        }
-    } else if (strcmp(id, "pos_i2c_gyro_temp") == 0) {
-        pos_gyro_i2c_sample_t i2c_data;
-        double timestamp;
-        if (position_sensors_get_i2c_gyro_data(&i2c_data, &timestamp)) {
-            telemetry_sendFloat(sockfd, i2c_data.temperature);
-        } else {
-            telemetry_sendString(sockfd, "N/A");
-        }
     } else if (strcmp(id, "pos_accel1_x") == 0) {
         pos_accel_sample_t accel_data;
         double timestamp;

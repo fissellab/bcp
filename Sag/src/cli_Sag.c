@@ -27,6 +27,9 @@
 
 extern conf_params_t config;  // Access to global configuration
 
+extern int heaters_running;
+extern int shutdown_heaters;
+extern pthread_t main_heaters_thread;
 int exiting = 0;
 int spec_running = 0;
 int spec_120khz = 0; // Flag to track if 120kHz spectrometer is running
@@ -928,6 +931,192 @@ void exec_command(Packet pkt) {
             printf("Heaters are not running.\n");
             write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted stop_heaters but heaters were not running");
         }
+    
+    // =================== INDIVIDUAL HEATER CONTROL COMMANDS ===================
+    
+    } else if (pkt.cmd_primary == sc_heater_on) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted sc_heater_on but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted sc_heater_on but heaters not running");
+        } else {
+            printf("Enabling star camera heater auto control...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Enabling star camera heater auto control");
+            if (set_heater_auto_mode(0, true) == 1) {
+                printf("Star camera heater rejoined auto control loop.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Star camera heater auto control enabled successfully");
+            } else {
+                printf("Failed to enable star camera heater auto control.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to enable star camera heater auto control");
+            }
+        }
+    } else if (pkt.cmd_primary == sc_heater_off) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted sc_heater_off but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted sc_heater_off but heaters not running");
+        } else {
+            printf("Disabling star camera heater auto control...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Disabling star camera heater auto control");
+            if (set_heater_auto_mode(0, false) == 1) {
+                printf("Star camera heater removed from auto control loop and turned OFF.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Star camera heater auto control disabled successfully");
+            } else {
+                printf("Failed to disable star camera heater auto control.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to disable star camera heater auto control");
+            }
+        }
+    } else if (pkt.cmd_primary == motor_heater_on) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted motor_heater_on but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted motor_heater_on but heaters not running");
+        } else {
+            printf("Enabling motor heater auto control...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Enabling motor heater auto control");
+            if (set_heater_auto_mode(1, true) == 1) {
+                printf("Motor heater rejoined auto control loop.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Motor heater auto control enabled successfully");
+            } else {
+                printf("Failed to enable motor heater auto control.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to enable motor heater auto control");
+            }
+        }
+    } else if (pkt.cmd_primary == motor_heater_off) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted motor_heater_off but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted motor_heater_off but heaters not running");
+        } else {
+            printf("Disabling motor heater auto control...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Disabling motor heater auto control");
+            if (set_heater_auto_mode(1, false) == 1) {
+                printf("Motor heater removed from auto control loop and turned OFF.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Motor heater auto control disabled successfully");
+            } else {
+                printf("Failed to disable motor heater auto control.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to disable motor heater auto control");
+            }
+        }
+    } else if (pkt.cmd_primary == eth_heater_on) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted eth_heater_on but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted eth_heater_on but heaters not running");
+        } else {
+            printf("Enabling ethernet switch heater auto control...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Enabling ethernet switch heater auto control");
+            if (set_heater_auto_mode(2, true) == 1) {
+                printf("Ethernet switch heater rejoined auto control loop.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Ethernet switch heater auto control enabled successfully");
+            } else {
+                printf("Failed to enable ethernet switch heater auto control.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to enable ethernet switch heater auto control");
+            }
+        }
+    } else if (pkt.cmd_primary == eth_heater_off) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted eth_heater_off but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted eth_heater_off but heaters not running");
+        } else {
+            printf("Disabling ethernet switch heater auto control...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Disabling ethernet switch heater auto control");
+            if (set_heater_auto_mode(2, false) == 1) {
+                printf("Ethernet switch heater removed from auto control loop and turned OFF.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Ethernet switch heater auto control disabled successfully");
+            } else {
+                printf("Failed to disable ethernet switch heater auto control.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to disable ethernet switch heater auto control");
+            }
+        }
+    } else if (pkt.cmd_primary == lock_heater_on) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted lock_heater_on but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted lock_heater_on but heaters not running");
+        } else {
+            printf("Enabling lockpin heater auto control...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Enabling lockpin heater auto control");
+            if (set_heater_auto_mode(3, true) == 1) {
+                printf("Lockpin heater rejoined auto control loop.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Lockpin heater auto control enabled successfully");
+            } else {
+                printf("Failed to enable lockpin heater auto control.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to enable lockpin heater auto control");
+            }
+        }
+    } else if (pkt.cmd_primary == lock_heater_off) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted lock_heater_off but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted lock_heater_off but heaters not running");
+        } else {
+            printf("Disabling lockpin heater auto control...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Disabling lockpin heater auto control");
+            if (set_heater_auto_mode(3, false) == 1) {
+                printf("Lockpin heater removed from auto control loop and turned OFF.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Lockpin heater auto control disabled successfully");
+            } else {
+                printf("Failed to disable lockpin heater auto control.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to disable lockpin heater auto control");
+            }
+        }
+    } else if (pkt.cmd_primary == pv_heater_on) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted pv_heater_on but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running. Start with 'start_heaters' first.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted pv_heater_on but heaters not running");
+        } else {
+            printf("Attempting to turn ON PV heater...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempting to turn ON PV heater");
+            if (set_pv_heater_manual(true) == 1) {
+                printf("PV heater turned ON successfully (manual control).\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PV heater turned ON successfully");
+            } else {
+                printf("PV heater ON failed - insufficient current budget. Try again later.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PV heater ON failed - insufficient current budget");
+            }
+        }
+    } else if (pkt.cmd_primary == pv_heater_off) {
+        if (!config.heaters.enabled) {
+            printf("Heaters are not enabled in configuration.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted pv_heater_off but heaters not enabled");
+        } else if (!heaters_running) {
+            printf("Heater control system is not running.\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Attempted pv_heater_off but heaters not running");
+        } else {
+            printf("Turning OFF PV heater...\n");
+            write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Turning OFF PV heater");
+            if (set_pv_heater_manual(false) == 1) {
+                printf("PV heater turned OFF successfully.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "PV heater turned OFF successfully");
+            } else {
+                printf("Failed to turn OFF PV heater.\n");
+                write_to_log(cmd_log, "cli_Sag.c", "exec_command", "Failed to turn OFF PV heater");
+            }
+        }
+    
+    // =================== END INDIVIDUAL HEATER CONTROL COMMANDS ===================
+    
     } else if (pkt.cmd_primary == start_pr59) {
         if (config.pr59.enabled) {
             if (!pr59_running) {

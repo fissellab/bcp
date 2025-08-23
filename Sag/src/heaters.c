@@ -105,7 +105,7 @@ void initialize_heaters(HeaterInfo heaters[]) {
     // Relay 4 ← AIN0 (Manual-only heater - no automatic temperature control): Pressure Vessel
     heaters[4].eio_dir      = EIO4_DIR;
     heaters[4].eio_state    = EIO4_STATE;
-    heaters[4].ain_channel  = "";
+    heaters[4].ain_channel  = "AIN10";
     heaters[4].state        = false;
     heaters[4].current_temp = 0.0;
     heaters[4].temp_valid   = false;
@@ -192,7 +192,7 @@ void close_labjack(int handle) {
 }
 
 /**
- * @brief Read temperature from LM35 on specified channel
+ * @brief Read temperature from LM335 on specified channel
  * @param handle LabJack handle
  * @param channel Analog input channel name (e.g., "AIN0")
  * @param temperature_c Pointer to store the temperature in Celsius
@@ -215,8 +215,8 @@ int read_temperature(int handle, const char* channel, double* temperature_c) {
         return err; // Return error code
     }
 
-    // LM35 outputs 10mV per degree Celsius
-    *temperature_c = voltage * 100.0; // Convert to Celsius
+    // LM335 outputs 10mV per Kelvin, convert to Celsius
+    *temperature_c = (voltage * 100.0) - 273.15; // Convert from Kelvin to Celsius
     return 0; // Success
 }
 
@@ -413,9 +413,14 @@ static int init_socket_heaters() {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     struct sockaddr_in servaddr;
     struct timeval tv;
-
-    tv.tv_sec = 0;
-    tv.tv_usec = config.heaters.timeout;
+    
+    long timeout_us = config.heaters.timeout;
+    if (timeout_us <= 0) {
+       timeout_us = 500000;
+    }
+    
+    tv.tv_sec = timeout_us / 1000000L;
+    tv.tv_usec = timeout_us % 1000000L;
 
     if(sockfd < 0){
         write_to_log(heaters_log_file,"heaters.c","init_socket_heaters","Socket creation failed");
@@ -482,13 +487,93 @@ int set_toggle(int relay_id){
 }
 
 /**
+ * @brief Set individual heater enabled state for auto control (heaters 0-3 only)
+ * @param heater_id Heater ID (0-3)
+ * @param enabled true to enable auto control, false to disable and turn OFF
+ * @return 1 if successful, 0 if invalid heater ID
+ */
+int set_heater_auto_mode(int heater_id, bool enabled) {
+    char message[256];
+    
+    // Validate heater ID (only auto heaters 0-3)
+    if (heater_id < 0 || heater_id >= 4) {
+        snprintf(message, sizeof(message), "Invalid heater ID %d for auto control (valid: 0-3)", heater_id);
+        write_to_log(heaters_log_file, "heaters.c", "set_heater_auto_mode", message);
+        return 0;
+    }
+    
+    heaters[heater_id].enabled = enabled;
+    
+    // If disabling, immediately turn OFF the heater
+    if (!enabled && heaters[heater_id].state) {
+        heaters[heater_id].state = false;
+        // Note: Actual relay control will happen in main loop context where we have handle
+        heaters[heater_id].toggle = true; // Signal main loop to update relay
+    }
+    
+    snprintf(message, sizeof(message), "Heater %d auto control %s", 
+             heater_id, enabled ? "ENABLED" : "DISABLED");
+    write_to_log(heaters_log_file, "heaters.c", "set_heater_auto_mode", message);
+    
+    return 1;
+}
+
+/**
+ * @brief Get current total current draw from all heaters
+ * @return Total current in Amperes
+ */
+float get_total_heater_current(void) {
+    float total = 0.0;
+    for (int i = 0; i < NUM_HEATERS; i++) {
+        total += heaters[i].current;
+    }
+    return total;
+}
+
+/**
+ * @brief Manually control PV heater (heater 4) with current budget check
+ * @param turn_on true to turn ON, false to turn OFF
+ * @return 1 if successful, 0 if failed (insufficient current budget)
+ */
+int set_pv_heater_manual(bool turn_on) {
+    char message[256];
+    const int pv_heater_id = 4;
+    const float estimated_heater_current = 0.8; // Amperes
+    
+    if (turn_on) {
+        // Check current budget before turning ON
+        float current_total = get_total_heater_current();
+        if ((current_total + estimated_heater_current) <= CURRENT_CAP) {
+            heaters[pv_heater_id].state = true;
+            heaters[pv_heater_id].toggle = true; // Signal main loop to update relay
+            snprintf(message, sizeof(message), "PV heater turned ON (current: %.1fA/%.1fA)", 
+                     current_total + estimated_heater_current, (float)CURRENT_CAP);
+            write_to_log(heaters_log_file, "heaters.c", "set_pv_heater_manual", message);
+            return 1;
+        } else {
+            snprintf(message, sizeof(message), "PV heater ON failed - insufficient current budget (%.1fA + %.1fA > %.1fA)", 
+                     current_total, estimated_heater_current, (float)CURRENT_CAP);
+            write_to_log(heaters_log_file, "heaters.c", "set_pv_heater_manual", message);
+            return 0;
+        }
+    } else {
+        // Always allow turning OFF
+        heaters[pv_heater_id].state = false;
+        heaters[pv_heater_id].toggle = true; // Signal main loop to update relay
+        snprintf(message, sizeof(message), "PV heater turned OFF");
+        write_to_log(heaters_log_file, "heaters.c", "set_pv_heater_manual", message);
+        return 1;
+    }
+}
+
+/**
  * @brief Thread function to run the heaters control logic.
  * It initializes the LabJack, sets up the heaters, and enters the main control loop.
  */
 static void *do_server_heaters() {
 
-	heaters_sockfd = init_socket_heaters();
-	char buffer[MAXLEN];
+    heaters_sockfd = init_socket_heaters();
+    char buffer[MAXLEN];
 
     if(heaters_server_running){
         while(!stop_heaters_server){
@@ -496,15 +581,15 @@ static void *do_server_heaters() {
             
             int relay_id = -1;
 
-            if (strcmp(buffer, "toggle_lockpin") == 0) {
+            if (strcmp(buffer, "toggle_starcamera") == 0) {
                 relay_id = 0;    
-            } else if(strcmp(buffer, "toggle_starcamera") == 0) {
-                relay_id = 1; 
-            } else if(strcmp(buffer, "toggle_PV") == 0) {
-                relay_id = 2;
             } else if(strcmp(buffer, "toggle_motor") == 0) {
-                relay_id = 3;
+                relay_id = 1; 
             } else if(strcmp(buffer, "toggle_ethernet") == 0) {
+                relay_id = 2;
+            } else if(strcmp(buffer, "toggle_lockpin") == 0) {
+                relay_id = 3;
+            } else if(strcmp(buffer, "toggle_PV") == 0) {
                 relay_id = 4;
             } else{
                 write_to_log(heaters_log_file, "heaters.c", "do_server_heaters", "Malformed input: missing relay id");
@@ -518,19 +603,15 @@ static void *do_server_heaters() {
                 // For heater 4: directly toggle the heater state (manual-only)
                 if (relay_id < 4) {
                     // Automatic heaters: toggle enabled state for auto control
-                    if (heaters[relay_id].state == true) {
-                        heaters[relay_id].enabled = 0;
-                    } else if (heaters[relay_id].state == false) {
-                        heaters[relay_id].enabled = 1;
-                    }
+		    heaters[relay_id].enabled = !heaters[relay_id].enabled;
                 } else {
                     // Manual-only heater 4: toggle state directly
-                    heaters[relay_id].enabled = !heaters[relay_id].enabled;
+                    heaters[relay_id].state = !heaters[relay_id].state;
+		    heaters[relay_id].toggle = true;
                 }
                 
-                if (set_toggle(relay_id)) {
-                    sendInt_heaters(heaters_sockfd, 1); // Send success response
-                }
+                sendInt_heaters(heaters_sockfd, 1); // Send success response
+                heaters[relay_id].toggle = true;
             }
         }
 
@@ -574,8 +655,7 @@ void* run_heaters_thread(void* arg) {
     char path[256];
 
     // Initialize log file
-    snprintf(path, sizeof(path), "%s/heaters_log_%ld.txt", config.heaters.workdir, time(NULL));
-    heaters_log_file = fopen(path, "w");
+    start_new_files();
     if (!heaters_log_file) {
         fprintf(stderr, "Failed to open heaters log file\n");
         heaters_running = 0;
@@ -631,7 +711,7 @@ void* run_heaters_thread(void* arg) {
 
     calibrate_current(handle, heaters);
     heaters_running = 1;
-
+    printf("Heaters running");
     // Main control loop - now with integrated UDP server functionality
     while (!shutdown_heaters) {
         gettimeofday(&tv_now, NULL);
@@ -660,6 +740,9 @@ void* run_heaters_thread(void* arg) {
                 // Only for heaters 0-3 (automatic control), exclude heater 4 (manual-only)
                 if (i < 4 && heaters[i].current_temp < heaters[i].temp_low) {
                     heaters[i].temp_diff = heaters[i].temp_low - heaters[i].current_temp;
+                    snprintf(message, sizeof(message), "Heater %d needs heating: %.1f°C < %.1f°C (diff=%.1f°C)", 
+                             i, heaters[i].current_temp, heaters[i].temp_low, heaters[i].temp_diff);
+                    write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
                 } else {
                     heaters[i].temp_diff = 0.0;  // No heating needed or manual-only heater
                 }
@@ -674,26 +757,33 @@ void* run_heaters_thread(void* arg) {
 
         bubbleSort(position_difference);
 
-        // Process manual toggles for all heaters first
+        // Process manual override commands for all heaters first
         for (int i = 0; i < NUM_HEATERS; i++) {
             if (heaters[i].toggle) {
                 heaters[i].toggle = false; // Reset toggle flag
                 
                 if (i == 4) {
-                    // Heater 4 is manual-only: toggle state directly
-                    heaters[i].state = !heaters[i].state;
+                    // Heater 4 (PV) is manual-only: apply the state change directly
                     set_relay_state(handle, i, heaters[i].state);
-                    snprintf(message, sizeof(message), "Manual heater %d (EIO%d) turned %s", 
-                            i, i, heaters[i].state ? "ON" : "OFF");
+                    snprintf(message, sizeof(message), "PV heater (EIO%d) turned %s", 
+                            i, heaters[i].state ? "ON" : "OFF");
                     write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
                     fflush(heaters_log_file);
                 } else {
-                    // Heaters 0-3: toggle enabled state for auto control override
-                    heaters[i].enabled = !heaters[i].enabled;
-                    snprintf(message, sizeof(message), "Heater %d auto control %s", 
-                            i, heaters[i].enabled ? "ENABLED" : "DISABLED");
-                    write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
-                    fflush(heaters_log_file);
+                    // Heaters 0-3: auto control heaters - apply enabled state change
+                    if (!heaters[i].enabled && heaters[i].state) {
+                        // If being disabled and currently ON, turn OFF immediately
+                        heaters[i].state = false;
+                        set_relay_state(handle, i, false);
+                        snprintf(message, sizeof(message), "Auto heater %d (EIO%d) disabled and turned OFF", i, i);
+                        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+                        fflush(heaters_log_file);
+                    } else {
+                        snprintf(message, sizeof(message), "Auto heater %d control %s", 
+                                i, heaters[i].enabled ? "ENABLED" : "DISABLED");
+                        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+                        fflush(heaters_log_file);
+                    }
                 }
             }
         }
@@ -701,16 +791,26 @@ void* run_heaters_thread(void* arg) {
         // Control logic for automatic heaters only (0-3), heater 4 is manual-only
         for (int i = 0; i < NUM_HEATERS - 1; i++) {  // Only process heaters 0-3
             if (heaters[position_difference[i]].temp_valid && heaters[position_difference[i]].enabled) {
+                snprintf(message, sizeof(message), "Heater %d auto control: temp_diff=%.1f°C, current_state=%s, total_current=%.1fA", 
+                         position_difference[i], heaters[position_difference[i]].temp_diff, 
+                         heaters[position_difference[i]].state ? "ON" : "OFF", sum);
+                write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
+                
                 if (heaters[position_difference[i]].temp_diff > 0) {
                     // Turn ON heater if temperature is below threshold
                     // Estimate new total current if we turn on this heater (adding approx 0.8A)
                     if (!heaters[position_difference[i]].state && (sum + 0.8) <= CURRENT_CAP) {
                         heaters[position_difference[i]].state = true;
                         set_relay_state(handle, position_difference[i], true);
-                        snprintf(message, sizeof(message), "Heater %d (EIO%d) turned ON at %.1f°C", position_difference[i], position_difference[i], heaters[position_difference[i]].current_temp);
+                        snprintf(message, sizeof(message), "Heater %d (EIO%d) turned ON at %.1f°C (current budget: %.1fA/%.1fA)", 
+                                 position_difference[i], position_difference[i], heaters[position_difference[i]].current_temp, sum + 0.8, (float)CURRENT_CAP);
                         write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
                         fflush(heaters_log_file);
                         sum += 0.8; // Update sum with estimated new current
+                    } else if (!heaters[position_difference[i]].state) {
+                        snprintf(message, sizeof(message), "Heater %d NOT turned ON - current limit: %.1fA + 0.8A > %.1fA", 
+                                 position_difference[i], sum, (float)CURRENT_CAP);
+                        write_to_log(heaters_log_file, "heaters.c", "run_heaters_thread", message);
                     }
                 } else if (heaters[position_difference[i]].current_temp > heaters[position_difference[i]].temp_high) {
                     // Turn OFF heater if temperature is above threshold

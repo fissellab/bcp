@@ -1,9 +1,8 @@
 # Gyroscope Data Client Guide
 
 ## Overview
-The BCP Sag system provides real-time gyroscope data via UDP telemetry server. The system supports two types of gyroscopes:
-- **SPI Gyroscope (ADXRS453)**: Single-axis rate gyroscope
-- **I2C Gyroscope (IAM20380HT)**: 3-axis gyroscope with temperature
+The BCP Sag system provides real-time gyroscope data via UDP telemetry server. The system supports:
+- **SPI Gyroscope (ADXRS453)**: Single-axis rate gyroscope (primary telemetry data)
 
 ## Telemetry Server Configuration
 - **Server IP**: `0.0.0.0` (listens on all interfaces)
@@ -14,18 +13,10 @@ The BCP Sag system provides real-time gyroscope data via UDP telemetry server. T
 
 ## Available Gyroscope Channels
 
-### SPI Gyroscope (ADXRS453)
+### SPI Gyroscope (ADXRS453) - Primary Telemetry Data
 | Channel ID | Data Type | Units | Description |
 |------------|-----------|-------|-------------|
 | `pos_spi_gyro_rate` | float | deg/s | Angular velocity (single axis) |
-
-### I2C Gyroscope (IAM20380HT) 
-| Channel ID | Data Type | Units | Description |
-|------------|-----------|-------|-------------|
-| `pos_i2c_gyro_x` | float | deg/s | X-axis angular velocity |
-| `pos_i2c_gyro_y` | float | deg/s | Y-axis angular velocity |
-| `pos_i2c_gyro_z` | float | deg/s | Z-axis angular velocity |
-| `pos_i2c_gyro_temp` | float | °C | Gyroscope temperature |
 
 ### Position Sensor Status
 | Channel ID | Data Type | Description |
@@ -67,24 +58,14 @@ class GyroClient:
         except ValueError:
             return None
     
-    def get_i2c_gyro_data(self):
-        """Get complete I2C gyroscope data"""
-        data = {}
-        channels = ["pos_i2c_gyro_x", "pos_i2c_gyro_y", "pos_i2c_gyro_z", "pos_i2c_gyro_temp"]
-        
-        for channel in channels:
-            result = self.request_data(channel)
-            try:
-                data[channel.replace("pos_i2c_gyro_", "")] = float(result)
-            except ValueError:
-                data[channel.replace("pos_i2c_gyro_", "")] = None
-        
-        return data
+    def check_sensor_status(self):
+        """Check position sensor system status"""
+        return self.request_data("pos_status")
     
-    def stream_gyro_data_10hz(self, duration=60):
-        """Stream gyro data at 10 Hz for specified duration"""
-        print(f"Streaming gyro data at 10 Hz for {duration} seconds...")
-        print("Timestamp,SPI_Rate,I2C_X,I2C_Y,I2C_Z,I2C_Temp")
+    def stream_spi_gyro_10hz(self, duration=60):
+        """Stream SPI gyro data at 10 Hz for specified duration"""
+        print(f"Streaming SPI gyro data at 10 Hz for {duration} seconds...")
+        print("Timestamp,SPI_Rate_deg_per_sec")
         
         start_time = time.time()
         while (time.time() - start_time) < duration:
@@ -93,12 +74,9 @@ class GyroClient:
             # Get SPI gyro data
             spi_rate = self.get_spi_gyro_rate()
             
-            # Get I2C gyro data
-            i2c_data = self.get_i2c_gyro_data()
-            
             # Print data
             timestamp = time.time()
-            print(f"{timestamp:.3f},{spi_rate},{i2c_data.get('x')},{i2c_data.get('y')},{i2c_data.get('z')},{i2c_data.get('temp')}")
+            print(f"{timestamp:.3f},{spi_rate}")
             
             # Maintain 10 Hz rate (100ms intervals)
             elapsed = time.time() - loop_start
@@ -117,9 +95,9 @@ if __name__ == "__main__":
     status = client.request_data("pos_status")
     print(f"Position sensor status: {status}")
     
-    # Stream data for 30 seconds
+    # Stream SPI gyro data for 30 seconds
     try:
-        client.stream_gyro_data_10hz(duration=30)
+        client.stream_spi_gyro_10hz(duration=30)
     except KeyboardInterrupt:
         print("\\nStopping stream...")
     finally:
@@ -170,25 +148,20 @@ float gyro_request_float(gyro_client_t *client, const char *channel) {
     return 0.0f;
 }
 
-void gyro_stream_10hz(gyro_client_t *client, int duration_sec) {
-    printf("Streaming gyro data at 10 Hz for %d seconds...\\n", duration_sec);
-    printf("Timestamp,SPI_Rate,I2C_X,I2C_Y,I2C_Z,I2C_Temp\\n");
+void spi_gyro_stream_10hz(gyro_client_t *client, int duration_sec) {
+    printf("Streaming SPI gyro data at 10 Hz for %d seconds...\\n", duration_sec);
+    printf("Timestamp,SPI_Rate_deg_per_sec\\n");
     
     time_t start_time = time(NULL);
     while ((time(NULL) - start_time) < duration_sec) {
         struct timespec loop_start, loop_end;
         clock_gettime(CLOCK_MONOTONIC, &loop_start);
         
-        // Get gyro data
+        // Get SPI gyro data
         float spi_rate = gyro_request_float(client, "pos_spi_gyro_rate");
-        float i2c_x = gyro_request_float(client, "pos_i2c_gyro_x");
-        float i2c_y = gyro_request_float(client, "pos_i2c_gyro_y");
-        float i2c_z = gyro_request_float(client, "pos_i2c_gyro_z");
-        float i2c_temp = gyro_request_float(client, "pos_i2c_gyro_temp");
         
         // Print data
-        printf("%.3f,%.6f,%.6f,%.6f,%.6f,%.2f\\n", 
-               (double)time(NULL), spi_rate, i2c_x, i2c_y, i2c_z, i2c_temp);
+        printf("%.3f,%.6f\\n", (double)time(NULL), spi_rate);
         
         // Maintain 10 Hz (100ms intervals)
         clock_gettime(CLOCK_MONOTONIC, &loop_end);
@@ -257,7 +230,8 @@ Client Applications (10 Hz requests)
 4. Handle timeouts gracefully
 
 ## Example Applications
-- **Balloon attitude monitoring**: Stream I2C gyro X/Y/Z at 10 Hz
-- **Platform stability analysis**: Monitor SPI gyro rate + I2C data
-- **System health monitoring**: Check temperatures and status
-- **Data logging**: Record gyro data to files with timestamps
+- **Balloon attitude monitoring**: Stream SPI gyro rate at 10 Hz for single-axis rotation detection
+- **Platform stability analysis**: Monitor SPI gyro rate for angular velocity changes
+- **System health monitoring**: Check position sensor status and connectivity
+- **Data logging**: Record SPI gyro data to files with timestamps
+- **Real-time control**: Use SPI gyro rate for feedback control systems
