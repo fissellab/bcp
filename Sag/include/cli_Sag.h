@@ -102,9 +102,19 @@ enum commands {
     cmd_housekeeping_off,
     cmd_start_housekeeping,
     cmd_stop_housekeeping,
+    set_lon,
+    set_lat,
+    set_alt,
+    set_motor_P,
+    set_motor_I,
+    set_motor_D,
+    set_motor_Gv,
+    set_motor_Imax,
+    set_lock_duration,
     exit_both
 
 };
+
 
 typedef struct __attribute__((packed)) {
     uint8_t start;

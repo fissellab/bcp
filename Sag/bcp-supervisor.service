@@ -1,0 +1,39 @@
+[Unit]
+Description=BCP Supervisor for Saggitarius
+Documentation=Bulletproof supervisor for stratospheric balloon BCP operations
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/mayukh/bcp/Sag
+ExecStart=/home/mayukh/bcp/Sag/bcp_supervisor.sh
+Restart=always
+RestartSec=30
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=60
+
+# Resource limits for flight computer
+MemoryMax=2G
+CPUQuota=80%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bcp-supervisor
+
+# Security settings
+NoNewPrivileges=false
+ProtectSystem=false
+ProtectHome=false
+
+# Environment
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=HOME=/root
+
+[Install]
+WantedBy=multi-user.target
