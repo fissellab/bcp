@@ -1,5 +1,5 @@
 [Unit]
-Description=BCP Supervisor for Saggitarius
+Description=BCP Supervisor for Ophiuchus
 After=network-online.target
 Wants=network-online.target
 StartLimitIntervalSec=0
@@ -8,8 +8,8 @@ StartLimitIntervalSec=0
 Type=simple
 User=root
 Group=root
-WorkingDirectory=/home/mayukh/bcp/Sag
-ExecStart=/home/mayukh/bcp/Sag/bcp_supervisor.sh
+WorkingDirectory=/home/ophiuchus/bcp-mayukh/Oph
+ExecStart=/home/ophiuchus/bcp-mayukh/Oph/bcp_supervisor_oph.sh
 Restart=always
 RestartSec=30
 KillMode=mixed
@@ -23,7 +23,7 @@ CPUQuota=80%
 # Logging
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=bcp-supervisor
+SyslogIdentifier=bcp-supervisor-oph
 
 # Security settings
 NoNewPrivileges=false

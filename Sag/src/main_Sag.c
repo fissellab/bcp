@@ -556,8 +556,8 @@ int main(int argc, char* argv[]) {
         write_to_log(main_log, "main_Sag.c", "main", "System monitor stopped during cleanup");
     }
 
-    // Cleanup PR59 telemetry interface
-    pr59_interface_cleanup();
+    // Cleanup PR59 telemetry interface (main process destroys it)
+    pr59_interface_destroy();
 
     fclose(cmd_log);
     fclose(main_log);

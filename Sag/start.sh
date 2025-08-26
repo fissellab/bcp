@@ -23,6 +23,7 @@ if [ ! -f "bcp_Sag.config" ]; then
     exit 1
 fi
 
+
 echo " Starting BCP Saggitarius..."
 echo ""
 

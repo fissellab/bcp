@@ -15,19 +15,25 @@ static const char *PR59_SHM_NAME = "/bcp_pr59_data";
 
 // Initialize the PR59 interface with shared memory
 int pr59_interface_init(void) {
-    // Try to create or open shared memory
-    shm_fd = shm_open(PR59_SHM_NAME, O_CREAT | O_RDWR, 0666);
-    if (shm_fd == -1) {
-        fprintf(stderr, "PR59 Interface: Failed to create shared memory: %s\n", strerror(errno));
-        return -1;
-    }
+    // Try to open existing shared memory first
+    shm_fd = shm_open(PR59_SHM_NAME, O_RDWR, 0666);
+    bool existing_memory = (shm_fd != -1);
     
-    // Set the size of the shared memory
-    if (ftruncate(shm_fd, sizeof(pr59_data_t)) == -1) {
-        fprintf(stderr, "PR59 Interface: Failed to set shared memory size: %s\n", strerror(errno));
-        close(shm_fd);
-        shm_unlink(PR59_SHM_NAME);
-        return -1;
+    // If it doesn't exist, create it (main BCP process)
+    if (!existing_memory) {
+        shm_fd = shm_open(PR59_SHM_NAME, O_CREAT | O_RDWR, 0666);
+        if (shm_fd == -1) {
+            fprintf(stderr, "PR59 Interface: Failed to create shared memory: %s\n", strerror(errno));
+            return -1;
+        }
+        
+        // Set the size of the shared memory (only for new memory)
+        if (ftruncate(shm_fd, sizeof(pr59_data_t)) == -1) {
+            fprintf(stderr, "PR59 Interface: Failed to set shared memory size: %s\n", strerror(errno));
+            close(shm_fd);
+            shm_unlink(PR59_SHM_NAME);
+            return -1;
+        }
     }
     
     // Map the shared memory
@@ -35,26 +41,31 @@ int pr59_interface_init(void) {
     if (shared_pr59_data == MAP_FAILED) {
         fprintf(stderr, "PR59 Interface: Failed to map shared memory: %s\n", strerror(errno));
         close(shm_fd);
-        shm_unlink(PR59_SHM_NAME);
+        if (!existing_memory) {
+            shm_unlink(PR59_SHM_NAME);
+        }
         return -1;
     }
     
-    // Initialize the mutex
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-    pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-    pthread_mutex_init(&shared_pr59_data->mutex, &attr);
-    pthread_mutexattr_destroy(&attr);
-    
-    // Initialize default values
-    pthread_mutex_lock(&shared_pr59_data->mutex);
-    memset(shared_pr59_data, 0, sizeof(pr59_data_t));
-    shared_pr59_data->is_running = false;
-    shared_pr59_data->timestamp = time(NULL);
-    shared_pr59_data->last_update = 0;
-    shared_pr59_data->fan_status = FAN_AUTO;
-    shared_pr59_data->pid_update_pending = false;
-    pthread_mutex_unlock(&shared_pr59_data->mutex);
+    // Only initialize mutex and data for NEW shared memory (main BCP process)
+    if (!existing_memory) {
+        // Initialize the mutex
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+        pthread_mutex_init(&shared_pr59_data->mutex, &attr);
+        pthread_mutexattr_destroy(&attr);
+        
+        // Initialize default values
+        pthread_mutex_lock(&shared_pr59_data->mutex);
+        memset(shared_pr59_data, 0, sizeof(pr59_data_t));
+        shared_pr59_data->is_running = false;
+        shared_pr59_data->timestamp = time(NULL);
+        shared_pr59_data->last_update = 0;
+        shared_pr59_data->fan_status = FAN_AUTO;
+        shared_pr59_data->pid_update_pending = false;
+        pthread_mutex_unlock(&shared_pr59_data->mutex);
+    }
     
     return 0;
 }
@@ -176,8 +187,7 @@ void pr59_interface_cleanup(void) {
         shared_pr59_data->is_running = false;
         pthread_mutex_unlock(&shared_pr59_data->mutex);
         
-        // Cleanup mutex
-        pthread_mutex_destroy(&shared_pr59_data->mutex);
+        // DON'T destroy mutex - it might be used by other processes
         
         // Unmap shared memory
         munmap(shared_pr59_data, sizeof(pr59_data_t));
@@ -186,7 +196,7 @@ void pr59_interface_cleanup(void) {
     
     if (shm_fd >= 0) {
         close(shm_fd);
-        shm_unlink(PR59_SHM_NAME);
+        // DON'T unlink shared memory - let main BCP process manage it
         shm_fd = -1;
     }
 }
@@ -263,5 +273,29 @@ const char* pr59_get_fan_status_string(pr59_fan_status_t status) {
         case FAN_FORCED_OFF: return "forced_off";
         case FAN_ERROR: return "error";
         default: return "unknown";
+    }
+}
+
+// Destroy PR59 interface (main BCP process only)
+void pr59_interface_destroy(void) {
+    if (shared_pr59_data != NULL) {
+        // Mark as not running
+        pthread_mutex_lock(&shared_pr59_data->mutex);
+        shared_pr59_data->is_running = false;
+        pthread_mutex_unlock(&shared_pr59_data->mutex);
+        
+        // Destroy mutex (main process is responsible)
+        pthread_mutex_destroy(&shared_pr59_data->mutex);
+        
+        // Unmap shared memory
+        munmap(shared_pr59_data, sizeof(pr59_data_t));
+        shared_pr59_data = NULL;
+    }
+    
+    if (shm_fd >= 0) {
+        close(shm_fd);
+        // Remove shared memory (main process is responsible)
+        shm_unlink(PR59_SHM_NAME);
+        shm_fd = -1;
     }
 } 

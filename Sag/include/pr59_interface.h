@@ -82,7 +82,10 @@ bool pr59_is_running(void);
 // Get fan status string for telemetry
 const char* pr59_get_fan_status_string(pr59_fan_status_t status);
 
-// Cleanup PR59 interface
+// Cleanup PR59 interface (detach only)
 void pr59_interface_cleanup(void);
+
+// Destroy PR59 interface (main BCP process only)
+void pr59_interface_destroy(void);
 
 #endif // PR59_INTERFACE_H 

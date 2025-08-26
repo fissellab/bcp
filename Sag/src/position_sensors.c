@@ -34,6 +34,10 @@ static FILE *i2c_gyro_file = NULL;
 static char data_base_path[512];
 static pthread_mutex_t file_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+// File rotation variables
+static time_t last_rotation_time = 0;
+static const int ROTATION_INTERVAL_SECONDS = 600; // 10 minutes
+
 // Forward declarations
 static void *script_management_thread(void *arg);
 static void *data_reception_thread(void *arg);
@@ -45,6 +49,7 @@ static int create_data_directories(void);
 static int open_data_files(void);
 static void close_data_files(void);
 static void write_sensor_data(const pos_sensor_packet_t *packet);
+static int rotate_data_files_if_needed(void);
 
 // Logging function
 static void log_position_message(const char *message) {
@@ -656,6 +661,10 @@ static int open_data_files(void) {
     }
     if (spi_gyro_file) setvbuf(spi_gyro_file, NULL, _IOFBF, 1 << 20);
     if (i2c_gyro_file) setvbuf(i2c_gyro_file, NULL, _IOFBF, 1 << 20);
+    
+    // Set initial rotation time
+    last_rotation_time = now;
+    
     log_position_message("Data files opened successfully");
     return 0;
 }
@@ -688,6 +697,13 @@ static void close_data_files(void) {
 // Write sensor data to files
 static void write_sensor_data(const pos_sensor_packet_t *packet) {
     pthread_mutex_lock(&file_mutex);
+    
+    // Check if we need to rotate files (10-minute interval)
+    if (rotate_data_files_if_needed() < 0) {
+        // If rotation fails, log error but continue with current files
+        log_position_message("File rotation failed, continuing with current files");
+    }
+    
     static uint32_t flush_counter = 0;
     double timestamp = packet->header.timestamp_sec + packet->header.timestamp_nsec / 1000000000.0;
 
@@ -722,4 +738,97 @@ static void write_sensor_data(const pos_sensor_packet_t *packet) {
     }
 
     pthread_mutex_unlock(&file_mutex);
+}
+
+// Rotate data files if 10 minutes have passed
+static int rotate_data_files_if_needed(void) {
+    time_t now = time(NULL);
+    
+    // Check if 10 minutes have passed since last rotation
+    if (now - last_rotation_time < ROTATION_INTERVAL_SECONDS) {
+        return 0; // No rotation needed
+    }
+    
+    // We need to rotate - this function assumes file_mutex is already locked
+    
+    struct tm *t = localtime(&now);
+    char filename[512];
+    char msg[256];
+    
+    // Close current files
+    for (int i = 0; i < 3; i++) {
+        if (accel_files[i] != NULL) {
+            fclose(accel_files[i]);
+            accel_files[i] = NULL;
+        }
+    }
+    
+    if (spi_gyro_file != NULL) {
+        fclose(spi_gyro_file);
+        spi_gyro_file = NULL;
+    }
+    
+    if (i2c_gyro_file != NULL) {
+        fclose(i2c_gyro_file);
+        i2c_gyro_file = NULL;
+    }
+    
+    // Open new files with current timestamp
+    
+    // Open accelerometer files
+    for (int i = 0; i < 3; i++) {
+        snprintf(filename, sizeof(filename), "%s/accelerometer_%d/accel_%d_%04d%02d%02d_%02d%02d%02d.bin",
+                data_base_path, i + 1, i + 1,
+                t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+                t->tm_hour, t->tm_min, t->tm_sec);
+        
+        accel_files[i] = fopen(filename, "wb");
+        if (accel_files[i] == NULL) {
+            snprintf(msg, sizeof(msg), "Failed to open rotated accel file %s: %s", 
+                    filename, strerror(errno));
+            log_position_message(msg);
+            return -1;
+        }
+        setvbuf(accel_files[i], NULL, _IOFBF, 1 << 20); // 1 MiB buffer
+    }
+    
+    // Open SPI gyroscope file
+    snprintf(filename, sizeof(filename), "%s/spi_gyroscope/spi_gyro_%04d%02d%02d_%02d%02d%02d.bin",
+            data_base_path,
+            t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+            t->tm_hour, t->tm_min, t->tm_sec);
+    
+    spi_gyro_file = fopen(filename, "wb");
+    if (spi_gyro_file == NULL) {
+        snprintf(msg, sizeof(msg), "Failed to open rotated SPI gyro file %s: %s", 
+                filename, strerror(errno));
+        log_position_message(msg);
+        return -1;
+    }
+    setvbuf(spi_gyro_file, NULL, _IOFBF, 1 << 20);
+    
+    // Open I2C gyroscope file
+    snprintf(filename, sizeof(filename), "%s/i2c_gyroscope/i2c_gyro_%04d%02d%02d_%02d%02d%02d.bin",
+            data_base_path,
+            t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+            t->tm_hour, t->tm_min, t->tm_sec);
+    
+    i2c_gyro_file = fopen(filename, "wb");
+    if (i2c_gyro_file == NULL) {
+        snprintf(msg, sizeof(msg), "Failed to open rotated I2C gyro file %s: %s", 
+                filename, strerror(errno));
+        log_position_message(msg);
+        return -1;
+    }
+    setvbuf(i2c_gyro_file, NULL, _IOFBF, 1 << 20);
+    
+    // Update rotation time
+    last_rotation_time = now;
+    
+    snprintf(msg, sizeof(msg), "Data files rotated successfully at %04d-%02d-%02d %02d:%02d:%02d",
+            t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+            t->tm_hour, t->tm_min, t->tm_sec);
+    log_position_message(msg);
+    
+    return 0;
 }

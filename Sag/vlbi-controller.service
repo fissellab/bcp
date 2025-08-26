@@ -1,24 +1,46 @@
 [Unit]
-Description=VLBI Controller Daemon
-After=network.target
+Description=VLBI Controller Daemon - Bulletproof Mode
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
-User=aquila
-Group=aquila
+User=root
+Group=root
 WorkingDirectory=/home/aquila
+
+# Main command
 ExecStart=/usr/bin/python3 /home/aquila/vlbi_controller.py
+
+# Robust restart policy
 Restart=always
-RestartSec=10
+RestartSec=5
+StartLimitInterval=300
+StartLimitBurst=10
+
+# Timeout settings
+TimeoutStartSec=30
+TimeoutStopSec=30
+
+# Output handling
 StandardOutput=journal
 StandardError=journal
 
 # Environment
 Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=/usr/local/lib/python3/dist-packages
 
-# Security settings
+# Security settings (relaxed for hardware access)
 NoNewPrivileges=yes
 PrivateTmp=yes
 
+# Resource limits
+LimitNOFILE=65536
+MemoryAccounting=yes
+MemoryMax=512M
+
+# Health check
+WatchdogSec=60
+
 [Install]
-WantedBy=multi-user.target 
+WantedBy=multi-user.target

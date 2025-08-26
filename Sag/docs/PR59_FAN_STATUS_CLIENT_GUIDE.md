@@ -2,7 +2,7 @@
 
 ## New Telemetry Channel
 
-The PR59 system now provides real-time fan status telemetry by reading hardware registers.
+The PR59 system now provides real-time fan status telemetry based on current override state.
 
 ### Request Channel
 ```
@@ -11,9 +11,8 @@ pr59_fan_status
 
 ### Response Values
 - `"automatic"` - Fan in automatic cooling mode (normal operation)
-- `"forced_on"` - Fan manually forced ON via command
-- `"forced_off"` - Fan manually forced OFF via command  
-- `"error"` - Error reading fan status from hardware
+- `"forced_on"` - Fan manually forced ON via `start_pr59_fan` command
+- `"forced_off"` - Fan manually forced OFF via `stop_pr59_fan` command  
 - `"N/A"` - PR59 not running or data unavailable
 
 ### Usage Example
@@ -37,13 +36,13 @@ elif response == "forced_on":
     status = "Fan manually enabled"
 elif response == "forced_off":
     status = "Fan manually disabled"
-elif response == "error":
-    status = "Hardware read error"
+
 else:
     status = "PR59 not available"
 ```
 
 ### Notes
-- Fan status is read directly from TEC controller hardware registers (16 & 23)
+- Fan status reflects current override state set by ground station commands
 - Status updates in real-time (1-second polling)
 - Works independently of existing PR59 telemetry channels
+- More reliable than hardware register polling (avoids communication conflicts)

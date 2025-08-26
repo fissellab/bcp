@@ -269,8 +269,8 @@ void set_fan_mode(int fd, int mode, char *response) {
     snprintf(cmd, sizeof(cmd), "$R23=%d", mode);
     send_command(fd, cmd, response);
     
-    // Save to EEPROM
-    send_command(fd, "$RW", response);
+    // REMOVED: Don't save to EEPROM on every fan mode change to prevent write storms
+    // EEPROM writes only happen during initialization and PID updates
 }
 
 // Read temperature from device
@@ -572,17 +572,25 @@ int initialize_with_register_clear_and_soft_start(int fd, PR59_Config* config) {
 // Apply fan override settings based on ground station commands
 void apply_fan_override(int fd) {
     char response[BUFFER_SIZE];
+    static int last_override_state = 0;  // Track previous state to avoid redundant commands
     
-    if (fan_override_enable == 1) {
-        // Force fan ON (mode 1 = always on)
-        set_fan_mode(fd, 1, response);
-        printf(" [FAN: FORCED ON]");
-    } else if (fan_override_enable == -1) {
-        // Force fan OFF (mode 0 = always off)
-        set_fan_mode(fd, 0, response);
-        printf(" [FAN: FORCED OFF]");
+    // Only send commands when the state actually changes
+    if (fan_override_enable != last_override_state) {
+        if (fan_override_enable == 1) {
+            // Force fan ON (mode 1 = always on)
+            set_fan_mode(fd, 1, response);
+            printf(" [FAN: FORCED ON]");
+        } else if (fan_override_enable == -1) {
+            // Force fan OFF (mode 0 = always off)
+            set_fan_mode(fd, 0, response);
+            printf(" [FAN: FORCED OFF]");
+        } else if (fan_override_enable == 0) {
+            // Return to automatic mode
+            set_fan_mode(fd, 2, response);
+            printf(" [FAN: AUTOMATIC]");
+        }
+        last_override_state = fan_override_enable;
     }
-    // If fan_override_enable == 0, we keep the automatic mode (mode 2) that was set during initialization
 }
 
 // Read current fan status from TEC controller registers
@@ -773,12 +781,23 @@ int main(int argc, char *argv[]) {
         // Check for pending PID updates from shared memory
         process_pid_updates(serial_port);
 
-        // Apply any fan override commands from ground station
-        apply_fan_override(serial_port);
-        
-        // Read current fan status from hardware
-        pr59_fan_status_t fan_status = read_fan_status(serial_port);
+        // Determine fan status based on override state (avoid race condition)
+        pr59_fan_status_t fan_status;
+        if (fan_override_enable == 1) {
+            fan_status = FAN_FORCED_ON;
+        } else if (fan_override_enable == -1) {
+            fan_status = FAN_FORCED_OFF;
+        } else {
+            fan_status = FAN_AUTO;
+        }
         pr59_update_fan_status(fan_status);
+
+        // Apply fan override commands AFTER status determination (less frequent)
+        static int override_apply_counter = 0;
+        if (++override_apply_counter >= 5) {  // Apply every 5 seconds instead of every second
+            apply_fan_override(serial_port);
+            override_apply_counter = 0;
+        }
 
         // Update shared memory for BCP telemetry
         pr59_update_data(temp, fet_temp, current, voltage, 

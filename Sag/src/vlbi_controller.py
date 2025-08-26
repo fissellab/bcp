@@ -21,7 +21,7 @@ LISTEN_PORT = 8004
 LISTEN_IP = "0.0.0.0"  # Listen on all interfaces
 VLBI_SCRIPT_PATH = "/home/aquila/casper/4x2_100gbe_2bit/start_vlbi_logging.sh"
 LOG_FILE = "/var/log/vlbi_controller.log"
-PID_FILE = "/home/aquila/vlbi_controller.pid"  # Changed to home directory to avoid permission issues
+PID_FILE = "/home/aquila/vlbi_controller.pid"
 
 # Global variables
 vlbi_process = None
@@ -50,6 +50,8 @@ def setup_logging():
         ]
     )
 
+
+
 def signal_handler(signum, frame):
     """Handle shutdown signals"""
     global running
@@ -73,6 +75,7 @@ def cleanup_and_exit():
             vlbi_process.kill()
     
     # Remove PID file
+    PID_FILE = "/home/aquila/vlbi_controller.pid"
     if os.path.exists(PID_FILE):
         os.remove(PID_FILE)
     
@@ -378,7 +381,9 @@ def main():
     
     setup_logging()
     
-    # Check if already running
+    # Simple PID file check (like the original)
+    PID_FILE = "/home/aquila/vlbi_controller.pid"
+    
     if os.path.exists(PID_FILE):
         try:
             with open(PID_FILE, 'r') as f:
