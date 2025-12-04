@@ -22,6 +22,7 @@ aux_source_directory(src _srcFiles)
 list(REMOVE_ITEM _srcFiles
     "src/accl_rx.c"
     "src/accl_tx.c"
+    "src/housekeeping_testing.c"
 )
 
 message(STATUS "Source files: ${_srcFiles}")

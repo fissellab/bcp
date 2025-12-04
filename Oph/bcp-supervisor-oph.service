@@ -1,0 +1,39 @@
+[Unit]
+Description=BCP Supervisor for Ophiuchus
+Documentation=Bulletproof supervisor for stratospheric balloon BCP operations (Power Control)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/ophiuchus/bcp-mayukh/Oph
+ExecStart=/home/ophiuchus/bcp-mayukh/Oph/bcp_supervisor_oph.sh
+Restart=always
+RestartSec=30
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=60
+
+# Resource limits for flight computer
+MemoryMax=2G
+CPUQuota=80%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bcp-supervisor-oph
+
+# Security settings
+NoNewPrivileges=false
+ProtectSystem=false
+ProtectHome=false
+
+# Environment
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=HOME=/root
+
+[Install]
+WantedBy=multi-user.target
