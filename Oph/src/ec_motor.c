@@ -906,7 +906,7 @@ int close_ec_motor(void){
 void *do_motors(void*){
 	int expectedWKC, wkc;
 	int ret;
-	int count = 0;
+	long int count = 0;
 	double t;
 	struct timeval current_time;
 	char * ifname = config.motor.port;
@@ -939,6 +939,12 @@ void *do_motors(void*){
 		while(!stop){
 			gettimeofday(&current_time, NULL);
 			t = current_time.tv_sec+current_time.tv_usec/1e6;
+			if (count > 120000){
+				fclose(outfile);
+				snprintf(fname,flen,"%s/motor_pv_%ld.txt",config.motor.datadir,time(NULL));
+        			outfile = fopen(fname, "w");
+				count = 0;
+			}
 			enable();
 			ec_send_processdata();
 			wkc = ec_receive_processdata(EC_TIMEOUTRET);
@@ -957,6 +963,7 @@ void *do_motors(void*){
 			command_motor();
 			fprintf(outfile,"%lf;%lf;%lf;%lf;%d;%d;%d\n",t,MotorData[GETREADINDEX(motor_index)].position,MotorData[GETREADINDEX(motor_index)].velocity,MotorData[GETREADINDEX(motor_index)].current,scan_mode.scan,scan_mode.turnaround,scan_mode.scanning);
 			usleep(4600);
+			count++;
 		}
 	fclose(outfile);
 	close_ec_motor();

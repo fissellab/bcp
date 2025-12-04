@@ -449,6 +449,20 @@ void read_in_config(char* filepath) {
     }
     config.lockpin.duration = tmpint;
 
+    if(!config_lookup_int(&conf,"lockpin.pbob",&tmpint)){
+        printf("Missing lockpin.pbob in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.lockpin.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"lockpin.relay",&tmpint)){
+        printf("Missing lockpin.relay in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.lockpin.relay = tmpint;
+
     //GPS server config
     if(!config_lookup_int(&conf,"gps_server.enabled",&tmpint)){
         printf("Missing gps_server.enabled in %s\n",filepath);
@@ -550,28 +564,6 @@ void read_in_config(char* filepath) {
         exit(0);
     }
     config.starcam_downlink.notification_file = strdup(tmpstr);
-
-    // Read UDP client IPs array
-    config_setting_t *client_ips_setting = config_lookup(&conf, "starcam_downlink.udp_client_ips");
-    if (client_ips_setting != NULL && config_setting_is_array(client_ips_setting)) {
-        config.starcam_downlink.num_client_ips = config_setting_length(client_ips_setting);
-        config.starcam_downlink.udp_client_ips = malloc(config.starcam_downlink.num_client_ips * sizeof(char*));
-        
-        for (int i = 0; i < config.starcam_downlink.num_client_ips; i++) {
-            config_setting_t *ip_setting = config_setting_get_elem(client_ips_setting, i);
-            if (ip_setting && config_setting_type(ip_setting) == CONFIG_TYPE_STRING) {
-                config.starcam_downlink.udp_client_ips[i] = strdup(config_setting_get_string(ip_setting));
-            } else {
-                printf("Invalid IP address in starcam_downlink.udp_client_ips[%d]\n", i);
-                config_destroy(&conf);
-                exit(0);
-            }
-        }
-    } else {
-        // Default: no client IPs configured (request-response mode only)
-        config.starcam_downlink.num_client_ips = 0;
-        config.starcam_downlink.udp_client_ips = NULL;
-    }
 
     // Server configuration
     if(!config_lookup_int(&conf,"server.enabled",&tmpint)){
@@ -675,6 +667,12 @@ void read_in_config(char* filepath) {
     }
     config.power.pbob0.num_relays = tmpint;
 
+    if(!config_lookup_string(&conf,"power.pbob0.workdir",&tmpstr)){
+        printf("Missing power.pbob0.workdir in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.power.pbob0.workdir = strdup(tmpstr);
     //pbob1
  
     if(!config_lookup_int(&conf,"power.pbob1.enabled",&tmpint)){
@@ -705,6 +703,13 @@ void read_in_config(char* filepath) {
     }
     config.power.pbob1.num_relays = tmpint;
 
+    if(!config_lookup_string(&conf,"power.pbob1.workdir",&tmpstr)){
+        printf("Missing power.pbob1.workdir in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.power.pbob1.workdir = strdup(tmpstr);
+
     //pbob2
     if(!config_lookup_int(&conf,"power.pbob2.enabled",&tmpint)){
         printf("Missing power.pbob2.enabled in %s\n",filepath);
@@ -734,6 +739,224 @@ void read_in_config(char* filepath) {
         exit(0);
     }
     config.power.pbob2.num_relays = tmpint;
+
+    if(!config_lookup_string(&conf,"power.pbob2.workdir",&tmpstr)){
+        printf("Missing power.pbob2.workdir in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.power.pbob2.workdir = strdup(tmpstr);
+
+
+    //LNA's
+    if(!config_lookup_int(&conf,"lna.enabled",&tmpint)){
+        printf("Missing lna.enabled in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.lna.enabled = tmpint;
+
+    if(!config_lookup_int(&conf,"lna.pbob",&tmpint)){
+        printf("Missing lna.pbob in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.lna.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"lna.relay",&tmpint)){
+        printf("Missing lna.relay in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.lna.relay = tmpint;
+
+    //Mixer
+    if(!config_lookup_int(&conf,"mixer.enabled",&tmpint)){
+        printf("Missing mixer.enabled in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.mixer.enabled = tmpint;
+
+    if(!config_lookup_int(&conf,"mixer.pbob",&tmpint)){
+        printf("Missing mixer.pbob in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.mixer.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"mixer.relay",&tmpint)){
+        printf("Missing mixer.relay in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.mixer.relay = tmpint;
+
+    //RFSoC
+    if(!config_lookup_int(&conf,"rfsoc.pbob",&tmpint)){
+        printf("Missing rfsoc.pbob in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.rfsoc.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"rfsoc.relay",&tmpint)){
+        printf("Missing rfsoc.relay in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.rfsoc.relay = tmpint;
+    //cmd_server
+    if(!config_lookup_int(&conf,"cmd_server.port",&tmpint)){
+        printf("Missing cmd_server.port in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.cmd_server.port = tmpint;
+
+    if(!config_lookup_int(&conf,"cmd_server.timeout",&tmpint)){
+        printf("Missing cmd_server.timeout in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.cmd_server.timeout = tmpint;
+
+    if(!config_lookup_int(&conf,"gps.pbob",&tmpint)){
+        printf("Missing gps.pbob in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.gps.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"gps.relay",&tmpint)){
+        printf("Missing gps.relay in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.gps.relay = tmpint;
+
+
+    if(!config_lookup_int(&conf,"backend.pbob",&tmpint)){
+        printf("Missing backend.pbob in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.backend.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"backend.relay",&tmpint)){
+        printf("Missing backend.relay in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.backend.relay = tmpint;
+
+    //timing_box
+    if(!config_lookup_int(&conf,"timing_box.pbob",&tmpint)){
+        printf("Missing timing_box.pbob in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.timing_box.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"timing_box.relay",&tmpint)){
+        printf("Missing timing_box.relay in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.timing_box.relay = tmpint;
+
+    // System monitor configuration
+    if(!config_lookup_int(&conf,"system_monitor.enabled",&tmpint)){
+        printf("Missing system_monitor.enabled in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.system_monitor.enabled = tmpint;
+
+    if(!config_lookup_string(&conf,"system_monitor.logfile",&tmpstr)){
+        printf("Missing system_monitor.logfile in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.system_monitor.logfile = strdup(tmpstr);
+
+    if(!config_lookup_int(&conf,"system_monitor.update_interval_sec",&tmpint)){
+        printf("Missing system_monitor.update_interval_sec in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.system_monitor.update_interval_sec = tmpint;
+
+    // Housekeeping configuration
+    if(!config_lookup_int(&conf,"housekeeping.enabled",&tmpint)){
+        printf("Missing housekeeping.enabled in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.housekeeping.enabled = tmpint;
+
+    if(!config_lookup_string(&conf,"housekeeping.logfile",&tmpstr)){
+        printf("Missing housekeeping.logfile in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.housekeeping.logfile = strdup(tmpstr);
+
+    if(!config_lookup_string(&conf,"housekeeping.data_path",&tmpstr)){
+        printf("Missing housekeeping.data_path in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.housekeeping.data_path = strdup(tmpstr);
+
+    if(!config_lookup_int(&conf,"housekeeping.pbob",&tmpint)){
+        printf("Missing housekeeping.pbob in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.housekeeping.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"housekeeping.relay",&tmpint)){
+        printf("Missing housekeeping.relay in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.housekeeping.relay = tmpint;
+
+    if(!config_lookup_int(&conf,"housekeeping.file_rotation_interval",&tmpint)){
+        printf("Missing housekeeping.file_rotation_interval in %s\n",filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.housekeeping.file_rotation_interval = tmpint;
+
+    if(!config_lookup_int(&conf,"heaters.pbob",&tmpint)) {
+	printf("Missing heaters.pbob in %s\n", filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.heaters.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"heaters.relay",&tmpint)) {
+	printf("Missing heaters.relay in %s\n", filepath);
+	config_destroy(&conf);
+	exit(0);
+    }
+    config.heaters.relay = tmpint;
+
+    if(!config_lookup_int(&conf,"position_box.pbob",&tmpint)) {
+        printf("Missing position_box.pbob in %s\n", filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.position_box.pbob = tmpint;
+
+    if(!config_lookup_int(&conf,"position_box.relay",&tmpint)) {
+        printf("Missing position_box.relay in %s\n", filepath);
+        config_destroy(&conf);
+        exit(0);
+    }
+    config.position_box.relay = tmpint;
 
     config_destroy(&conf);
 }
@@ -804,13 +1027,17 @@ void print_config() {
     printf(" db = %lf\n",config.lazisusan.db);
     printf(" gps_db = %lf\n",config.lazisusan.gps_db);
     printf("};\n\n");
+
     printf("lockpin:{\n");
     printf(" enabled = %d;\n",config.lockpin.enabled);
     printf(" logfile = %s;\n",config.lockpin.logfile);
     printf(" baud = %d;\n",config.lockpin.baud);
     printf(" serialport = %s;\n",config.lockpin.serialport);
     printf(" duration = %d;\n",config.lockpin.duration);
+    printf(" pbob = %d;\n",config.lockpin.pbob);
+    printf(" relay = %d;\n",config.lockpin.relay);
     printf("};\n\n");
+
     printf("gps_server:{\n");
     printf(" enabled = %d;\n",config.gps_server.enabled);
     printf(" logfile = %s;\n",config.gps_server.logfile);
@@ -829,12 +1056,6 @@ void print_config() {
     printf(" image_timeout_sec = %d;\n",config.starcam_downlink.image_timeout_sec);
     printf(" workdir = %s;\n",config.starcam_downlink.workdir);
     printf(" notification_file = %s;\n",config.starcam_downlink.notification_file);
-    printf(" udp_client_ips = [");
-    for (int i = 0; i < config.starcam_downlink.num_client_ips; i++) {
-        printf("\"%s\"", config.starcam_downlink.udp_client_ips[i]);
-        if (i < config.starcam_downlink.num_client_ips - 1) printf(", ");
-    }
-    printf("];\n");
     printf("};\n\n"); 
 
     printf("server:{\n");
@@ -856,18 +1077,64 @@ void print_config() {
     printf("  id = %d\n", config.power.pbob0.id);
     printf("  ip = %s;\n", config.power.pbob0.ip);
     printf("  num_relays = %d;\n", config.power.pbob0.num_relays);
+    printf("  workdir = %s;\n", config.power.pbob0.workdir);
     printf(" };\n");
     printf(" pbob1:{\n");
     printf("  enabled = %d;\n", config.power.pbob1.enabled);
     printf("  id = %d\n", config.power.pbob1.id);
     printf("  ip = %s;\n", config.power.pbob1.ip);
     printf("  num_relays = %d;\n", config.power.pbob1.num_relays);
+    printf("  workdir = %s;\n", config.power.pbob1.workdir);
     printf(" };\n");
     printf(" pbob2:{\n");
     printf("  enabled = %d;\n", config.power.pbob2.enabled);
     printf("  id = %d\n", config.power.pbob2.id);
     printf("  ip = %s;\n", config.power.pbob2.ip);
     printf("  num_relays = %d;\n", config.power.pbob2.num_relays);
+    printf("  workdir = %s;\n", config.power.pbob2.workdir);
     printf(" };\n");
     printf("};\n\n");
+
+    printf("lna:{\n");
+    printf(" enabled = %d;\n",config.lna.enabled);
+    printf(" pbob = %d;\n",config.lna.pbob);
+    printf(" relay = %d;\n",config.lna.relay);
+    printf("};\n\n");
+
+    printf("mixer:{\n");
+    printf(" enabled = %d;\n",config.mixer.enabled);
+    printf(" pbob = %d;\n",config.mixer.pbob);
+    printf(" relay = %d;\n",config.mixer.relay);
+    printf("};\n\n");
+
+    printf("rfsoc:{\n");
+    printf(" pbob = %d;\n",config.rfsoc.pbob);
+    printf(" relay = %d;\n",config.rfsoc.relay);
+    printf("};\n\n");
+
+    printf("gps:{\n");
+    printf(" pbob = %d;\n",config.gps.pbob);
+    printf(" relay = %d;\n",config.gps.relay);
+    printf("};\n\n");
+
+    printf("timing_box:{\n");
+    printf(" pbob = %d;\n",config.timing_box.pbob);
+    printf(" relay = %d;\n",config.timing_box.relay);
+    printf("};\n\n");
+
+    printf("system_monitor:{\n");
+    printf(" enabled = %d;\n",config.system_monitor.enabled);
+    printf(" logfile = %s;\n",config.system_monitor.logfile);
+    printf(" update_interval_sec = %d;\n",config.system_monitor.update_interval_sec);
+    printf("};\n\n");
+
+    printf("housekeeping:{\n");
+    printf(" enabled = %d;\n",config.housekeeping.enabled);
+    printf(" logfile = %s;\n",config.housekeeping.logfile);
+    printf(" data_path = %s;\n",config.housekeeping.data_path);
+    printf(" pbob = %d;\n",config.housekeeping.pbob);
+    printf(" relay = %d;\n",config.housekeeping.relay);
+    printf(" file_rotation_interval = %d;\n",config.housekeeping.file_rotation_interval);
+    printf("};\n\n");
+
 }

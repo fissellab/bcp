@@ -506,11 +506,11 @@ int loadCamera(FILE* log) {
 ** Output: None (void).
 */
 void setSaveImage() {
-    ImageFileParams.pwchFileName = L"save1.bmp";
+    ImageFileParams.pwchFileName = L"save1.jpg";
     ImageFileParams.pnImageID = NULL;
     ImageFileParams.ppcImageMem = NULL;
-    ImageFileParams.nQuality = 80;
-    ImageFileParams.nFileType = IS_IMG_BMP;
+    ImageFileParams.nQuality = 75;
+    ImageFileParams.nFileType = IS_IMG_JPG;
 }
 
 /* Function to mask hot pixels accordinging to static and dynamic maps.
@@ -1330,7 +1330,28 @@ int doCameraAndAstrometry(FILE* log) {
         cam_error = printCameraError();
         fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Error retrieving the active image memory: %s.\n", time(NULL), cam_error);
     }
+    strftime(date, sizeof(date), join_path(config.bvexcam.workdir,"/pics/saved_image_%Y-%m-%d_%H:%M:%S"), tm_info);
+    swprintf(filename, 200, L"%s:%ld.jpg", date,tv.tv_usec);
 
+    if (all_camera_params.save_image) {
+        ImageFileParams.pwchFileName = filename;
+        if (is_ImageFile(camera_handle, IS_IMAGE_FILE_CMD_SAVE, 
+                        (void *) &ImageFileParams, sizeof(ImageFileParams)) != IS_SUCCESS) {
+            const char * last_error_str = printCameraError();
+            fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Failed to save image: %s\n", time(NULL), last_error_str);
+        } else {
+            fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Saving to %ls\n", time(NULL),filename);
+        }
+
+        // unlink whatever the latest saved image was linked to before
+        unlink(join_path(config.bvexcam.workdir,"/latest_saved_image.jpg"));
+        // sym link current date to latest image for live Kst updates
+        symlink((const char*)filename, join_path(config.bvexcam.workdir,"/latest_saved_image.jpg"));
+         } else {
+         if (verbose) {
+             printf("Image saving disabled - skipping save operation\n");
+         }
+     }
     // testing pictures that have already been taken 
     /*
     if (loadDummyPicture(L"/home/felix/blastcam/pics/test_2.jpg", 
@@ -1528,8 +1549,8 @@ int doCameraAndAstrometry(FILE* log) {
             printf(">> No longer auto-focusing!\n");
         }
 
-        strftime(date, sizeof(date), join_path(config.bvexcam.workdir,"/pics/saved_image_%Y-%m-%d_%H:%M:%S"), tm_info);
-        swprintf(filename, 200, L"%s:%ld.bmp", date,tv.tv_usec);
+        //strftime(date, sizeof(date), join_path(config.bvexcam.workdir,"/pics/saved_image_%Y-%m-%d_%H:%M:%S"), tm_info);
+        //swprintf(filename, 200, L"%s:%ld.jpg", date,tv.tv_usec);
 	if(all_camera_params.solve_img){
         // write blob and time information to data file
         	strftime(buff, sizeof(buff), "%b %d %H:%M:%S", tm_info); 
@@ -1573,11 +1594,11 @@ int doCameraAndAstrometry(FILE* log) {
 	}
     }
 
-    // save image for future reference (if enabled via CLI or config)
+    /* save image for future reference (if enabled via CLI or config)
     if (all_camera_params.save_image) {
         ImageFileParams.pwchFileName = filename;
         if (is_ImageFile(camera_handle, IS_IMAGE_FILE_CMD_SAVE, 
-                        (void *) &ImageFileParams, sizeof(ImageFileParams)) == -1) {
+                        (void *) &ImageFileParams, sizeof(ImageFileParams)) != IS_SUCCESS) {
             const char * last_error_str = printCameraError();
             fprintf(log,"[%ld][camera.c][doCameraAndAstrometry] Failed to save image: %s\n", time(NULL), last_error_str);
         } else {
@@ -1585,15 +1606,15 @@ int doCameraAndAstrometry(FILE* log) {
         }
         
         // unlink whatever the latest saved image was linked to before
-        unlink(join_path(config.bvexcam.workdir,"/latest_saved_image.bmp"));
+        unlink(join_path(config.bvexcam.workdir,"/latest_saved_image.jpg"));
         // sym link current date to latest image for live Kst updates
-        symlink(date, join_path(config.bvexcam.workdir,"/latest_saved_image.bmp"));
+        symlink((const char*)filename, join_path(config.bvexcam.workdir,"/latest_saved_image.jpg"));
          } else {
          if (verbose) {
              printf("Image saving disabled - skipping save operation\n");
          }
      }
-    
+    */
     // Notify image server of new image for downlink
     // FIX: Send original camera image data (before blob processing) instead of processed buffers
     // The 'memory' buffer was overwritten by processed data, so use original_camera_data

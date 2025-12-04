@@ -26,13 +26,14 @@ int decode_GPS(char * gps_d){
 	double lat;
 	double alt;
 	double head;
+	//printf("%s\n",gps_d);
         ret = sscanf(gps_d,"gps_lat:%lf,gps_lon:%lf,gps_alt:%lf,gps_head:%lf",&lat, &lon, &alt, &head);
 
 	curr_gps.gps_lat = lat;
 	curr_gps.gps_lon = lon;
 	curr_gps.gps_alt = alt;
 	curr_gps.gps_head = head;
-
+	
 	return ret;
 }
 

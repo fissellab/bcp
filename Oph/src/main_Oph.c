@@ -19,6 +19,8 @@
 #include "starcam_downlink.h"
 #include "server.h"
 #include "pbob.h"
+#include "system_monitor.h"
+#include "housekeeping.h"
 
 // This is the main struct that stores all the config parameters
 struct conf_params config;
@@ -46,14 +48,19 @@ extern int stop_tel;
 extern int tel_server_running;
 extern int shutdown_pbob;
 extern int pbob_enabled;
+extern int receiver_on;
+extern int pbob_ready;
 pthread_t ls_thread;
 extern pthread_t lock_thread;
 extern pthread_t astro_thread_id;
 pthread_t gps_server_thread;
 pthread_t server_thread;
 pthread_t pbob_thread;
+extern FILE* housekeeping_log;
 
 int main(int argc, char* argv[]) {
+    int flen = 1024;
+    char fname[flen];
     printf("This is BCP on Ophiuchus\n");
     printf("========================\n");
 
@@ -67,7 +74,8 @@ int main(int argc, char* argv[]) {
     print_config();
 
     printf("Starting main log\n");
-    main_log = fopen(config.main.logpath, "w");
+    snprintf(fname,flen,"%s/main_%ld.log",config.main.logpath,time(NULL));
+    main_log = fopen(fname, "w");
 
     if (main_log == NULL) {
         printf("Error opening logfile %s: No such file or directory\n", config.main.logpath);
@@ -75,7 +83,7 @@ int main(int argc, char* argv[]) {
     }
 
     write_to_log(main_log, "main_Oph.c", "main", "Started logfile");
-
+    /*
     cmd_log = fopen(config.main.cmdlog, "w");
     printf("Starting command log\n");
     write_to_log(main_log, "main_Oph.c", "main", "Starting command log");
@@ -86,8 +94,10 @@ int main(int argc, char* argv[]) {
         fclose(main_log);
         exit(1);
     }
+    */
     if (config.power.enabled){
-        pbob_log_file = fopen(config.power.logfile,"w");
+	snprintf(fname,flen,"%s/pbob_%ld.log",config.power.logfile,time(NULL));
+        pbob_log_file = fopen(fname,"w");
 	if (pbob_log_file == NULL){
         	write_to_log(main_log, "main_Oph.c","main", "Error opening pbob log: No such file or directory");
         	fclose(main_log);
@@ -97,8 +107,8 @@ int main(int argc, char* argv[]) {
 		printf("Starting PBoBs....\n");
 		write_to_log(main_log,"main_Oph.c","main","Starting PBoBs");
 		pthread_create(&pbob_thread,NULL,run_pbob_thread,NULL);
-		while(!pbob_enabled){
-			if(pbob_enabled){
+		while(!pbob_ready){
+			if(pbob_ready){
 				printf("PBoBs started successfully\n");
 				write_to_log(main_log,"main_Oph.c","main","PBoBs started successfully");
 				break;
@@ -106,23 +116,11 @@ int main(int argc, char* argv[]) {
 		}
 	}
     }
-    if (config.bvexcam.enabled){
-        printf("Starting bvexcam log\n");
-        write_to_log(main_log, "main_Oph.c", "main", "Starting bvexcam log");
-        bvexcam_log = fopen(config.bvexcam.logfile, "w");
-
-        if (bvexcam_log == NULL) {
-               printf("Error opening bvexcam log %s: No such file or directory\n", config.bvexcam.logfile);
-                      write_to_log(main_log, "main_Oph.c", "main", "Error opening bvexcam log: No such file or directory");
-        }
-
-    }
 
     // Initialize starcam downlink if enabled
     if (config.starcam_downlink.enabled) {
         printf("Starting starcam downlink\n");
         write_to_log(main_log, "main_Oph.c", "main", "Starting starcam downlink");
-        
         // Copy config to starcam_config
         starcam_config.enabled = config.starcam_downlink.enabled;
         strncpy(starcam_config.logfile, config.starcam_downlink.logfile, sizeof(starcam_config.logfile) - 1);
@@ -133,9 +131,6 @@ int main(int argc, char* argv[]) {
         starcam_config.image_timeout_sec = config.starcam_downlink.image_timeout_sec;
         strncpy(starcam_config.workdir, config.starcam_downlink.workdir, sizeof(starcam_config.workdir) - 1);
         strncpy(starcam_config.notification_file, config.starcam_downlink.notification_file, sizeof(starcam_config.notification_file) - 1);
-        starcam_config.udp_client_ips = config.starcam_downlink.udp_client_ips;
-        starcam_config.num_client_ips = config.starcam_downlink.num_client_ips;
-        
         if (initStarcamDownlink() != 0) {
             printf("Error initializing starcam downlink.\n");
             write_to_log(main_log, "main_Oph.c", "main", "Error initializing starcam downlink");
@@ -149,7 +144,6 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-
     /* Initialize accelerometer if enabled
     if (config.accelerometer.enabled) {
         printf("Starting accelerometer\n");
@@ -163,17 +157,6 @@ int main(int argc, char* argv[]) {
             write_to_log(main_log, "main_Oph.c", "main", "Successfully started accelerometer");
         }
     }*/
-
-    if (config.motor.enabled){
-	printf("Starting motor log.\n");
-    	write_to_log(main_log,"main_Oph.c","main","Starting motor log");
-    	motor_log = fopen(config.motor.logfile,"w");
-
-        if(motor_log == NULL){
-		printf("Error opening motor log %s: No such file or directory\n", config.motor.logfile);
-                write_to_log(main_log, "main_Oph.c", "main", "Error opening motor log: No such file or directory");
-	}
-    }
 
     if (config.lazisusan.enabled){
 	printf("Starting lazisusan log.\n");
@@ -205,7 +188,8 @@ int main(int argc, char* argv[]) {
 	write_to_log(main_log,"main_Oph.c","main","Starting GPS server");
 	printf("Starting GPS server log....\n");
 	write_to_log(main_log,"main_Oph.c","main","Starting GPS server log");
-	gps_server_log = fopen(config.gps_server.logfile,"w");
+	snprintf(fname,flen,"%s/gps_server_%ld.log",config.gps_server.logfile,time(NULL));
+        gps_server_log = fopen(fname, "w");
 	if(gps_server_log == NULL){
 		printf("Error starting GPS server log %s: No such file or directory \n", config.gps_server.logfile);
 		write_to_log(main_log, "main_Oph.c", "main", "Error opening GPS server log: No such file or directory");
@@ -225,7 +209,8 @@ int main(int argc, char* argv[]) {
 	write_to_log(main_log,"main_Oph.c","main","Starting telemetry server");
 	printf("Starting telemetry server log....\n");
 	write_to_log(main_log,"main_Oph.c","main","Starting telemetry server log");
-	server_log = fopen(config.server.logfile,"w");
+	snprintf(fname,flen,"%s/server_%ld.log",config.server.logfile,time(NULL));
+	server_log = fopen(fname,"w");
 	if(server_log == NULL){
 		printf("Error starting telemetry server log %s: No such file or directory \n", config.server.logfile);
 		write_to_log(main_log, "main_Oph.c", "main", "Error opening telemetry server log: No such file or directory");
@@ -240,11 +225,56 @@ int main(int argc, char* argv[]) {
     	}
     }
     
+    // Start system monitor if enabled
+    if (config.system_monitor.enabled){
+	printf("Starting system monitor....\n");
+	write_to_log(main_log,"main_Oph.c","main","Starting system monitor");
+	printf("Starting system monitor log....\n");
+	write_to_log(main_log,"main_Oph.c","main","Starting system monitor log");
+	snprintf(fname,flen,"%s/system_monitor_%ld.log",config.system_monitor.logfile,time(NULL));
+        system_monitor_log = fopen(fname,"w");
+	if(system_monitor_log == NULL){
+		printf("Error starting system monitor log %s: No such file or directory \n", config.system_monitor.logfile);
+		write_to_log(main_log, "main_Oph.c", "main", "Error opening system monitor log: No such file or directory");
+	}else{
+		if(init_system_monitor() == 0){
+			pthread_create(&system_monitor_thread,NULL,run_system_monitor_thread,NULL);
+			sleep(1); // Give it a moment to start
+			if(system_monitor_running){
+				printf("Successfully started system monitor\n");
+				write_to_log(main_log,"main_Oph.c","main","Successfully started system monitor");
+			}else{
+				printf("Failed to start system monitor\n");
+				write_to_log(main_log,"main_Oph.c","main","Failed to start system monitor");
+			}
+		}else{
+			printf("Failed to initialize system monitor\n");
+			write_to_log(main_log,"main_Oph.c","main","Failed to initialize system monitor");
+		}
+    	}
+    }
+    
+    // Start housekeeping log if enabled (housekeeping system itself is started via commands)
     printf("\n");
-    // Start command-line
-    cmdprompt();
+    do_commands();
 
     // Shutdown procedures
+
+    //Shutdown receiver if needed
+    if (config.mixer.enabled && config.lna.enabled){
+        if(receiver_on){
+                printf("Powering down receiver\n");
+                write_to_log(main_log, "main_Oph.c", "main", "Powering down receiver");
+                receiver_on = 0;
+                set_toggle(config.lna.pbob,config.lna.relay);
+                set_toggle(config.mixer.pbob,config.mixer.relay);
+                printf("Receiver powered down\n");
+                write_to_log(main_log, "main_Oph.c", "main", "Receiver powered down");
+        }else{
+                printf("Receiver already powered down\n");
+        }
+    }
+
     if (config.bvexcam.enabled) {
 	if (bvexcam_on){
         	pthread_join(astro_thread_id, (void **) &(astro_ptr));
@@ -259,10 +289,9 @@ int main(int argc, char* argv[]) {
 		}
 		//Put PBoB command here
                 set_toggle(config.bvexcam.pbob,config.bvexcam.relay);
+		fclose(bvexcam_log);
 		//
         }
-
-        fclose(bvexcam_log);
     }
 
     /* Shutdown accelerometer if it was enabled
@@ -285,11 +314,11 @@ int main(int argc, char* argv[]) {
 	    //Put PBob command here
             set_toggle(config.motor.pbob,config.motor.relay);
 	    //
+	    fclose(motor_log);
         }else{
             printf("Motor already shutdown \n");
             write_to_log(main_log,"main_Oph.c","main","Motor already shutdown\n");
 	}
-	fclose(motor_log);
     }
 
     if (config.lazisusan.enabled){
@@ -303,15 +332,19 @@ int main(int argc, char* argv[]) {
     }
 
     if (config.lockpin.enabled){
-	printf("Shutting down lockpin\n");
-	write_to_log(main_log,"Main_Oph.c","main","Shutting down lockpin");
-	exit_lock = 1;
-	pthread_join(lock_thread,NULL);
-	//put PBoB command here
-
-	//
-	printf("Lockpin shutdown complete\n");
-	write_to_log(main_log,"main_Oph.c","main","Lockpin shutdown complete");
+	if(lockpin_on){
+	    printf("Shutting down lockpin\n");
+	    write_to_log(main_log,"Main_Oph.c","main","Shutting down lockpin");
+	    exit_lock = 1;
+	    pthread_join(lock_thread,NULL);
+	    //put PBoB command here
+	    set_toggle(config.lockpin.pbob,config.lockpin.relay);
+	    //
+	    printf("Lockpin shutdown complete\n");
+	    write_to_log(main_log,"main_Oph.c","main","Lockpin shutdown complete");
+	}else{
+	    printf("Lockpin already shutdown\n");
+	}
     }
     if (config.gps_server.enabled){
         printf("Shutting down GPS server\n");
@@ -341,6 +374,29 @@ int main(int argc, char* argv[]) {
 	}
     }
 
+    // Shutdown system monitor if it was enabled
+    if (config.system_monitor.enabled) {
+        printf("Shutting down system monitor\n");
+        write_to_log(main_log, "main_Oph.c", "main", "Shutting down system monitor");
+        shutdown_system_monitor();
+        printf("System monitor shutdown complete.\n");
+        write_to_log(main_log, "main_Oph.c", "main", "System monitor shutdown complete");
+    }
+
+    // Shutdown housekeeping if it was enabled and running
+    if (config.housekeeping.enabled) {
+        if(housekeeping_running || housekeeping_on){
+            printf("Shutting down housekeeping system\n");
+            write_to_log(main_log, "main_Oph.c", "main", "Shutting down housekeeping system");
+            shutdown_housekeeping();
+            printf("Housekeeping system shutdown complete.\n");
+            write_to_log(main_log, "main_Oph.c", "main", "Housekeeping system shutdown complete");
+        }
+        if(housekeeping_log){
+            fclose(housekeeping_log);
+        }
+    }
+
     // Shutdown starcam downlink if it was enabled
     if (config.starcam_downlink.enabled) {
         printf("Shutting down starcam downlink\n");
@@ -360,7 +416,7 @@ int main(int argc, char* argv[]) {
 	write_to_log(main_log, "main_Oph.c", "main", " PBoB shutdown complete");
      }
 
-    fclose(cmd_log);
+    //fclose(cmd_log);
     fclose(main_log);
     return 0;
 }

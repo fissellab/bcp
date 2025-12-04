@@ -8,10 +8,9 @@
 #include "gps_server.h"
 #include "file_io_Oph.h"
 
-extern GPS_data curr_gps;
-extern int server_running;
+extern conf_params config;
 
-static int first_calc = 1;
+extern GPS_data curr_gps;
 
 void get_UTC(char *buf,int size){
   struct timeval current_time;
@@ -107,36 +106,24 @@ double El_from_RaDec(double ra, double dec, double lat, double lon){
   
 }
 void AzEl_from_RaDec(SkyCoord *RaDec, SkyCoord *AzEl){
-    static double tel_lat=0;
-    static double tel_lon=0;
-    if(first_calc){
-    	if(config.gps_server.enabled && server_running){
-		if(curr_gps.gps_lat !=0){
-			tel_lat = curr_gps.gps_lat;
-		}else{
-			tel_lat = config.bvexcam.lat;
-		}
-		if(curr_gps.gps_lon !=0){
-                        tel_lon = curr_gps.gps_lon;
-                }else{
-                        tel_lon = config.bvexcam.lon;
-                }
-	}else{
+    static int first_call = 1;
+    static double tel_lat = 0;
+    static double tel_lon = 0;
+
+    if(first_call){
+	if((curr_gps.gps_lat ==0) || (curr_gps.gps_lon == 0)){
 		tel_lat = config.bvexcam.lat;
 		tel_lon = config.bvexcam.lon;
+	}else{
+		tel_lat = curr_gps.gps_lat;
+		tel_lon = curr_gps.gps_lon;
 	}
-	first_calc = 0;
-
+	first_call = 0;
     }else{
-	if(config.gps_server.enabled && server_running){
-                if(curr_gps.gps_lat !=0){
-                        tel_lat = curr_gps.gps_lat;
-                }
-		
-                if(curr_gps.gps_lon !=0){
-                        tel_lon = curr_gps.gps_lon;
-                }
-        }
+	if((curr_gps.gps_lat !=0) && (curr_gps.gps_lon !=0)){
+		tel_lat = curr_gps.gps_lat;
+		tel_lon = curr_gps.gps_lon;
+	}
     }
 
     AzEl->lon = Az_from_RaDec(RaDec->lon,RaDec->lat,tel_lat,tel_lon);

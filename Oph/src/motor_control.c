@@ -25,6 +25,7 @@ ScanModeStruct scan_mode = {
 	.mode = NONE,
 	.turnaround = 1,
 	.scanning = 0,
+	.firsttime = 1,
 };
 
 SkyCoord target = {
@@ -65,6 +66,14 @@ void print_motor_PID(){
 	mvprintw(12,0,"Motor I: %lf\n",i_pub);
 	mvprintw(13,0,"Motor D: %lf\n",d_pub);
 }
+double average_vel(){
+	double summed_vel = 0.0;
+	for(int i = 0; i<3; i++){
+		summed_vel += MotorData[i].velocity;
+	}
+
+	return summed_vel/3.0;
+}
 
 static int16_t calculate_current(float v_req){
 	
@@ -87,8 +96,14 @@ static int16_t calculate_current(float v_req){
 	
 	int motor_i = GETREADINDEX(motor_index);
 	
-	float pv = (float) MotorData[motor_index].velocity;
-	
+	float pv = 0.0;
+
+	if((axes_mode.mode == VEL) && ((fabs(v_req) < 1.0) && (fabs(v_req) != 0.0))){
+		pv = (float) average_vel();
+	}else{
+		pv = (float) MotorData[motor_index].velocity;
+	}
+
 	int16_t milliamp_return;
 	static int16_t last_milliamp = 0;
 	int16_t max_delta_mA = config.motor.max_delta;//5
@@ -229,7 +244,6 @@ void go_to_park(){
 
 void do_enc_dither(){
 
-	static int firsttime = 1;
 	int motor_i;
 	double curr_pos;
         double pos_tol;
@@ -240,13 +254,13 @@ void do_enc_dither(){
 
 	pos_tol = config.motor.pos_tol;
 	
-	if(firsttime){
+	if(scan_mode.firsttime){
 		if(scan_mode.start_el>scan_mode.stop_el){
 		
 			if((curr_pos > scan_mode.start_el+pos_tol) || (curr_pos < scan_mode.start_el)){
 				go_to_enc(scan_mode.start_el);
 			}else{
-				firsttime = 0;
+				scan_mode.firsttime = 0;
 				axes_mode.mode = VEL;
 				scan_mode.scan = 0;
 				scan_mode.start_to_stop = -1;	
@@ -258,7 +272,7 @@ void do_enc_dither(){
 			if((curr_pos < scan_mode.start_el-pos_tol) || (curr_pos > scan_mode.start_el)){
 				go_to_enc(scan_mode.start_el);
 			}else{
-				firsttime = 0;
+				scan_mode.firsttime = 0;
 				axes_mode.mode = VEL;
 				scan_mode.scan = 0;
 				scan_mode.start_to_stop = 1;	
@@ -299,21 +313,157 @@ void do_enc_dither(){
 			axes_mode.vel = 0.0;
 			scan_mode.scanning = 0;
 			scan_mode.scan = 0;
-			firsttime = 1;
+			scan_mode.mode = NONE;
+			scan_mode.firsttime = 1;
 		}
 	
 	}
 
 }
+
+void track_dither(){
+        SkyCoord azel_coord;
+	AzEl_from_RaDec(&target,&azel_coord);
+        scan_mode.start_el = azel_coord.lat - scan_mode.scan_len/2;
+	scan_mode.stop_el = azel_coord.lat + scan_mode.scan_len/2;
+
+	if(scan_mode.start_el <MINEL){
+		axes_mode.mode = VEL;
+		axes_mode.vel = 0.0;
+                scan_mode.scanning = 0;
+                scan_mode.scan = 0;
+                scan_mode.mode = NONE;
+                scan_mode.firsttime = 1;
+	}else if(scan_mode.stop_el > MAXEL){
+		axes_mode.mode = VEL;
+                axes_mode.vel = 0.0;
+                scan_mode.scanning = 0;
+                scan_mode.scan = 0;
+                scan_mode.mode = NONE;
+                scan_mode.firsttime = 1;
+	}else{
+		do_enc_dither();
+	}
+}
+
+void skydip_track(){
+
+	double el_prev;
+	static double t_start;
+        double t_now;
+        struct timeval time;
+	static int on_skydip = 0;
+	static int ascending;
+	static int done_scan = 0;
+	int motor_i;
+        double curr_pos;
+        double pos_tol;
+
+	gettimeofday(&time,NULL);
+        t_now = time.tv_sec+time.tv_usec/1e6;
+	SkyCoord azel_coord;
+        AzEl_from_RaDec(&target,&azel_coord);
+
+	motor_i = GETREADINDEX(motor_index);
+
+        curr_pos = MotorData[motor_i].position;
+
+
+	if(scan_mode.scan == 0){
+		el_prev = azel_coord.lat;
+		t_start = t_now;
+		track();
+		scan_mode.scan++;
+	}else{
+		if(!on_skydip){
+			if((el_prev-azel_coord.lat)>0){
+				ascending = 0;
+			}else{
+				ascending = 1;
+			}
+		}//Only reset these when we are not sky-dipping
+
+		if(ascending){
+			if((t_now-t_start)>scan_mode.time){
+                                if(!on_skydip){
+                                        if(done_scan){
+                                                go_to_enc(scan_mode.start_el);
+                                                if(axes_mode.on_target){
+                                                        done_scan = 0;
+                                                        t_start=t_now;
+                                                        track();
+                                                        scan_mode.scan++;
+                                                }
+                                        }else{
+                                                scan_mode.stop_el = azel_coord.lat+scan_mode.scan_len;
+                                                scan_mode.start_el = azel_coord.lat-2.0;//add padding for backlash
+                                                on_skydip = 1;
+                                                axes_mode.mode=VEL;
+                                                axes_mode.vel=scan_mode.vel;
+                                                scan_mode.scan++;
+                                                axes_mode.on_target = 0;
+					}
+                                }else{
+                                        if(curr_pos > scan_mode.stop_el){
+                                                go_to_enc(scan_mode.start_el);
+						on_skydip = 0;
+                                                done_scan = 1;
+                                        }
+                                }
+                        }else{
+                                track();
+                        }
+
+		}else{
+			if((t_now-t_start)>scan_mode.time){
+                                if(!on_skydip){
+					if(done_scan){
+						go_to_enc(scan_mode.start_el);
+						if(axes_mode.on_target){
+							done_scan = 0;
+							t_start=t_now;
+							track();
+							scan_mode.scan++;
+						}
+					}else{
+						scan_mode.stop_el = azel_coord.lat-scan_mode.scan_len;
+                                        	scan_mode.start_el = azel_coord.lat+2.0;//add padding for backlash
+						on_skydip = 1;
+                                        	axes_mode.mode=VEL;
+                                        	axes_mode.vel=(-1)*scan_mode.vel;
+                                        	scan_mode.scan++;
+                                        	axes_mode.on_target = 0;
+					}
+				}else{
+                                        if(curr_pos <  scan_mode.stop_el){
+                                                go_to_enc(scan_mode.start_el);
+						done_scan = 1;
+						on_skydip = 0;
+                                        }
+                                }
+                        }else{
+                                track();
+                        }
+
+
+		}
+	}
+}
+
 void track(){
 	double el_delta;
 	double az_delta;
 	SkyCoord azel_coord;
 	axes_mode.mode = POS;
 	AzEl_from_RaDec(&target,&azel_coord);
-	axes_mode.dest = azel_coord.lat;
-	axes_mode.dest_az = azel_coord.lon;
-
+	if(azel_coord.lat > MAXEL){
+		axes_mode.dest = MAXEL;
+	}else if(azel_coord.lat < MINEL){
+		axes_mode.dest = 0;
+	}else{
+		axes_mode.dest = azel_coord.lat;
+		axes_mode.dest_az = azel_coord.lon;
+	}
 	if(config.lazisusan.enabled && config.motor.enabled){
 		el_delta = fabs(MotorData[GETREADINDEX(motor_index)].position-axes_mode.dest);
 		az_delta = fabs(axes_mode.dest_az-get_angle());
@@ -360,6 +510,8 @@ void track(){
 
 void enc_onoff(){
 	static int on_to_off = 0;
+        static int off_to_off = 0;
+        static int top = 0;
 	static double t_start;
 	double t_now;
 	struct timeval time;
@@ -373,32 +525,46 @@ void enc_onoff(){
 			scan_mode.on_position = 1;
 			t_start = t_now;
 			on_to_off = 0;
+			off_to_off = 0;
+			top = 0;
 			scan_mode.scan++;
 		}
 	}else{
 
-		if((scan_mode.on_position == -1) || (on_to_off == 1)){
+		if(((scan_mode.on_position == -1) || (on_to_off == 1)) && top){
                 	axes_mode.dest += scan_mode.offset;
-       		 }
+       		}else if((scan_mode.on_position == -1) || (off_to_off == 1)){
+			axes_mode.dest -= scan_mode.offset;
+		}
 
-		if((t_now-t_start)>scan_mode.time){
+		if(((t_now-t_start)>scan_mode.time/2.0) && (scan_mode.on_position != 1)){
+			if(scan_mode.on_position == -1){
+				scan_mode.on_position = 0;
+				if (top){
+					off_to_off = 1;
+					top = 0;
+				}else if (!top){
+					on_to_off = -1;
+				}
+			}else if(axes_mode.on_target_el){
+				t_start = t_now;
+				if(on_to_off == 1){
+					scan_mode.on_position = -1;
+					on_to_off = 0;
+				}else if (off_to_off == 1){
+					scan_mode.on_position = -1;
+					off_to_off = 0;
+				}else if (on_to_off == -1){
+					scan_mode.on_position = 1;
+					on_to_off = 0;
+					scan_mode.scan++;
+				}
+			}
+		}else if((t_now-t_start)>scan_mode.time){
 			if(scan_mode.on_position == 1){
 				on_to_off = 1;
 				scan_mode.on_position = 0;
-				scan_mode.scan++;
-			}else if(scan_mode.on_position == -1){
-				on_to_off = -1;
-				scan_mode.on_position = 0;
-				scan_mode.scan++;
-			}else if(axes_mode.on_target_el){
-				t_start = t_now;
-				if(on_to_off == -1){
-					scan_mode.on_position = 1;
-					on_to_off = 0;
-				}else if(on_to_off == 1){
-					scan_mode.on_position = -1;
-					on_to_off = 0;
-				}
+				top = 1;
 			}
 		}
 	}
@@ -451,8 +617,13 @@ void command_motor(void){
 			track();
 		}else if(scan_mode.mode == EL_ONOFF){
 			enc_onoff();
+		}else if(scan_mode.mode == TRACK_DITHER){
+			track_dither();
+		}else if(scan_mode.mode == SD_TRACK){
+			skydip_track();
 		}
 	}
+	
 	if(config.bvexcam.enabled){
 		//if(check_sc()){
 			//set_el_offset(all_astro_params.alt);

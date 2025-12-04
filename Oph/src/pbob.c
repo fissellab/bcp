@@ -22,9 +22,10 @@ int shutdown_pbob; // Flag to control shutdown sequence
 extern struct conf_params config;
 struct sockaddr_in cliaddr_pbob;
 int pbob_enabled;
+int pbob_ready = 0;
 int pbob_server_running = 0;
 int stop_pbob_server = 0;
-int sockfd;
+static int pbob_sockfd;  // Make static to avoid naming conflict with bvexcam.c
 pthread_t pbob_server_thread;
 
 typedef enum {
@@ -32,7 +33,7 @@ typedef enum {
     PBOB_DISABLED = 1
 } PbobStatus;
 
-// Current names for subsystems each PBOB controls
+/* Current names for subsystems each PBOB controls
 static const char* metric_names[NUM_PBOB][NUM_RELAYS] = {
     // PBOB 0
     { "//", "motor_current", "bvex_cam_current", "//", "//", "//" },
@@ -41,7 +42,7 @@ static const char* metric_names[NUM_PBOB][NUM_RELAYS] = {
     // PBOB 2
     { "//", "//", "//", NULL, NULL, NULL }
 };
-
+*/
 const int regs[NUM_RELAYS] = {2008, 2009, 2010, 2011, 2012, 2013}; // Register addresses for relays
 const int pins[NUM_RELAYS] = {0, 1, 2, 3, 4, 5}; // Pin names for relays
 RelayController controller[NUM_PBOB]; //I moved the extern flag to the header-FT
@@ -64,6 +65,33 @@ int set_toggle(int pbob_id, int relay_id){
     return 0; // Relay not found or PBOB not found
 }
 
+double get_relay_current(int pbob_id, int relay_id){
+	for(int j = 0; j<NUM_PBOB; j++){
+                if(controller[j].id == pbob_id){
+                        for(int i=0; i<controller[j].num_relays; i++){
+                                if(controller[j].relays[i].relay_id == relay_id){
+                                        return controller[j].relays[i].current;
+                                }
+                        }
+                }
+        }
+
+    return 0.0;
+}
+
+int get_state(int pbob_id, int relay_id){
+        for(int j = 0; j<NUM_PBOB; j++){
+                if(controller[j].id == pbob_id){
+                        for(int i=0; i<controller[j].num_relays; i++){
+                                if(controller[j].relays[i].relay_id == relay_id){
+                                        return controller[j].relays[i].state;
+                                }
+                        }
+                }
+        }
+
+    return 0;
+}
 /*
 * This function handles errors from LabJack operations.
 * It logs the error message to the log file and prints it to the console.
@@ -306,6 +334,7 @@ static int initialize_parameters(int pbob_index, RelayController* ctrl) {
     int num_relays = 0;
     int id = 0;
     char message[256];
+    char path[256];
 
     switch (pbob_index) {
         case 0:
@@ -313,25 +342,28 @@ static int initialize_parameters(int pbob_index, RelayController* ctrl) {
             ip = config.power.pbob0.ip;
             num_relays = config.power.pbob0.num_relays;
             id = config.power.pbob0.id;
+	        snprintf(path,sizeof(path),"%s/pbob%d_current_%ld.txt",config.power.pbob0.workdir,id,time(NULL));
             break;
         case 1:
             enabled = config.power.pbob1.enabled;
             ip = config.power.pbob1.ip;
             num_relays = config.power.pbob1.num_relays;
             id = config.power.pbob1.id;
+	        snprintf(path,sizeof(path),"%s/pbob%d_current_%ld.txt",config.power.pbob1.workdir,id,time(NULL));
             break;
         case 2:
             enabled = config.power.pbob2.enabled;
             ip = config.power.pbob2.ip;
             num_relays = config.power.pbob2.num_relays;
             id = config.power.pbob2.id;
+            snprintf(path,sizeof(path),"%s/pbob%d_current_%ld.txt",config.power.pbob2.workdir,id,time(NULL));
             break;
         default:
             snprintf(message, sizeof(message), "Invalid PBOB index: %d", pbob_index);
             write_to_log(pbob_log_file, "pbob.c", "initialize_parameters", message);
             return PBOB_DISABLED;
     }
-
+    ctrl->enabled = enabled;
     if (!enabled) {
         printf("PBOB %d is disabled in configuration, skipping initialization.\n", pbob_index);
         return PBOB_DISABLED;
@@ -341,6 +373,7 @@ static int initialize_parameters(int pbob_index, RelayController* ctrl) {
     ctrl->ip = ip;
     ctrl->num_relays = num_relays;
     ctrl->id = id;
+    ctrl->log = fopen(path,"w");
     
     snprintf(message, sizeof(message), "PBOB %d initialized with IP: %s, Number of Relays: %d", 
             pbob_index, ctrl->ip, ctrl->num_relays);
@@ -356,15 +389,15 @@ static void sendInt_pbob(int sockfd, int sample) {
 	char string_sample[6];
 
 	snprintf(string_sample,6,"%d",sample);
-        sendto(sockfd, (const char*) string_sample, strlen(string_sample), MSG_CONFIRM,(const struct sockaddr *) &cliaddr_pbob, sizeof(cliaddr_pbob));
-        return;
+    sendto(sockfd, (const char*) string_sample, strlen(string_sample), MSG_CONFIRM,(const struct sockaddr *) &cliaddr_pbob, sizeof(cliaddr_pbob));
+    return;
 }
 
 static void sendDouble(int sockfd,double sample) {
 	char string_sample[10];
 
 	snprintf(string_sample,10,"%lf",sample);
-	sendto(sockfd, (const char*) string_sample, strlen(string_sample), MSG_CONFIRM,(const struct sockaddr *) &cliaddr, sizeof(cliaddr));
+	sendto(sockfd, (const char*) string_sample, strlen(string_sample), MSG_CONFIRM,(const struct sockaddr *) &cliaddr_pbob, sizeof(cliaddr_pbob));
 	return;
 }
 
@@ -443,12 +476,12 @@ static void sock_listen_pbob(int sockfd, char* buffer) {
 
 static void *do_server_pbob() {
 
-	sockfd = init_socket_pbob();
+	pbob_sockfd = init_socket_pbob();
 	char buffer[MAXLEN];
 
     if(pbob_server_running){
         while(!stop_pbob_server){
-            sock_listen_pbob(sockfd, buffer);
+            sock_listen_pbob(pbob_sockfd, buffer);
             char* pbob_id_str = strtok(buffer, ";");
             char* relay_id_str = strtok(NULL, ";");
 
@@ -464,7 +497,7 @@ static void *do_server_pbob() {
                     write_to_log(pbob_log_file, "pbob.c", "do_server_pbob", "Invalid relay id received");
                 } else {
                     if (set_toggle(pbob_id, relay_id)) {
-                        sendInt_pbob(sockfd, 1); // Send success response
+                        sendInt_pbob(pbob_sockfd, 1); // Send success response
                     }
                 }
             }
@@ -473,18 +506,9 @@ static void *do_server_pbob() {
         write_to_log(pbob_log_file,"pbob.c","do_server_pbob","Shutting down server");
         pbob_server_running = 0;
         stop_pbob_server = 0;
-        close(sockfd);
+        close(pbob_sockfd);
     }else{
         write_to_log(pbob_log_file,"pbob.c","do_server_pbob","Could not start server");
-    }
-}
-
-static void send_metric_pbob(int sockfd, char* id, double value) {
-    if(strcmp(id, "motor_current")==0){
-        sendDouble(sockfd, value); // Placeholder for current reading
-    } else{
-        fprintf(pbob_log_file, "[%ld][pbob.c][send_metric] Received unknown request: '%s'\n", time(NULL), id);
-        fflush(pbob_log_file);
     }
 }
 
@@ -495,9 +519,7 @@ static void send_metric_pbob(int sockfd, char* id, double value) {
  */
 int run_pbob() {
     char message[256];
-
     pthread_create(&pbob_server_thread, NULL, do_server_pbob, NULL);
-
     // Initialize all controllers
     for (int i = 0; i < NUM_PBOB; i++) {
         if (initialize_parameters(i, &controller[i]) == PBOB_ENABLED) {
@@ -507,7 +529,8 @@ int run_pbob() {
                 controller[i].relays[j].registerAddress = regs[j];
                 controller[i].relays[j].relay_id = j;
                 controller[i].relays[j].state = false;
-                controller[i].relays[j].pin = pins[j];
+                controller[i].relays[j].curr_offset = 0.0;
+                // controller[i].relays[j].pin = pins[j]; // Removed - pin field doesn't exist in Relay struct
             }
             controller[i].handle = 0;
             
@@ -569,48 +592,98 @@ int all_relays_off() {
  * The function reads the voltage from the specified analog input, calculates the current,
  * logs the result, and sends the current value as a metric.
  */
-static void read_relay_current(RelayController* ctrl, int channel) {
+static void read_relay_current(RelayController* ctrl, Relay* rly) {
     double voltage, current;
     char channel_name[10];
     char message[256];
     
-    snprintf(channel_name, sizeof(channel_name), "AIN%d", channel);
+    snprintf(channel_name, sizeof(channel_name), "AIN%d", rly->relay_id);
     
     int err = LJM_eReadName(ctrl->handle, channel_name, &voltage);
     if (err != LJME_NOERROR) {
         snprintf(message, sizeof(message), "Failed to read voltage from %s", channel_name);
-        handle_ljm_error(err, "reading analog input", channel, "read_relay_current");
+        handle_ljm_error(err, "reading analog input", rly->relay_id, "read_relay_current");
         return;
     } else {
-        current = voltage/SHUNT_RESISTOR;
+        current = voltage/SHUNT_RESISTOR - rly->curr_offset;
         snprintf(message, sizeof(message), "Current read from %s: %.6f A", channel_name, current);
         write_to_log(pbob_log_file, "pbob.c", "read_relay_current", message);
     }
 
-    if (metric_names[ctrl->id][channel] != NULL) {
-        send_metric_pbob(sockfd, metric_names[ctrl->id][channel], current);
-    } else {
-        snprintf(message, sizeof(message), "Invalid PBOB ID %d or channel %d for current reading", ctrl->id, channel);
-        write_to_log(pbob_log_file, "pbob.c", "read_relay_current", message);
-        return;
+    rly->current = current;
+    return;
+}
+void start_new_files(){
+	char path[256];
+	for(int i = 0; i < NUM_PBOB; i++) {
+		if(controller[i].enabled){
+			fclose(controller[i].log);
+			if(controller[i].id == config.power.pbob0.id){
+				snprintf(path,sizeof(path),"%s/pbob%d_current_%ld.txt",config.power.pbob0.workdir,controller[i].id,time(NULL));
+			}else if(controller[i].id == config.power.pbob1.id){
+				snprintf(path,sizeof(path),"%s/pbob%d_current_%ld.txt",config.power.pbob1.workdir,controller[i].id,time(NULL));
+            }else if(controller[i].id == config.power.pbob2.id){
+				snprintf(path,sizeof(path),"%s/pbob%d_current_%ld.txt",config.power.pbob2.workdir,controller[i].id,time(NULL));
+            }
+			controller[i].log = fopen(path,"w");
+		}
     }
 }
 
 /*
 * Thread function to run the PBOB relay control system.
-* It continuously checks for relay toggles and performs shutdown if requested.
-*/
+* It continuously checks for relay toggles and performs shutdown if requested.*/
+
+//This calibrates for the dead current
+void calibrate_current(){
+        for(int i=0;i<NUM_PBOB; i++) {
+            if(controller[i].enabled){
+                for (int j = 0;j<controller[i].num_relays;j++){
+                        double summed = 0;
+                        for (int k=0;k<CAL_ITER;k++){
+                                read_relay_current(&controller[i], &controller[i].relays[j]);
+                                summed += controller[i].relays[j].current;
+                                usleep(200000);
+                        }
+                        controller[i].relays[j].curr_offset = summed/CAL_ITER;
+                }
+            }
+        }
+}
+
 void* run_pbob_thread(void* arg) {
     char message[256];
+    static int t_prev=0;
+    struct timeval tv_now;
+    float time;
+
+    gettimeofday(&tv_now,NULL);
+    t_prev = tv_now.tv_sec;
     run_pbob();
-    
+    calibrate_current();
+    pbob_ready = 1;
     while(1) {
+	    gettimeofday(&tv_now,NULL);
+	    time = tv_now.tv_sec+tv_now.tv_usec/1e6;
+	    if(tv_now.tv_sec-t_prev>600){
+		    t_prev = tv_now.tv_sec;
+		    start_new_files();
+	    }
         for(int i = 0; i < NUM_PBOB; i++) {
-            for(int j = 0; j < controller[i].num_relays; j++) {
-                read_relay_current(&controller[i], controller[i].relays[j].relay_id);
-                if (controller[i].relays[j].toggle) {
-                    toggle_relay(&controller[i], j);
-                    controller[i].relays[j].toggle = 0;
+            if(controller[i].enabled){
+	            fprintf(controller[i].log,"%lf;",time);
+                for(int j = 0; j < controller[i].num_relays; j++) {
+                    read_relay_current(&controller[i], &controller[i].relays[j]);
+		            if (j == controller[i].num_relays-1){
+			            fprintf(controller[i].log,"%f\n",controller[i].relays[j].current);
+		            } else{
+			            fprintf(controller[i].log,"%f;",controller[i].relays[j].current);
+                    }
+                    
+                    if (controller[i].relays[j].toggle) {
+                        toggle_relay(&controller[i], j);
+                        controller[i].relays[j].toggle = 0;
+                    }
                 }
             }
         }
@@ -618,10 +691,15 @@ void* run_pbob_thread(void* arg) {
         if(shutdown_pbob == 1 && all_relays_off() == 1){
             break; // Exit the loop if shutdown is requested and all relays are OFF
         }
+
+	    usleep(200000);
     }
 
     for (int i = 0; i < NUM_PBOB; i++) {
-        close_labjack(&controller[i]); // Close LabJack connection
+	    if(controller[i].enabled){
+        	close_labjack(&controller[i]); // Close LabJack connection
+		    fclose(controller[i].log);//
+	    }
     }
 
     stop_pbob_server = 1; // Signal the server thread to stop

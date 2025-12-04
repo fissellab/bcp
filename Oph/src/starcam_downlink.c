@@ -163,47 +163,8 @@ static void free_image_data(image_data_t *image) {
     image->valid = 0;
 }
 
-// Proactively stream image to configured clients
-static void stream_to_clients(image_data_t *img) {
-    if (starcam_config.num_client_ips == 0) {
-        return; // No clients configured for proactive streaming
-    }
-    
-    for (int i = 0; i < starcam_config.num_client_ips; i++) {
-        struct sockaddr_in client_addr;
-        memset(&client_addr, 0, sizeof(client_addr));
-        client_addr.sin_family = AF_INET;
-        client_addr.sin_port = htons(starcam_config.port + 1); // Use port+1 for proactive streaming
-        
-        if (inet_aton(starcam_config.udp_client_ips[i], &client_addr.sin_addr) == 0) {
-            log_message("ERROR", "Invalid client IP address: %s", starcam_config.udp_client_ips[i]);
-            continue;
-        }
-        
-        // Send image header to client
-        image_header_msg_t img_header = {
-            .header = {MSG_IMAGE_HEADER, sizeof(image_header_msg_t) - sizeof(message_header_t), 0},
-            .timestamp = img->timestamp,
-            .total_size = img->compressed_size,
-            .total_chunks = (img->compressed_size + starcam_config.chunk_size - 1) / starcam_config.chunk_size,
-            .compression_quality = img->compression_quality,
-            .blob_count = img->blob_count,
-            .width = img->width,
-            .height = img->height
-        };
-        
-        ssize_t sent = sendto(server_socket, &img_header, sizeof(img_header), 0,
-                             (struct sockaddr*)&client_addr, sizeof(client_addr));
-        
-        if (sent > 0) {
-            log_message("INFO", "Sent image header to client %s (%u bytes, %u chunks)", 
-                       starcam_config.udp_client_ips[i], img->compressed_size, img_header.total_chunks);
-        } else {
-            log_message("ERROR", "Failed to send image header to client %s: %s", 
-                       starcam_config.udp_client_ips[i], strerror(errno));
-        }
-    }
-}
+// Note: Proactive streaming to trusted IPs has been removed
+// Server now operates in request-response mode only
 
 // Replace current image with new one (smart replacement logic)
 static int replace_current_image(const char *image_path, int blob_count, 
@@ -257,9 +218,6 @@ static int replace_current_image(const char *image_path, int blob_count,
         current_image.valid = 1;
         
         log_message("INFO", "Updated current image: %s", image_path);
-        
-        // PROACTIVELY STREAM TO CONFIGURED CLIENTS
-        stream_to_clients(&current_image);
     }
     
     pthread_mutex_unlock(&image_mutex);
