@@ -12,6 +12,10 @@
 #define ENC_DITHER 1
 #define ENC_TRACK 2
 #define EL_ONOFF 3
+#define TRACK_DITHER 4
+#define SD_TRACK 5
+#define MAXEL  53
+#define MINEL -0.7
 
 #include "coords.h"
 
@@ -31,6 +35,7 @@ typedef struct{
 
 typedef struct{
 	int mode;
+	int firsttime;
 	double start_el;
 	double stop_el;
 	double vel;
@@ -42,6 +47,7 @@ typedef struct{
 	double offset;
 	double time;
 	int on_position;
+	double scan_len;
 }ScanModeStruct;
 
 void command_motor(void);
@@ -50,6 +56,8 @@ void set_el_offset(double cal_angle);
 int start_motor(void);
 void print_motor_PID();
 void go_to_park();
+double average_vel();
+void track();
 
 extern AxesModeStruct axes_mode;
 extern ScanModeStruct scan_mode;

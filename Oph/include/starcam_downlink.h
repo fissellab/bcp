@@ -15,8 +15,6 @@ typedef struct {
     int image_timeout_sec;
     char workdir[256];
     char notification_file[256];
-    char **udp_client_ips;
-    int num_client_ips;
 } starcam_downlink_config_t;
 
 // Image data structure (replaces image_metadata_t)

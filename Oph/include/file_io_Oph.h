@@ -83,6 +83,8 @@ typedef struct lockpin_conf{
 	int baud;
 	char *serialport;
 	int duration;
+	int pbob;
+        int relay;
 } lockpin_conf;
 
 typedef struct gps_server_conf{
@@ -103,8 +105,6 @@ typedef struct starcam_downlink_conf{
 	int image_timeout_sec;
 	char *workdir;
 	char *notification_file;
-	char **udp_client_ips;
-	int num_client_ips;
 } starcam_downlink_conf;
 
 typedef struct server_conf{
@@ -119,6 +119,7 @@ typedef struct pbob_conf{
 	int enabled;
 	int id;
 	char *ip;
+	char *workdir;
         int num_relays;
 }pbob_conf;
 
@@ -133,6 +134,70 @@ typedef struct power_conf{
 	struct pbob_conf pbob2;
 }power_conf;
 
+typedef struct lna_conf{
+	int enabled;
+	int pbob;
+	int relay;
+}lna_conf;
+
+typedef struct mixer_conf{
+	int enabled;
+	int pbob;
+	int relay;
+}mixer_conf;
+
+typedef struct rfsoc_conf{
+        int enabled;
+        int pbob;
+        int relay;
+}rfsoc_conf;
+
+typedef struct cmd_server_conf{
+	int port;
+	int timeout;
+}cmd_server_conf;
+
+typedef struct gps_conf{
+	int pbob;
+	int relay;
+}gps_conf;
+
+typedef struct backend_conf{
+	int pbob;
+	int relay;
+}backend_conf;
+
+typedef struct timing_box_conf{
+	int pbob;
+	int relay;
+}timing_box_conf;
+
+typedef struct system_monitor_conf {
+    int enabled;
+    char *logfile;
+    int update_interval_sec;  // How often to update metrics (in seconds)
+} system_monitor_conf;
+
+typedef struct housekeeping_conf {
+    int enabled;
+    char *logfile;
+    char *data_path;
+    int pbob;
+    int relay;
+    int file_rotation_interval;  // File rotation interval in seconds (600 = 10 minutes)
+} housekeeping_conf;
+
+typedef struct heater_conf {
+    int pbob;
+    int relay;
+} heater_conf;
+
+typedef struct position_conf {
+    int pbob;
+    int relay;
+} position_conf;
+
+
 typedef struct conf_params {
     struct main_conf main;
     struct bvexcam_conf bvexcam;
@@ -144,6 +209,17 @@ typedef struct conf_params {
     struct starcam_downlink_conf starcam_downlink;
     struct server_conf server;
     struct power_conf power;
+    struct lna_conf lna;
+    struct mixer_conf mixer;
+    struct rfsoc_conf rfsoc;
+    struct cmd_server_conf cmd_server;
+    struct gps_conf gps;
+    struct backend_conf backend;
+    struct timing_box_conf timing_box;
+    struct system_monitor_conf system_monitor;
+    struct housekeeping_conf housekeeping;
+    struct heater_conf heaters;
+    struct position_conf position_box;
 } conf_params;
 
 extern struct conf_params config;
